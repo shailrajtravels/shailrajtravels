@@ -1,0 +1,126 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-deep: var(--brand-blue-deep);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-dark: var(--brand-green-dark);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-mist: var(--brand-mist);
+
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --primary: #0B4DBA;
+  --primary-foreground: #ffffff;
+  --secondary: #F8FBFA;
+  --secondary-foreground: #083A8C;
+  --muted: #F8FBFA;
+  --muted-foreground: #475569;
+  --accent: #2FAF43;
+  --accent-foreground: #ffffff;
+  --border: #e6ecf2;
+  --input: #e6ecf2;
+  --ring: #0B4DBA;
+
+  --brand-blue: #0B4DBA;
+  --brand-blue-deep: #083A8C;
+  --brand-green: #2FAF43;
+  --brand-green-dark: #1E8B34;
+  --brand-ink: #0a1f4a;
+  --brand-mist: #F8FBFA;
+
+  --gradient-cta: linear-gradient(135deg, #0B4DBA 0%, #2FAF43 100%);
+  --gradient-cta-hover: linear-gradient(135deg, #083A8C 0%, #1E8B34 100%);
+  --shadow-luxury: 0 30px 80px -30px rgba(8, 58, 140, 0.28);
+  --shadow-card: 0 18px 50px -18px rgba(8, 58, 140, 0.22);
+  --shadow-nav: 0 1px 0 #eef2f7, 0 6px 24px -12px rgba(8, 58, 140, 0.10);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+@keyframes float-leaf {
+  0% { transform: translate(-20px, 10px) rotate(-10deg); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translate(140px, -40px) rotate(20deg); opacity: 0; }
+}
+@keyframes float-feather {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(-14px) rotate(-4deg); }
+}
+@keyframes hero-zoom {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility animate-float-leaf { animation: float-leaf 15s ease-in-out infinite; }
+@utility animate-float-feather { animation: float-feather 9s ease-in-out infinite; }
+@utility animate-hero-zoom { animation: hero-zoom 1.8s ease-out both; }
+@utility animate-reveal { animation: reveal-up 0.9s cubic-bezier(.2,.7,.2,1) both; }
+
+@utility btn-cta {
+  background-image: var(--gradient-cta);
+  color: #fff;
+  box-shadow: 0 14px 30px -10px rgba(11, 77, 186, .45);
+  transition: all .3s ease;
+  &:hover {
+    background-image: var(--gradient-cta-hover);
+    box-shadow: 0 18px 40px -10px rgba(47, 175, 67, .5);
+    transform: translateY(-1px);
+  }
+}
+
+html { scroll-behavior: smooth; }

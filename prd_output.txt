@@ -1,0 +1,1422 @@
+=== PRD v2 ===
+SHAILRAJ TRAVELS
+www.shailrajtravels.com
+Product Requirements Document
+Full SEO Strategy & Implementation Plan
+Pilgrimage Tourism — Organic Growth Playbook
+Version
+2.0
+Date
+June 2026
+Market
+Maharashtra / All India
+Prepared by
+Axenor Studios
+1. Executive Summary
+Shailraj Travels is a pilgrimage tour operator based in Pune, Maharashtra. This document defines the complete Product Requirements and Full SEO Strategy to drive organic Google traffic, rank for high-intent pilgrimage keywords, and convert visitors into tour inquiries.
+India's spiritual tourism sector is growing rapidly — faith-based travel now accounts for a significant share of domestic tourism and is expected to continue growing through 2026 and beyond. Competitors like Swastik Holiday, Thomas Cook India, and regional operators already have SEO-optimized pages ranking for the same keywords Shailraj Travels needs to capture.
+This plan covers: keyword strategy, page architecture, on-page SEO specifications, content playbook, technical SEO, local SEO, link building, blog SEO, schema markup, and monthly execution timeline.
+2. Business Goals & KPIs
+2.1 Primary Goals
+Rank in Top 5 on Google for all 6 core pilgrimage tour keywords within 6 months
+Generate 500+ monthly organic visitors from pilgrimage-related searches within 90 days of launch
+Increase tour inquiry form submissions by 40% within 6 months
+Build 20+ high-quality backlinks from travel, religious, and Maharashtra-focused websites
+Improve Google Business Profile visibility for local pilgrimage searches in Pune and Mumbai
+2.2 SEO KPIs & Targets
+KPI
+Baseline (Month 0)
+Target (Month 3)
+Target (Month 6)
+Organic Sessions / Month
+~50–100 (estimated)
+500+
+2,000+
+Keyword Rankings (Top 10)
+0–2 keywords
+4 keywords
+All 6 + long-tails
+Inquiry Form Submissions
+Current baseline
++20%
++40%
+Domain Authority / DR
+Measure at start
++5 points
++10 points
+Backlinks Acquired
+0 new
+10
+25+
+Google Reviews
+Current count
++15
++40
+Page Speed (Lighthouse)
+Measure at start
+>85
+>90
+Core Web Vitals
+Measure at start
+Passing
+All Green
+3. Keyword Strategy
+Keyword research is the foundation of the entire SEO plan. Every page, blog post, and meta tag must be mapped to a primary keyword + supporting long-tail cluster. The strategy targets three keyword tiers based on competition and intent.
+3.1 Tier 1 — Primary Commercial Keywords (Core Landing Pages)
+These are the high-intent keywords directly tied to tour bookings. Users searching these terms are ready to book or shortlisting providers.
+Primary Keyword
+Search Intent
+Target URL
+Difficulty
+Ashtavinayak Yatra package
+Transactional
+/tours/ashtavinayak-yatra
+Medium
+Jyotirlinga darshan tour
+Transactional
+/tours/jyotirlinga-darshan
+Medium
+Pandharpur Wari yatra
+Informational + Transactional
+/tours/pandharpur-wari
+Low-Medium
+Char Dham Yatra package
+Transactional
+/tours/char-dham-yatra
+High
+Shirdi tour package from Pune
+Transactional
+/tours/shirdi-tour
+Medium
+Tirupati Balaji tour from Pune
+Transactional
+/tours/tirupati-balaji-tour
+Medium-High
+3.2 Tier 2 — Long-Tail Keywords (Supporting Content & Internal Pages)
+These keywords have lower competition and capture users earlier in the decision journey. Targeting these via FAQ sections, detailed content, and blog posts will build topical authority.
+Long-Tail Keyword
+Target Page
+Ashtavinayak yatra 2 days package from Pune
+/tours/ashtavinayak-yatra
+Ashtavinayak darshan by bus Pune
+/tours/ashtavinayak-yatra
+All 8 Ashtavinayak temples darshan
+/blog/ashtavinayak-yatra-complete-guide
+12 Jyotirlinga darshan package India
+/tours/jyotirlinga-darshan
+Jyotirlinga tour Maharashtra
+/tours/jyotirlinga-darshan
+Pandharpur Wari yatra 2026 date
+/blog/pandharpur-wari-guide
+Char Dham Yatra by train from Pune
+/tours/char-dham-yatra
+Char Dham cost per person
+/tours/char-dham-yatra
+Shirdi one day trip Pune
+/tours/shirdi-tour
+Shirdi Sai Baba darshan package
+/tours/shirdi-tour
+Tirupati darshan package from Pune
+/tours/tirupati-balaji-tour
+Tirupati Balaji tour with flight
+/tours/tirupati-balaji-tour
+pilgrimage tour operator Pune
+/
+religious yatra package Maharashtra
+/tours
+3.3 Tier 3 — Local SEO Keywords (Google Maps / Near Me)
+These keywords drive high-converting local traffic, especially from mobile users. They are targeted via Google Business Profile, local schema, and location-specific content.
+pilgrimage tour operator near me
+yatra package Pune
+religious tour bus Pimpri Chinchwad
+Ashtavinayak bus from Pune
+Shirdi darshan tour Pune
+best pilgrimage travel company Pune
+3.4 Keyword Mapping Summary
+Each primary keyword must be used in the following places on its target page:
+Page Title (H1) — exact or close match
+Meta Title — within first 60 characters
+Meta Description — naturally within first 155 characters
+URL slug
+First paragraph of body content (within 100 words)
+At least one H2 subheading
+Alt text of the hero image
+FAQ questions (1–2 naturally placed)
+4. URL Architecture & Site Structure
+4.1 Core URL Structure
+All URLs must be lowercase, hyphenated, and free of stop words where practical. No trailing slashes except on the homepage.
+Page
+URL
+Priority
+Homepage
+/
+P0
+All Tours Listing
+/tours
+P0
+Ashtavinayak Yatra
+/tours/ashtavinayak-yatra
+P1
+Jyotirlinga Darshan
+/tours/jyotirlinga-darshan
+P1
+Pandharpur Wari
+/tours/pandharpur-wari
+P1
+Char Dham Yatra
+/tours/char-dham-yatra
+P1
+Shirdi Tour
+/tours/shirdi-tour
+P1
+Tirupati Balaji Tour
+/tours/tirupati-balaji-tour
+P1
+Blog Index
+/blog
+P2
+Blog Article (pattern)
+/blog/{article-slug}
+P2
+Contact
+/contact
+P2
+About
+/about
+P2
+Privacy Policy
+/privacy-policy
+P3
+Terms & Conditions
+/terms-and-conditions
+P3
+Refund Policy
+/refund-policy
+P3
+Cancellation Policy
+/cancellation-policy
+P3
+4.2 Internal Linking Architecture
+Internal linking passes link equity (PageRank) between pages and helps Google understand the hierarchy of content. Implement the following linking rules:
+Homepage links to: /tours, all 6 tour pages, /blog, /contact, /about
+/tours listing page links to: all 6 individual tour pages, featured blog posts
+Each tour page links to: 2–3 other relevant tour pages, 1–2 related blog posts, /contact
+Each blog post links to: its primary related tour page, 2 other blog posts, /contact
+Footer links to: all 6 tour pages, /blog, /contact, /about, all legal pages
+5. On-Page SEO Specifications
+5.1 Meta Tags — Full Spec for All 6 Pages
+Page
+Meta Title (≤60 chars)
+Meta Description (≤160 chars)
+Ashtavinayak Yatra
+Ashtavinayak Yatra Package | Shailraj Travels
+Book Ashtavinayak Yatra with AC bus, guided darshan & stay. Trusted pilgrimage tours from Pune. Call Shailraj Travels today.
+Jyotirlinga Darshan
+12 Jyotirlinga Darshan Tour Package | Shailraj Travels
+Explore all 12 Jyotirlinga temples with comfortable travel & guided darshan. Book Jyotirlinga tour packages from Pune with Shailraj Travels.
+Pandharpur Wari
+Pandharpur Wari Yatra Package | Shailraj Travels
+Join Pandharpur Wari Yatra with comfortable bus travel & guided darshan. Book Wari pilgrimage packages from Pune. Call us today.
+Char Dham Yatra
+Char Dham Yatra Package from Pune | Shailraj Travels
+Book Char Dham Yatra with flights, accommodation & guided darshan. Kedarnath, Badrinath, Gangotri, Yamunotri — book now.
+Shirdi Tour
+Shirdi Tour Package from Pune | Shailraj Travels
+One day & overnight Shirdi tour packages from Pune with AC travel & Sai Baba darshan assistance. Book with Shailraj Travels.
+Tirupati Balaji
+Tirupati Balaji Tour from Pune | Shailraj Travels
+Book Tirupati Balaji darshan tour from Pune with flight, stay & VIP darshan tickets. Trusted pilgrimage operator — Shailraj Travels.
+5.2 H-Tag Hierarchy per Tour Page
+Each page must follow a strict heading hierarchy. Only one H1 is allowed per page.
+Tag
+Purpose
+Keyword Usage
+H1
+Page title — primary keyword
+Exact match primary keyword
+H2
+Major sections — tour overview, highlights, packages, FAQs
+Contain keyword variations + semantic terms
+H3
+Sub-sections within H2 blocks
+Long-tail terms, destination names, specific features
+H4
+Minor sub-sections if needed
+Supporting details, no keyword stuffing
+5.3 Content Length Requirements
+Thin content (under 500 words) is a primary reason pages fail to rank. Each page must meet minimum content thresholds:
+Content Type
+Minimum Word Count
+Tour Landing Page (each)
+1,200 words
+Blog Article
+1,500 words
+Homepage
+800 words
+/tours listing page
+600 words
+FAQ Section per page
+300–400 words (8–10 questions)
+Legal Pages
+400 words each
+5.4 Image SEO Requirements
+Every image on the site must have proper SEO optimization:
+Alt text must describe the image AND include the target keyword naturally
+File names must be descriptive and hyphenated (e.g., ashtavinayak-yatra-pune-bus.jpg)
+All images must be compressed below 200KB using WebP format where possible
+Hero images: specify explicit width and height attributes to prevent layout shift (CWV)
+Lazy loading on all images below the fold
+Gallery images: descriptive alt tags with temple/destination name + Shailraj Travels
+6. Tour Page Structure — Full Specification
+6.1 Page Template (All 6 Tour Pages)
+Every tour landing page must contain the following sections in this order:
+Section #
+Section Name
+SEO Purpose
+1
+Hero — H1, Short Description, CTA Buttons
+Primary keyword in H1; CTAs drive conversions
+2
+Breadcrumb Navigation
+Breadcrumb schema; improves crawl depth signals
+3
+Tour Overview (300–400 words)
+Core content with keyword + semantic terms; E-E-A-T
+4
+Tour Highlights (7–10 bullet points)
+Scannable; captures featured snippet opportunities
+5
+Destinations Covered
+Topical breadth; geographic keyword signals
+6
+Tour Packages (Price Cards)
+Commercial intent; helps Google classify as booking page
+7
+Photo Gallery (lazy-loaded, SEO alt tags)
+Visual signals; image search traffic
+8
+Inquiry / Booking Form
+Lead capture; engagement signal
+9
+Customer Reviews / Testimonials
+Review schema; E-E-A-T; trust signals
+10
+FAQ Section (8–10 questions)
+FAQ schema; People Also Ask feature; long-tail coverage
+11
+Related Tours (Internal Links)
+Internal linking; crawl equity distribution
+12
+Related Blog Posts
+Topical authority; engagement signal
+6.2 Hero Section Requirements
+H1 tag: Exact or near-exact match of primary keyword
+Subheading: 1–2 sentences with secondary keyword + unique selling point
+CTA Buttons: 'Book Now' (opens inquiry form), 'Call Now' (tel: link), 'WhatsApp' (wa.me link)
+Hero Image: Full-width, compressed, WebP, with descriptive alt text
+Trust badges: 'Trusted by 500+ Families', 'AC Travel', '24x7 Support' etc.
+6.3 FAQ Section Requirements
+FAQs are critical for winning People Also Ask (PAA) boxes in Google search results. Each page needs 8–10 FAQs.
+Required FAQ topics per tour page:
+What is included in the [Tour Name] package?
+How many days does the [Tour Name] take?
+Is food and accommodation included?
+Can senior citizens join the tour?
+What is the best time for [Tour Name]?
+Is the tour suitable for families with children?
+What transport is used (AC bus, train, flight)?
+How do I book and what is the cancellation policy?
+7. Blog SEO Architecture
+7.1 Topic Cluster Strategy
+The blog must be built as a topic cluster model — one pillar page (the tour landing page) with multiple satellite blog posts that all interlink back to it. This signals deep topical expertise to Google.
+Pillar Page
+Supporting Blog Posts
+/tours/ashtavinayak-yatra
+/blog/ashtavinayak-yatra-complete-guide
+/blog/8-ganesha-temples-maharashtra
+/blog/ashtavinayak-yatra-from-pune-2-days
+/tours/jyotirlinga-darshan
+/blog/all-12-jyotirlinga-information
+/blog/maharashtra-jyotirlinga-temples
+/blog/trimbakeshwar-temple-guide
+/tours/pandharpur-wari
+/blog/pandharpur-wari-yatra-guide
+/blog/pandharpur-wari-2026-dates
+/blog/ashadhi-ekadashi-pandharpur
+/tours/char-dham-yatra
+/blog/char-dham-travel-tips
+/blog/kedarnath-trek-guide
+/blog/char-dham-best-time-to-visit
+/tours/shirdi-tour
+/blog/shirdi-darshan-guide
+/blog/shirdi-one-day-trip-pune
+/blog/shani-shingnapur-shirdi-tour
+/tours/tirupati-balaji-tour
+/blog/tirupati-darshan-guide
+/blog/tirupati-vip-darshan-tickets
+/blog/tirupati-balaji-from-pune-by-flight
+7.2 Blog Article SEO Checklist
+Every blog article must meet these requirements before publishing:
+Minimum 1,500 words of original, valuable content
+Primary keyword in: title, first paragraph, one H2, meta title, meta description, URL slug
+Secondary keywords distributed naturally throughout (no stuffing)
+3–5 internal links to tour pages and other blog posts
+Minimum 3 images with SEO alt tags
+FAQ section at end (5+ questions) with FAQ schema
+Author byline with E-E-A-T signals (years of experience, certifications)
+Publish date and last-updated date visible
+Social share buttons
+CTA to related tour booking page at end of article
+7.3 Priority Blog Articles — Phase 1
+Article Title
+Target Keyword
+Word Count
+Priority
+Complete Ashtavinayak Yatra Guide 2026
+ashtavinayak yatra guide
+2,000
+P1
+All 12 Jyotirlinga Temples: Complete Information
+12 jyotirlinga information
+2,500
+P1
+Pandharpur Wari Yatra 2026 — Dates, Route, Tips
+pandharpur wari yatra 2026
+1,800
+P1
+Char Dham Yatra Travel Tips for First-Timers
+char dham yatra tips
+1,800
+P1
+Shirdi Darshan Guide: How to Book, Best Time, Tips
+shirdi darshan guide
+1,500
+P1
+Tirupati Balaji Darshan: VIP Tickets, Travel Guide
+tirupati darshan guide
+1,800
+P1
+Ashtavinayak Yatra from Pune in 2 Days
+ashtavinayak yatra 2 days pune
+1,500
+P2
+Best Time for Char Dham Yatra
+best time char dham yatra
+1,200
+P2
+Shani Shingnapur + Shirdi 1 Day Tour from Pune
+shirdi shani shingnapur day trip
+1,200
+P2
+8. Technical SEO Requirements
+8.1 Core Web Vitals Targets
+Metric
+What It Measures
+Target
+LCP (Largest Contentful Paint)
+Load speed of main content
+< 2.5 seconds
+FID / INP (Interaction to Next Paint)
+Responsiveness to user input
+< 200ms
+CLS (Cumulative Layout Shift)
+Visual stability during load
+< 0.1
+TTFB (Time to First Byte)
+Server response speed
+< 800ms
+Overall Lighthouse Performance
+All metrics combined
+> 90
+Lighthouse SEO Score
+On-page SEO signals
+> 95
+Lighthouse Accessibility
+WCAG compliance
+> 90
+8.2 Sitemap & Indexing
+Generate /sitemap.xml automatically — update every time a page or blog post is added
+Submit sitemap to Google Search Console after launch
+Create /robots.txt — allow all tour and blog pages; disallow admin, thank-you, and search pages
+Implement canonical URLs on all pages to prevent duplicate content
+Set up Google Search Console and Bing Webmaster Tools on Day 1
+Monitor indexing status weekly in the first 3 months
+8.3 Canonical & Duplicate Content Rules
+Every page must have a self-referencing canonical tag
+Paginated content (if any) must use rel=prev/next or canonical to main page
+Never duplicate tour package descriptions — each variation must be unique
+Print-friendly versions of pages must have canonical pointing to main URL
+8.4 Open Graph & Social Meta Tags
+Required on every page for rich previews when links are shared on WhatsApp, Facebook, and Instagram:
+og:title — same as meta title
+og:description — same as meta description
+og:image — 1200x630px branded banner image specific to each tour
+og:url — canonical URL of the page
+og:type — website for homepage, article for blogs
+twitter:card — summary_large_image
+8.5 Security Requirements
+Requirement
+Implementation
+HTTPS
+SSL certificate via Let's Encrypt or hosting provider
+Content Security Policy
+Set via HTTP headers; restrict inline scripts
+X-Frame-Options
+DENY or SAMEORIGIN to prevent clickjacking
+X-Content-Type-Options
+nosniff header on all responses
+Rate Limiting
+Max 100 requests/min per IP on API endpoints
+reCAPTCHA v3
+On all inquiry and review submission forms
+CSRF Protection
+Token on all POST forms
+Input Validation
+Server-side validation on all form fields; sanitize against XSS
+9. Structured Data (Schema Markup)
+Schema markup (JSON-LD) helps Google display rich results — star ratings, FAQs, breadcrumbs, and business info — directly in search results. This significantly increases click-through rates.
+9.1 Required Schema Types
+Schema Type
+Pages to Implement
+Rich Result Benefit
+Organization
+Homepage
+Business info in Knowledge Panel
+LocalBusiness
+Homepage + Contact
+Google Maps / Local Pack inclusion
+TourActivity / Product
+All 6 tour pages
+Price and tour info in SERPs
+FAQPage
+All tour pages + blog posts
+FAQ boxes in search results
+BreadcrumbList
+All pages (except homepage)
+Breadcrumb path in SERP snippet
+Review / AggregateRating
+All tour pages
+Star ratings in search results
+Article
+All blog posts
+Article date and author in SERPs
+WebSite
+Homepage
+Sitelinks Search Box in SERPs
+9.2 LocalBusiness Schema — Required Fields
+name: Shailraj Travels
+address: Full address in Pune with postalCode and addressRegion: Maharashtra
+telephone: Primary contact number
+url: https://www.shailrajtravels.com
+openingHours: Accurate business hours
+geo: Latitude and longitude for map accuracy
+priceRange: ₹ to ₹₹₹ as appropriate
+10. Local SEO Strategy
+Since Shailraj Travels operates from Pune/Pimpri-Chinchwad, local SEO is critical for capturing nearby customers who search for pilgrimage tours with location intent.
+10.1 Google Business Profile (GBP) Optimization
+Claim and fully verify the GBP listing if not already done
+Business Name: Exactly 'Shailraj Travels' — no keyword stuffing
+Category: Primary = 'Tour Operator'; Secondary = 'Travel Agency', 'Religious Goods Store'
+Address: Complete, consistent with website and schema markup (NAP consistency)
+Service Area: Pune, Pimpri-Chinchwad, Mumbai, Nashik, Aurangabad, Kolhapur
+Photos: Upload 20+ high-quality photos of tours, vehicles, temples, team
+Services: List all 6 tour types with descriptions and pricing
+GBP Posts: Publish weekly posts — tour offers, festival specials, new packages
+Q&A: Pre-populate with 10+ common questions and answers
+Reviews: Respond to every review (positive and negative) within 48 hours
+10.2 NAP Consistency (Name, Address, Phone)
+The exact same business name, address, and phone number must appear identically on:
+Website (header, footer, contact page)
+Google Business Profile
+LocalBusiness schema markup
+All directory listings (Justdial, Sulekha, IndiaMart, etc.)
+Social media profiles (Facebook, Instagram)
+10.3 Local Citation Building
+Submit business details to these local directories in Month 1:
+Directory
+Category
+Priority
+Justdial
+Travel Agents Pune
+P1
+Sulekha
+Tour Operators Maharashtra
+P1
+IndiaMart
+Travel Services
+P1
+TradeIndia
+Tour Packages
+P2
+MakeMyTrip Partners
+Tour Operator Listing
+P1
+Times of India — Travel
+Local Business
+P2
+Pune Mirror Classifieds
+Travel
+P2
+Facebook Business Page
+Travel Company
+P1
+Instagram Business Profile
+Travel / Tourism
+P1
+11. Link Building Strategy
+Backlinks from authoritative, relevant websites are the #1 off-page ranking factor. The strategy focuses on quality over quantity — targeting travel, religious, and Maharashtra-based websites.
+11.1 Link Building Tactics
+Tactic
+Target Sources
+Monthly Target
+Guest Blogging
+Maharashtra travel blogs, pilgrimage websites, Pune lifestyle blogs
+2–3 links
+Temple Website Listings
+Siddhivinayak, Trimbakeshwar, Tirupati official/fan sites
+1–2 links
+Travel Forum Mentions
+IndiaMike, TripAdvisor forums, Quora answers
+3–5 links
+PR / News Articles
+Pune Mirror, Sakal, Loksatta (online editions)
+1 link
+Hotel & Dharamshala Partners
+Hotels at pilgrimage sites — mutual link exchange
+2 links
+Local Business Associations
+Pune tour operators associations, TAAI Maharashtra
+1 link
+Resource Page Links
+Pages listing 'pilgrimage tour operators in Pune'
+2–3 links
+Social Media Profiles
+Facebook, Instagram, LinkedIn (indirect signals)
+Ongoing
+11.2 Content Assets for Link Earning
+Create these high-value content assets that naturally attract links from other sites:
+Interactive Ashtavinayak Yatra Route Map
+Free downloadable '12 Jyotirlinga Darshan Checklist' PDF
+Pandharpur Wari 2026 Calendar (exact dates, stages, routes)
+Char Dham Yatra Packing List (printable)
+12. Review System
+12.1 On-Site Review Flow
+User submits review via on-site form (Full Name, Rating, Tour Taken, Review Text)
+Review saved to website database with pending status
+Admin receives email notification for moderation
+Admin approves review — it appears on the tour page and is marked up with Review schema
+12.2 Google Review Funnel
+After tour completion, send WhatsApp message with Google Review link
+On-site: Show 'Share Your Experience' button after review submission
+Button copies review text to clipboard automatically
+Then opens Google Business Profile review page in new tab
+Display message: 'Your review has been copied. Please paste it on Google Reviews to help other devotees.'
+IMPORTANT: Do NOT auto-submit to Google — this violates Google's policies
+12.3 Review Schema
+Implement AggregateRating schema on each tour page. Required fields: ratingValue, reviewCount, bestRating (5), worstRating (1). This displays star ratings directly in Google search results.
+13. Mobile SEO Requirements
+Over 75% of pilgrimage tour searches in India happen on mobile devices. Mobile-first indexing means Google primarily uses the mobile version of the site for ranking.
+13.1 Mobile UX Requirements
+Fully responsive design — tested on Android Chrome, iOS Safari, Samsung Browser
+Touch targets (buttons, links) minimum 44x44px
+Font size minimum 16px on body text — no zooming required
+Sticky WhatsApp button: bottom-right, 60px circle, always visible on scroll
+Sticky Call button: bottom-left, 60px circle, always visible on scroll
+Hamburger menu with smooth slide-out navigation on mobile
+Forms with large input fields, auto-correct off for name/phone fields
+Image sliders with swipe gesture support
+13.2 Mobile Performance
+Enable AMP (Accelerated Mobile Pages) for blog articles if feasible
+Implement service worker for offline caching of key pages
+Preload hero images using <link rel='preload'>
+Defer non-critical JavaScript
+Use next-gen image formats (WebP with JPEG fallback)
+14. SEO Execution Timeline
+Phase 1 — Foundation (Weeks 1–4)
+Week
+Tasks
+Week 1
+Set up Google Search Console, GA4, keyword tracking tool. Technical audit. Fix critical errors.
+Week 2
+Build all 6 tour landing pages with full content, meta tags, schema markup. Compress all images.
+Week 3
+Set up GBP profile. Submit sitemap. Verify indexing. Set up /robots.txt. Enable HTTPS.
+Week 4
+Launch blog with 3 priority articles. Submit to 5 local directories. Implement all schema types.
+Phase 2 — Content & Authority (Months 2–3)
+Month
+Tasks
+Month 2
+Publish 3 more blog posts. Start link building outreach. Collect first customer reviews. GBP posts weekly.
+Month 3
+Publish 3 more blog posts. Earn 5–10 backlinks. Monitor rankings. Optimize underperforming pages.
+Phase 3 — Growth & Refinement (Months 4–6)
+Month
+Tasks
+Month 4
+Audit keyword rankings. Refresh top pages. Expand to Tier 2 keywords. Add new tour pages if needed.
+Month 5
+Create linkable content assets (maps, PDFs). Pursue press mentions. Optimize blog for PAA features.
+Month 6
+Full SEO audit. Measure KPIs vs targets. Plan Phase 2 expansion (new tour pages, new keywords).
+15. SEO Tools & Tracking Stack
+Tool
+Purpose
+Cost
+Google Search Console
+Indexing, keyword impressions, technical errors
+Free
+Google Analytics 4
+Traffic, conversions, user behavior
+Free
+Google Business Profile
+Local SEO management
+Free
+Google Keyword Planner
+Search volume research
+Free
+Ubersuggest / Ahrefs Lite
+Keyword difficulty, competitor analysis, backlinks
+Paid
+Screaming Frog (Free tier)
+Technical SEO crawl — broken links, missing meta tags
+Free up to 500 URLs
+PageSpeed Insights
+Core Web Vitals monitoring
+Free
+Schema Markup Validator
+Validate all JSON-LD schema
+Free
+Google Rich Results Test
+Verify schema eligibility for rich results
+Free
+16. Footer Structure & Legal Pages
+16.1 Footer SEO Requirements
+Popular Tours section: all 6 tour names as clickable anchor links to /tours/{slug}
+Use descriptive anchor text — NOT 'click here' — use 'Ashtavinayak Yatra' etc.
+Footer must include: physical address, phone, email, GST number (if applicable)
+Copyright: © 2026 Shailraj Travels. All Rights Reserved.
+Designed & Developed by Axenor Studios — Pune, Maharashtra
+16.2 Required Legal Pages
+These pages are required for Google trust signals and user protection:
+Page
+URL
+Key Content
+Privacy Policy
+/privacy-policy
+Data collection, cookies, GDPR/Indian IT Act compliance
+Terms & Conditions
+/terms-and-conditions
+Tour booking terms, responsibilities, liability
+Refund Policy
+/refund-policy
+Refund timelines, conditions, and process
+Cancellation Policy
+/cancellation-policy
+Cancellation deadlines, charges per tour type
+Security Policy
+/security-policy
+Data security measures, payment security
+17. Success Metrics & Reporting
+17.1 Monthly Reporting Dashboard
+The following must be reviewed and reported monthly:
+Organic sessions by page (Google Analytics 4)
+Keyword ranking positions for all primary and long-tail keywords (Search Console)
+Impressions and Click-Through Rate (CTR) per page (Search Console)
+Number of inquiry form submissions (GA4 Goal Conversions)
+WhatsApp and Call button clicks (GA4 Events)
+New backlinks acquired (Ahrefs / Ubersuggest)
+Google Business Profile views, calls, direction requests
+Number of new Google reviews and average rating
+Core Web Vitals scores (PageSpeed Insights)
+17.2 Quarterly SEO Audit
+Every 3 months conduct a full SEO audit covering: all meta tags, broken links, missing alt text, schema validity, page speed, new keyword opportunities, and content refresh needs.
+18. Document Control
+Item
+Detail
+Document Title
+Shailraj Travels — PRD & Full SEO Strategy
+Version
+2.0
+Prepared By
+Axenor Studios
+Date
+June 2026
+Website
+https://www.shailrajtravels.com
+Next Review
+September 2026
+This document should be treated as a living reference. Update it whenever new tours, keywords, or strategy decisions are made. All development and content work should be measured against the KPIs in Section 2.
+
+=== PRD v3 ===
+SHAILRAJ TRAVELS
+www.shailrajtravels.com
+SEO EXPANSION PRD
+v3.0 — Post-Launch Growth & Scale Strategy
+Version
+3.0
+Date
+June 2026
+Phase
+Post-Launch Expansion
+Builds On
+SEO PRD v2.0
+Prepared by
+Axenor Studios
+Review Date
+December 2026
+1. Executive Summary
+This document defines the Phase 2 SEO Expansion Strategy for Shailraj Travels, to be implemented after successful completion of SEO PRD v2.0. While v2.0 built the SEO foundation — 6 core tour pages, technical setup, schema, and initial blog content — v3.0 is the growth engine.
+The strategy is built around four growth pillars:
+Geographic Expansion — 30+ city-specific landing pages to capture local intent searches
+Programmatic SEO — 50+ price and feature-specific pages for long-tail keyword domination
+Video & AI SEO — YouTube channel + optimisation for Google AI Overviews
+Authority Building — Digital PR, backlink campaigns, and linkable content assets
+Successful execution of this plan will position Shailraj Travels as the dominant pilgrimage tour brand in Maharashtra organic search.
+2. Business Goals & KPIs
+2.1 Upgrade from v2.0 Targets
+KPI
+v2.0 Target (Month 6)
+v3.0 Target (Month 12)
+v3.0 Target (Month 18)
+Organic Sessions / Month
+2,000
+5,000
+10,000+
+Indexed Pages
+~20
+100+
+200+
+Keyword Rankings (Top 10)
+6 primary
+100+ long-tail
+200+
+Google Reviews
+40
+100+
+200+
+Quality Backlinks
+25
+50+
+100+
+Inquiry Conversions / Month
++40%
++50%
++80%
+City Keywords (Top 3)
+0
+15+
+30+
+YouTube Subscribers
+0
+500+
+2,000+
+2.2 Revenue-Linked Goals
+Local Pack Ranking — Pune
+Top 3 for all 6 tour types
+Local Pack Ranking — Mumbai
+Top 5 for 4 core tours
+Google AI Overview Mentions
+Featured for 10+ pilgrimage queries
+YouTube Videos Published
+100 videos by Month 18
+Downloadable Assets Created
+20+ guides, checklists, calendars
+Average Google Rating
+4.8 stars or above
+3. City SEO Expansion
+3.1 Strategy
+Local intent keywords — searches like 'Ashtavinayak Yatra from Mumbai' — convert at significantly higher rates than generic keywords because the user has already decided they want to travel; they are just choosing a provider. City pages capture this bottom-of-funnel traffic at scale.
+Each city page is a unique, fully-optimised landing page — NOT a template with swapped city names. Google penalises thin, duplicated city pages. Each must have:
+Unique intro paragraph referencing the departure city and journey details
+City-specific departure logistics (bus pickup points, train connections, flight options)
+City-specific pricing (if applicable — transport costs differ by city)
+Local testimonials from customers from that city (if available)
+City-specific FAQ section (e.g. 'How long is the journey from Mumbai to Shirdi?')
+3.2 City Page URL Plan — Phase 2
+Ashtavinayak Yatra — 5 City Pages
+/tours/ashtavinayak-yatra-from-pune
+/tours/ashtavinayak-yatra-from-mumbai
+/tours/ashtavinayak-yatra-from-nashik
+/tours/ashtavinayak-yatra-from-kolhapur
+/tours/ashtavinayak-yatra-from-pimpri-chinchwad
+Shirdi Tour — 4 City Pages
+/tours/shirdi-tour-from-pune
+/tours/shirdi-tour-from-mumbai
+/tours/shirdi-tour-from-nashik
+/tours/shirdi-tour-from-pimpri-chinchwad
+Tirupati Balaji Tour — 3 City Pages
+/tours/tirupati-balaji-tour-from-pune
+/tours/tirupati-balaji-tour-from-mumbai
+/tours/tirupati-balaji-tour-from-nashik
+Char Dham Yatra — 2 City Pages
+/tours/char-dham-yatra-from-pune
+/tours/char-dham-yatra-from-mumbai
+Jyotirlinga Darshan — 3 City Pages
+/tours/jyotirlinga-darshan-from-pune
+/tours/jyotirlinga-darshan-from-mumbai
+/tours/jyotirlinga-darshan-from-nashik
+Pandharpur Wari — 3 City Pages
+/tours/pandharpur-wari-from-pune
+/tours/pandharpur-wari-from-mumbai
+/tours/pandharpur-wari-from-solapur
+3.3 City Page SEO Spec
+Element
+Specification
+H1
+{Tour Name} from {City} | Shailraj Travels
+Meta Title
+{Tour Name} from {City} | Shailraj Travels (≤60 chars)
+Meta Description
+Book {Tour Name} from {City} with AC travel, stay & guided darshan. Trusted by families across {City}. (≤160 chars)
+URL Slug
+/tours/{tour-name}-from-{city}
+Breadcrumb
+Home > Tours > {Tour Name} > From {City}
+Unique Content
+300+ words unique to each city — NO copy-paste from main tour page
+City-Specific FAQ
+5+ FAQs specific to that departure city
+Internal Links
+Link to main tour page, other city variants, and /contact
+Schema
+BreadcrumbList + LocalBusiness + FAQPage
+Total City Pages Target: 30+ pages
+4. Programmatic SEO — Price & Feature Pages
+4.1 Strategy
+Programmatic SEO creates a large number of targeted pages based on keyword formulas. For pilgrimage tours, the highest-converting long-tail patterns are cost/price queries and feature-specific queries. Users searching 'Ashtavinayak Yatra cost' or 'Tirupati VIP darshan package' are actively comparing options and ready to book.
+Unlike city pages, price pages can share a content template with dynamically populated unique sections — but must each have a meaningful unique angle (e.g. actual pricing tables, inclusions breakdown, comparison with DIY travel cost).
+4.2 Price Page URL Plan
+/price/ashtavinayak-yatra-cost
+/price/ashtavinayak-yatra-package-price
+/price/ashtavinayak-bus-package-price
+/price/ashtavinayak-senior-citizen-package
+/price/ashtavinayak-2-day-package-cost
+/price/shirdi-tour-cost
+/price/shirdi-one-day-tour-price
+/price/shirdi-overnight-package-cost
+/price/tirupati-package-price
+/price/tirupati-vip-darshan-package-cost
+/price/tirupati-darshan-cost-per-person
+/price/char-dham-yatra-cost
+/price/char-dham-package-price-per-person
+/price/char-dham-budget-package
+/price/jyotirlinga-darshan-cost
+/price/pandharpur-wari-package-price
+4.3 Price Page Content Requirements
+Section
+Content Required
+H1
+{Tour Name} Cost / Price — What to Expect in 2026
+Price Summary Box
+Package tiers: Budget / Standard / Premium with per-person prices
+What's Included
+Detailed inclusions list (transport, meals, stay, darshan tickets)
+What's Excluded
+Clear exclusions list — builds trust, reduces friction
+Cost Comparison
+Table: Package Tour vs Self-Travel — why package is better value
+Price FAQ
+8+ questions about pricing, payment, discounts, group rates
+CTA
+Book Now / Get Custom Quote / WhatsApp for Price
+Schema
+Product schema with price range + FAQPage schema
+Total Programmatic Pages Target: 50+ pages
+5. Video SEO Strategy
+5.1 Why Video SEO Matters Now
+Google increasingly surfaces YouTube videos in standard search results — especially for travel, pilgrimage, and 'how to' queries. A well-optimized YouTube channel serves three functions: direct YouTube search traffic, Google video carousel rankings, and signals that contribute to AI Overview visibility.
+YouTube is also the #2 search engine in India. Pilgrimage-related queries on YouTube ('Ashtavinayak Yatra vlog', 'Tirupati darshan guide') have significant search volume and very low competition from organized tour operators.
+5.2 YouTube Channel Setup
+Element
+Specification
+Channel Name
+Shailraj Travels
+Channel Handle
+@ShailrajTravels
+Channel Description
+Keyword-rich description including: pilgrimage tour operator, Pune, Maharashtra, Ashtavinayak, Jyotirlinga, Shirdi, Tirupati, Char Dham
+Channel Keywords
+All 6 primary tour keywords + Maharashtra pilgrimage tours
+Brand Watermark
+Shailraj Travels logo in bottom-right on all videos
+End Screens
+Subscribe button + link to website on all videos
+Links
+Website, WhatsApp, all social profiles in channel About section
+5.3 Video Content Plan — By Tour
+Tour
+Video Titles
+Priority
+Ashtavinayak
+Complete Route Guide | Temple Information | Cost Breakdown 2026 | Bus vs Car Comparison | Best Time to Visit
+P1
+Shirdi
+Darshan Guide Step-by-Step | One Day Trip from Pune | Best Time & Tips | Sai Baba Temple Complete Guide
+P1
+Jyotirlinga
+All 12 Temples Guide | Maharashtra Jyotirlinga Route | Trimbakeshwar Guide | Bhimashankar Guide
+P1
+Tirupati
+VIP Darshan Guide | Travel Process from Pune | What to Expect | Package vs Direct Booking
+P2
+Char Dham
+First Timer Guide | Packing List | Best Time 2026 | Kedarnath Trek Preparation | Cost Breakdown
+P2
+Pandharpur Wari
+Wari Yatra Guide | Ashadhi Ekadashi 2026 | Complete Route | First Time Visitor Tips
+P2
+5.4 Video SEO Optimization Checklist
+Title: Include primary keyword within first 60 characters
+Description: 300+ words, include keyword in first 2 sentences, add website link and WhatsApp in first 3 lines
+Tags: 10–15 tags including exact keyword, variations, and related terms in Marathi and Hindi
+Thumbnail: Custom branded thumbnail — bright, readable text, Shailraj Travels logo
+Chapters: Add timestamps for every major section (improves YouTube SEO and watch time)
+Cards: Link to related videos and website at key moments
+Pinned Comment: Include website link, WhatsApp number, and package inquiry CTA
+Subtitles: Add auto-generated captions and correct them — improves accessibility and indexability
+5.5 Publishing Schedule
+Period
+Frequency
+Cumulative Total
+Months 1–3
+2 videos per week
+24 videos
+Months 4–6
+2 videos per week
+48 videos
+Months 7–12
+2 videos per week
+96+ videos
+Month 18 Target
+100+ total videos
+Full topical coverage
+6. AI SEO Optimisation
+6.1 What Is Google AI Overview & Why It Matters
+Google AI Overviews (previously called SGE) appear at the top of search results for many informational queries. They pull content from multiple trusted sources and summarise the answer. A page that gets cited in an AI Overview can receive significant visibility even without a top organic ranking.
+To be cited in AI Overviews, pages must demonstrate E-E-A-T: Experience, Expertise, Authoritativeness, and Trustworthiness. This section defines exactly what changes to make.
+6.2 E-E-A-T Enhancements Required
+E-E-A-T Signal
+Current State
+Required Action
+Experience
+Not shown
+Add 'Pilgrims Served: 5,000+', 'Years Operating: X', real tour photos with captions
+Expertise
+Generic content
+Author bylines on all pages — name, years in pilgrimage tourism, certifications
+Authoritativeness
+Low
+Build mentions in Sakal, Loksatta, Pune Mirror; get temple association memberships
+Trustworthiness
+Partial
+Add HTTPS, privacy policy, GST number, business registration on footer, refund terms
+6.3 Author Bio Requirements
+Every blog article and tour page must display an author bio box containing:
+Author full name and photo
+Title: e.g. 'Senior Pilgrimage Travel Consultant, Shailraj Travels'
+Years of experience in pilgrimage tourism
+Number of pilgrims personally guided
+Temples/pilgrimage routes personally visited
+Last updated date on article
+6.4 FAQ Expansion for AI Capture
+Page Type
+Current FAQs
+New Target
+Rationale
+Tour Landing Pages
+8–10
+15–20
+More FAQs = more PAA box opportunities + AI Overview sourcing
+Blog Articles
+5
+10+
+Long-form FAQ answers are heavily favoured by AI Overviews
+Price Pages
+0
+8–10
+Price queries trigger AI Overviews frequently
+City Pages
+5
+8–10
+Location + query intent matches AI Overview triggers
+6.5 Comparison Content (High AI Overview Potential)
+Comparison articles are among the most cited content types in AI Overviews. Build dedicated comparison sections or pages:
+Comparison Topic
+Target URL
+Primary Keyword
+Ashtavinayak Tour Package vs Self Travel
+/blog/ashtavinayak-package-vs-self-travel
+ashtavinayak yatra by bus or car
+Shirdi Tour Package vs Going Alone
+/blog/shirdi-tour-package-vs-self-travel
+shirdi tour package or self travel
+Char Dham Package vs Independent Travel
+/blog/char-dham-package-vs-independent
+char dham yatra package or independent
+Tirupati Package vs Direct Booking
+/blog/tirupati-package-vs-direct-booking
+tirupati darshan package vs direct
+AC Bus vs Private Car for Ashtavinayak
+/blog/ashtavinayak-bus-vs-car
+ashtavinayak yatra bus or car
+7. Competitor Intelligence Programme
+7.1 Competitors to Track
+Competitor
+Type
+Why They Matter
+Kesari Tours
+Large national operator
+High DA, strong SEO — benchmark for page quality
+Veena World
+Large national operator
+Aggressive content strategy — track their blog cadence
+Thomas Cook India
+International brand
+Broad keyword coverage — find gaps they don't cover
+MakeMyTrip
+OTA platform
+Dominates many keywords — identify where they are weak
+Swastik Holiday
+Regional pilgrimage operator
+Most similar to Shailraj Travels — closest competitor
+Local Pune Operators
+Regional
+Track new packages, pricing, and local keyword targeting
+7.2 Monthly Competitor Analysis Tasks
+Analysis Area
+What to Track
+Tool
+New Keywords
+Keywords they started ranking for this month
+Ahrefs / Semrush
+New Backlinks
+Sites that linked to them — find where Shailraj Travels should also get links
+Ahrefs
+New Blog Posts
+Topics they published — find gaps + counter-publish faster
+Manual check + RSS feed
+New Tour Packages
+New tours or destinations launched
+Website monitoring
+Pricing Changes
+Package price changes that affect competitive positioning
+Manual check
+Review Velocity
+How fast they accumulate Google reviews vs Shailraj Travels
+Google Maps check
+7.3 Competitor Gap Opportunities
+Based on the competitor landscape, Shailraj Travels has clear opportunities in:
+Maharashtra-specific Jyotirlinga tours — large operators don't focus on state-level routes
+Pandharpur Wari content — almost zero SEO content from organised operators
+City-specific pages — most large operators only have generic tour pages
+Marathi language content — zero major operators have Marathi SEO pages
+Senior citizen pilgrimage pages — a high-converting segment with no dedicated content
+8. Digital PR & Authority Backlink Strategy
+8.1 Link Building Targets
+Source Type
+Target Publications / Sites
+Monthly Target
+Tactic
+Marathi News
+Sakal, Loksatta, Maharashtra Times, Pune Mirror
+1–2 links
+Press release on seasonal packages, Wari coverage, Char Dham season
+Travel Blogs
+India travel blogs, Maharashtra tourism blogs
+2–3 links
+Guest post offering pilgrimage expertise
+Temple Websites
+Trimbakeshwar.org, Bhimashankar, Siddhivinayak fan sites
+1 link
+Provide accurate darshan information, get listed as tour operator
+Tourism Portals
+Maharashtra Tourism, India Tourism resources
+1 link
+Submit business to official directories
+YouTube Mentions
+Travel YouTubers covering Maharashtra pilgrimages
+2–3 mentions
+Provide free tour information, offer collaboration
+Religious Forums
+Speaking Tree, Dharmakshetra, pilgrimage Facebook groups
+3–5 mentions
+Answer questions with expert content, link naturally
+Hotel Partners
+Hotels at Shirdi, Tirupati, Pandharpur
+1–2 links
+Mutual referral partnership with reciprocal link
+8.2 Linkable Content Assets — Creation Plan
+Asset
+Format
+Target Links
+Timeline
+Ashtavinayak Yatra Interactive Route Map
+Embeddable HTML map
+15+
+Month 2
+All 12 Jyotirlinga Location Map
+Embeddable HTML map
+10+
+Month 2
+Pandharpur Wari 2026 Calendar (dates + stages)
+PDF + Web page
+8+
+Month 1 (seasonal)
+Char Dham Yatra Packing List (printable)
+PDF download
+5+
+Month 3
+Maharashtra Pilgrimage Festival Calendar 2026
+Web page + PDF
+10+
+Month 1
+Tirupati Darshan Slot Booking Guide
+Web page (step-by-step)
+8+
+Month 3
+Ashtavinayak Yatra Cost Calculator
+Interactive HTML tool
+12+
+Month 4
+Senior Citizen Pilgrimage Travel Guide
+PDF + blog post
+6+
+Month 3
+8.3 Digital PR Calendar
+Month
+PR Opportunity
+Target Outlets
+July 2026
+Ashadhi Ekadashi / Pandharpur Wari Season
+Sakal, Loksatta, Maharashtra Times
+August 2026
+Ganesh Festival — Ashtavinayak surge
+Pune Mirror, Times of India Pune
+September 2026
+Char Dham Yatra closing season recap
+Travel blogs, tourism portals
+October 2026
+Navratri pilgrimage packages launch
+Marathi news portals
+November 2026
+Winter pilgrimage season packages
+Travel publications
+December 2026
+New Year pilgrimage specials, end-of-year review coverage
+All outlets
+9. Conversion Rate Optimisation (CRO)
+9.1 Exit Intent Popup
+Element
+Specification
+Trigger
+User moves mouse toward browser close / back button on desktop; time-based on mobile (45 seconds)
+Offer
+'Get a FREE Tour Consultation' or 'Get a Callback in 30 Minutes'
+Fields
+Name + Mobile Number only (fewer fields = higher conversion)
+Design
+Full-screen overlay, orange CTA button, X to close, mobile-friendly
+Frequency
+Show once per session — do NOT show again within 7 days
+A/B Test
+Test 'Free Consultation' vs 'Get Best Price' headline — track conversion rate
+9.2 WhatsApp Automation Flow
+A WhatsApp Business API automation sequence should handle new inquiries immediately:
+Trigger
+Automated Message
+Timing
+Inquiry form submitted
+Welcome + confirmation message with tour brochure PDF link
+Instant
+No reply after 24 hours
+Follow-up: 'Did you receive our brochure? Any questions?'
+Day 2
+Post-tour completion
+Thank you + Google Review request with direct link
+Day after tour
+Review request no reply
+Reminder: 'Your feedback helps other devotees'
+Day 3 post-tour
+Final review reminder
+Last follow-up with alternative (just rate 5 stars on Google)
+Day 7 post-tour
+9.3 Download Centre — Lead Magnet Strategy
+Gated and ungated downloadable resources serve dual purposes: they build backlinks (ungated) and capture email/WhatsApp contacts (gated). Recommended approach: ungated for linkable assets, gated for high-value personalised guides.
+Resource
+Gate?
+Lead Capture Method
+Ashtavinayak Yatra Complete Guide PDF
+No (ungated)
+Links from other sites — backlink magnet
+12 Jyotirlinga Darshan Checklist
+No (ungated)
+Shareable — builds brand awareness
+Pandharpur Wari 2026 Calendar
+No (ungated)
+Seasonal — PR and media pickup
+Char Dham Packing List
+Yes (gated)
+Capture WhatsApp number for follow-up
+Custom Tour Quote
+Yes (gated)
+Full inquiry capture — name, mobile, date, group size
+10. Review Growth System
+10.1 From 40 to 100+ Google Reviews
+Phase
+Strategy
+Expected Reviews
+Months 1–3
+Post-tour WhatsApp review request (Day 1, Day 3, Day 7 sequence)
++20–30 reviews
+Months 4–6
+Add review QR code to bus interiors, tour receipts, and boarding passes
++20 reviews
+Months 7–9
+Loyalty incentive: discount on next tour for leaving Google review (must comply with Google policy)
++20 reviews
+Ongoing
+Respond to every review within 48 hours — shows activity to Google
+Improves ranking
+10.2 Review Response Templates
+Every review — positive and negative — must receive a personalised response. Template principles:
+Positive reviews: Thank by name, mention the specific tour, invite them back, include a keyword naturally
+Negative reviews: Acknowledge, apologise, take conversation offline, show resolution commitment
+Never: copy-paste identical responses — Google may flag repetitive owner responses
+10.3 Review Schema Implementation
+Ensure AggregateRating schema is updated monthly as new reviews come in. Target:
+ratingValue: 4.8 or above
+reviewCount: reflect actual Google review count — keep in sync
+Star ratings must appear in Google SERPs within 2–4 weeks of schema implementation
+11. Marathi Language SEO (New Addition)
+11.1 Opportunity
+This is an untapped competitive advantage. Zero major pilgrimage tour operators currently have Marathi-language SEO pages. A significant portion of Shailraj Travels' target customers are Marathi-speaking and search in Marathi, especially for:
+अष्टविनायक यात्रा पॅकेज (Ashtavinayak Yatra package)
+पंढरपूर वारी सहल (Pandharpur Wari tour)
+शिर्डी दर्शन पॅकेज पुणे (Shirdi darshan package Pune)
+11.2 Implementation Plan
+Page
+Marathi URL
+Priority
+Ashtavinayak Yatra
+/mr/tours/ashtavinayak-yatra
+P1
+Pandharpur Wari
+/mr/tours/pandharpur-wari
+P1
+Shirdi Tour
+/mr/tours/shirdi-tour
+P1
+Blog — Ashtavinayak Guide
+/mr/blog/ashtavinayak-yatra-guide
+P2
+Homepage Marathi version
+/mr/
+P2
+11.3 Technical Requirements
+Implement hreflang tags: hreflang='mr' for Marathi, hreflang='en' for English
+Marathi pages must be fully written in Marathi — no machine translation
+Use Devanagari script throughout — no romanised Marathi
+Set lang='mr' attribute on HTML tag for Marathi pages
+12. Implementation Roadmap
+Phase
+1
+Foundation Complete (Pre-requisite)
+Complete all tasks from SEO PRD v2.0 before beginning Phase 2. All 6 core tour pages live, technical SEO done, sitemap submitted, GBP set up.
+Phase
+2
+City SEO Pages Launch (Month 1–2)
+Build and publish all 20 priority city-specific landing pages. Each with unique content, city-specific FAQs, schema markup, and internal links to parent tour page.
+Phase
+3
+Video SEO Channel Launch (Month 1–3)
+Set up YouTube channel with full SEO optimisation. Publish first 24 videos (2/week). Embed videos on relevant tour and blog pages.
+Phase
+4
+Programmatic Price Pages (Month 2–3)
+Build /price/ URL structure with 16 priority price pages. Add Product schema, price comparison tables, and booking CTAs.
+Phase
+5
+AI SEO Enhancements (Month 2–4)
+Add author bios to all pages. Expand FAQs to 15–20 per tour page. Add experience signals. Publish all 5 comparison articles.
+Phase
+6
+Review Automation Launch (Month 3)
+Implement WhatsApp review funnel (Day 1 / 3 / 7 sequence). Add QR codes to buses. Target 100 reviews by Month 9.
+Phase
+7
+Digital PR & Backlink Outreach (Month 3–6)
+Launch PR calendar. Pitch Sakal, Loksatta. Publish all linkable content assets. Target 5+ new backlinks per month.
+Phase
+8
+Marathi Language Pages (Month 4–6)
+Build priority Marathi pages with hreflang. Start with Ashtavinayak, Pandharpur Wari, and Shirdi — highest Marathi search demand.
+13. Success Metrics & Reporting
+13.1 Month 6 Milestones
+Metric
+Target by Month 6
+Organic Sessions / Month
+5,000+
+City Pages Published
+20+
+Programmatic Pages Published
+20+
+YouTube Videos Published
+48+
+YouTube Subscribers
+200+
+Google Reviews
+80+
+Quality Backlinks
+35+
+Keywords in Top 10
+50+
+AI Overview Mentions
+5+
+13.2 Month 12 Milestones
+Metric
+Target by Month 12
+Organic Sessions / Month
+10,000+
+Total Indexed Pages
+100+
+YouTube Videos Published
+96+
+YouTube Subscribers
+1,000+
+Google Reviews
+100+
+Quality Backlinks
+50+
+Keywords in Top 10
+100+
+Marathi Pages Live
+5+
+City Pages Live
+30+
+13.3 Monthly Reporting Requirements
+Traffic report: organic sessions by page, top landing pages, bounce rate (GA4)
+Rankings report: all tracked keywords, position changes, new keywords appearing (Search Console)
+Content report: new pages published, new blog posts, new videos
+Link report: new backlinks acquired, referring domains total, DA trend
+Review report: new reviews count, average rating, response rate
+YouTube report: views, watch time, subscribers, top performing videos
+Conversion report: form submissions, WhatsApp clicks, call clicks (GA4 events)
+14. Document Control
+Item
+Detail
+Document Title
+Shailraj Travels — SEO Expansion PRD v3.0
+Version
+3.0
+Builds On
+SEO PRD v2.0 (foundation must be complete first)
+Prepared By
+Axenor Studios
+Date
+June 2026
+Website
+https://www.shailrajtravels.com
+Next Review
+December 2026
+Implementation of this plan begins only after all tasks in SEO PRD v2.0 are complete and verified in Google Search Console.
