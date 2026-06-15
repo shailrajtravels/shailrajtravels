@@ -1,0 +1,17 @@
+import { createAPIFileRoute } from '@tanstack/start/api';
+import { generateRssFeed } from '../../lib/blog-utils';
+import { blogPosts } from '../../data/blogs';
+
+export const Route = createAPIFileRoute('/api/rss.xml')({
+  GET: async ({ request }) => {
+    const rssXml = generateRssFeed(blogPosts);
+    
+    return new Response(rssXml, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 's-maxage=86400, stale-while-revalidate'
+      }
+    });
+  }
+});

@@ -1,14 +1,13 @@
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useLanguage } from "./__root";
-import { getReviewsFn } from "../backend/lib/reviews";
+import { getReviewsFn } from '../backend/lib/reviews';
 
-import { translations } from "../frontend/features/core/i18n";
-import { Navbar } from "../frontend/features/core/Navbar";
-import { FooterSection as Footer } from "../frontend/features/core/Footer";
+import { translations } from '../frontend/features/core/i18n';
+import { Navbar } from '../frontend/features/core/Navbar';
+import { FooterSection as Footer } from '../frontend/features/core/Footer';
 import { Star, User, Calendar } from "lucide-react";
 
-export const Route = createFileRoute("/blog")({
+export const Route = createFileRoute("/yatri-stories")({
   component: BlogPage,
   loader: async () => {
     try {
@@ -22,7 +21,7 @@ export const Route = createFileRoute("/blog")({
 });
 
 function BlogPage() {
-  const { lang } = useLanguage();
+  const lang = "en";
   const t = translations[lang];
   const { reviews } = Route.useLoaderData() as any;
 
@@ -70,11 +69,11 @@ function BlogPage() {
                   </div>
                   
                   <h3 className="text-xl font-bold text-brand-blue-deep mb-4 line-clamp-2">
-                    {lang === 'mr' ? review.blogTitleMr : review.blogTitle}
+                    {review.blogTitle}
                   </h3>
                   
                   <div className="text-slate-600 mb-6 flex-1 relative z-10 whitespace-pre-wrap line-clamp-6">
-                    {lang === 'mr' ? review.blogContentMr : review.blogContent}
+                    {review.blogContent}
                   </div>
                   
                   <div className="pt-6 border-t border-slate-100 mt-auto flex items-center justify-between">

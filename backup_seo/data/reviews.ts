@@ -1,0 +1,62 @@
+import { Review } from '../types/review';
+
+export const customerReviews: Review[] = [
+  {
+    id: 'rev-001',
+    customerName: 'Rahul Deshmukh',
+    tourSlug: 'ashtavinayak-yatra',
+    rating: 5,
+    text: 'The Ashtavinayak Yatra with Shailraj Travels was exceptional. The Innova was very clean, and our driver was not just a driver but a knowledgeable guide. We completed all 8 temples comfortably within 2 days. Highly recommended for families with elderly members.',
+    date: '2026-05-12T10:00:00Z',
+    city: 'Pune',
+    featured: true,
+  },
+  {
+    id: 'rev-002',
+    customerName: 'Smita Joshi',
+    tourSlug: 'jyotirlinga-darshan',
+    rating: 5,
+    text: 'We booked the 5 Jyotirlinga tour. Everything from hotel bookings to Darshan arrangements was perfectly coordinated. The transparent pricing meant there were no hidden toll or parking charges. Truly a spiritual experience.',
+    date: '2026-04-28T14:30:00Z',
+    city: 'Mumbai',
+    featured: true,
+  },
+  {
+    id: 'rev-003',
+    customerName: 'Amitabh Sharma',
+    tourSlug: 'char-dham-yatra',
+    rating: 5,
+    text: 'A Char Dham Yatra is tough, but the Shailraj team made it so easy. The helicopter bookings were handled smoothly, and the ground support at Kedarnath base camp was outstanding. You can blindly trust them for Himalayan tours.',
+    date: '2026-05-02T09:15:00Z',
+    city: 'Delhi',
+    featured: true,
+  },
+  {
+    id: 'rev-004',
+    customerName: 'Sunita Patil',
+    tourSlug: 'pandharpur-wari',
+    rating: 4,
+    text: 'The Pandharpur Darshan was very well organized. Shailraj Travels managed to get us close to the temple without standing in massive lines. The food provided was pure vegetarian and very hygienic.',
+    date: '2026-06-01T11:45:00Z',
+    city: 'Kolhapur',
+  },
+  {
+    id: 'rev-005',
+    customerName: 'Vikram Singh',
+    tourSlug: 'shirdi-tour',
+    rating: 5,
+    text: 'Excellent 1-day trip to Shirdi and Shani Shingnapur. The tempo traveller was spacious and the driver was extremely polite and punctual. Will definitely book again for our next trip.',
+    date: '2026-03-15T16:20:00Z',
+    city: 'Pune',
+    featured: true,
+  },
+  {
+    id: 'rev-006',
+    customerName: 'Anjali Menon',
+    tourSlug: 'tirupati-balaji-tour',
+    rating: 5,
+    text: 'Booking Tirupati Balaji Darshan online is a nightmare, but Shailraj Travels handled everything including our tonsuring requirements and special entry darshan tickets. Extremely professional and reliable.',
+    date: '2026-02-10T08:30:00Z',
+    city: 'Bangalore',
+  }
+];

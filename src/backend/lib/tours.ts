@@ -36,18 +36,27 @@ export const getToursFn = createServerFn({ method: 'POST' }).handler(async () =>
 
 // Get single tour by slug
 export const getTourBySlugFn = createServerFn({ method: 'POST' })
-  .validator((data: { slug: string }) => data)
+  .validator((data: { slug: string, lang?: string }) => data)
   .handler(async ({ data }) => {
     try {
       const client = await clientPromise;
       const db = client.db('shailraj');
-      const tour = await db.collection('tours').findOne({ slug: data.slug });
+      
+      const query: any = { slug: data.slug };
+      if (data.lang) {
+        query.lang = data.lang;
+      } else {
+        query.lang = { $in: ['en', null] }; // default to english or un-versioned
+      }
+      
+      const tour = await db.collection('tours').findOne(query);
       
       if (!tour) return null;
 
       return {
         _id: tour._id.toString(),
         slug: tour.slug,
+        lang: tour.lang || 'en',
         title: tour.title,
         metaTitle: tour.metaTitle,
         metaDescription: tour.metaDescription,
@@ -59,7 +68,8 @@ export const getTourBySlugFn = createServerFn({ method: 'POST' })
         packages: tour.packages || [],
         faq: tour.faq || [],
         relatedTours: tour.relatedTours || [],
-        relatedBlogs: tour.relatedBlogs || []
+        relatedBlogs: tour.relatedBlogs || [],
+        schemaData: tour.schemaData || null
       };
     } catch (error) {
       console.error("Failed to fetch tour by slug", error);
