@@ -9,47 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as YatriStoriesRouteImport } from './routes/yatri-stories'
-import { Route as WhyChooseShailrajTravelsRouteImport } from './routes/why-choose-shailraj-travels'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
-import { Route as PilgrimageGuidesRouteImport } from './routes/pilgrimage-guides'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FeaturesRouteImport } from './routes/features'
-import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CancellationPolicyRouteImport } from './routes/cancellation-policy'
-import { Route as AuthorsRouteImport } from './routes/authors'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AboutShailrajTravelsRouteImport } from './routes/about-shailraj-travels'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToursIndexRouteImport } from './routes/tours.index'
-import { Route as MrIndexRouteImport } from './routes/mr/index'
-import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as ToursTourSlugRouteImport } from './routes/tours.$tourSlug'
-import { Route as ResourcesResourceSlugRouteImport } from './routes/resources/$resourceSlug'
-import { Route as FactsFactSlugRouteImport } from './routes/facts/$factSlug'
-import { Route as CompareCompareSlugRouteImport } from './routes/compare/$compareSlug'
-import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
-import { Route as AuthorAuthorSlugRouteImport } from './routes/author/$authorSlug'
-import { Route as MrToursTourSlugRouteImport } from './routes/mr/tours.$tourSlug'
-import { Route as BlogTagTagSlugRouteImport } from './routes/blog/tag/$tagSlug'
-import { Route as BlogCategoryCategorySlugRouteImport } from './routes/blog/category/$categorySlug'
-import { Route as BlogAuthorAuthorSlugRouteImport } from './routes/blog/author/$authorSlug'
 
-const YatriStoriesRoute = YatriStoriesRouteImport.update({
-  id: '/yatri-stories',
-  path: '/yatri-stories',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WhyChooseShailrajTravelsRoute =
-  WhyChooseShailrajTravelsRouteImport.update({
-    id: '/why-choose-shailraj-travels',
-    path: '/why-choose-shailraj-travels',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -65,11 +37,6 @@ const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PilgrimageGuidesRoute = PilgrimageGuidesRouteImport.update({
-  id: '/pilgrimage-guides',
-  path: '/pilgrimage-guides',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -78,11 +45,6 @@ const LoginRoute = LoginRouteImport.update({
 const FeaturesRoute = FeaturesRouteImport.update({
   id: '/features',
   path: '/features',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FaqRoute = FaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -95,19 +57,9 @@ const CancellationPolicyRoute = CancellationPolicyRouteImport.update({
   path: '/cancellation-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthorsRoute = AuthorsRouteImport.update({
-  id: '/authors',
-  path: '/authors',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutShailrajTravelsRoute = AboutShailrajTravelsRouteImport.update({
-  id: '/about-shailraj-travels',
-  path: '/about-shailraj-travels',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -125,301 +77,117 @@ const ToursIndexRoute = ToursIndexRouteImport.update({
   path: '/tours/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MrIndexRoute = MrIndexRouteImport.update({
-  id: '/mr/',
-  path: '/mr/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogIndexRoute = BlogIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => BlogRoute,
-} as any)
 const ToursTourSlugRoute = ToursTourSlugRouteImport.update({
   id: '/tours/$tourSlug',
   path: '/tours/$tourSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResourcesResourceSlugRoute = ResourcesResourceSlugRouteImport.update({
-  id: '/resources/$resourceSlug',
-  path: '/resources/$resourceSlug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FactsFactSlugRoute = FactsFactSlugRouteImport.update({
-  id: '/facts/$factSlug',
-  path: '/facts/$factSlug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompareCompareSlugRoute = CompareCompareSlugRouteImport.update({
-  id: '/compare/$compareSlug',
-  path: '/compare/$compareSlug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BlogRoute,
-} as any)
-const AuthorAuthorSlugRoute = AuthorAuthorSlugRouteImport.update({
-  id: '/author/$authorSlug',
-  path: '/author/$authorSlug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MrToursTourSlugRoute = MrToursTourSlugRouteImport.update({
-  id: '/mr/tours/$tourSlug',
-  path: '/mr/tours/$tourSlug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogTagTagSlugRoute = BlogTagTagSlugRouteImport.update({
-  id: '/tag/$tagSlug',
-  path: '/tag/$tagSlug',
-  getParentRoute: () => BlogRoute,
-} as any)
-const BlogCategoryCategorySlugRoute =
-  BlogCategoryCategorySlugRouteImport.update({
-    id: '/category/$categorySlug',
-    path: '/category/$categorySlug',
-    getParentRoute: () => BlogRoute,
-  } as any)
-const BlogAuthorAuthorSlugRoute = BlogAuthorAuthorSlugRouteImport.update({
-  id: '/author/$authorSlug',
-  path: '/author/$authorSlug',
-  getParentRoute: () => BlogRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/about-shailraj-travels': typeof AboutShailrajTravelsRoute
   '/admin': typeof AdminRoute
-  '/authors': typeof AuthorsRoute
   '/cancellation-policy': typeof CancellationPolicyRoute
   '/contact': typeof ContactRoute
-  '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
-  '/pilgrimage-guides': typeof PilgrimageGuidesRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms': typeof TermsRoute
-  '/why-choose-shailraj-travels': typeof WhyChooseShailrajTravelsRoute
-  '/yatri-stories': typeof YatriStoriesRoute
-  '/author/$authorSlug': typeof AuthorAuthorSlugRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/compare/$compareSlug': typeof CompareCompareSlugRoute
-  '/facts/$factSlug': typeof FactsFactSlugRoute
-  '/resources/$resourceSlug': typeof ResourcesResourceSlugRoute
   '/tours/$tourSlug': typeof ToursTourSlugRoute
-  '/blog/': typeof BlogIndexRoute
-  '/mr/': typeof MrIndexRoute
   '/tours/': typeof ToursIndexRoute
-  '/blog/author/$authorSlug': typeof BlogAuthorAuthorSlugRoute
-  '/blog/category/$categorySlug': typeof BlogCategoryCategorySlugRoute
-  '/blog/tag/$tagSlug': typeof BlogTagTagSlugRoute
-  '/mr/tours/$tourSlug': typeof MrToursTourSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/about-shailraj-travels': typeof AboutShailrajTravelsRoute
   '/admin': typeof AdminRoute
-  '/authors': typeof AuthorsRoute
   '/cancellation-policy': typeof CancellationPolicyRoute
   '/contact': typeof ContactRoute
-  '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
-  '/pilgrimage-guides': typeof PilgrimageGuidesRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms': typeof TermsRoute
-  '/why-choose-shailraj-travels': typeof WhyChooseShailrajTravelsRoute
-  '/yatri-stories': typeof YatriStoriesRoute
-  '/author/$authorSlug': typeof AuthorAuthorSlugRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/compare/$compareSlug': typeof CompareCompareSlugRoute
-  '/facts/$factSlug': typeof FactsFactSlugRoute
-  '/resources/$resourceSlug': typeof ResourcesResourceSlugRoute
   '/tours/$tourSlug': typeof ToursTourSlugRoute
-  '/blog': typeof BlogIndexRoute
-  '/mr': typeof MrIndexRoute
   '/tours': typeof ToursIndexRoute
-  '/blog/author/$authorSlug': typeof BlogAuthorAuthorSlugRoute
-  '/blog/category/$categorySlug': typeof BlogCategoryCategorySlugRoute
-  '/blog/tag/$tagSlug': typeof BlogTagTagSlugRoute
-  '/mr/tours/$tourSlug': typeof MrToursTourSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/about-shailraj-travels': typeof AboutShailrajTravelsRoute
   '/admin': typeof AdminRoute
-  '/authors': typeof AuthorsRoute
   '/cancellation-policy': typeof CancellationPolicyRoute
   '/contact': typeof ContactRoute
-  '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
-  '/pilgrimage-guides': typeof PilgrimageGuidesRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms': typeof TermsRoute
-  '/why-choose-shailraj-travels': typeof WhyChooseShailrajTravelsRoute
-  '/yatri-stories': typeof YatriStoriesRoute
-  '/author/$authorSlug': typeof AuthorAuthorSlugRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/compare/$compareSlug': typeof CompareCompareSlugRoute
-  '/facts/$factSlug': typeof FactsFactSlugRoute
-  '/resources/$resourceSlug': typeof ResourcesResourceSlugRoute
   '/tours/$tourSlug': typeof ToursTourSlugRoute
-  '/blog/': typeof BlogIndexRoute
-  '/mr/': typeof MrIndexRoute
   '/tours/': typeof ToursIndexRoute
-  '/blog/author/$authorSlug': typeof BlogAuthorAuthorSlugRoute
-  '/blog/category/$categorySlug': typeof BlogCategoryCategorySlugRoute
-  '/blog/tag/$tagSlug': typeof BlogTagTagSlugRoute
-  '/mr/tours/$tourSlug': typeof MrToursTourSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
-    | '/about-shailraj-travels'
     | '/admin'
-    | '/authors'
     | '/cancellation-policy'
     | '/contact'
-    | '/faq'
     | '/features'
     | '/login'
-    | '/pilgrimage-guides'
     | '/privacy-policy'
     | '/refund-policy'
     | '/terms'
-    | '/why-choose-shailraj-travels'
-    | '/yatri-stories'
-    | '/author/$authorSlug'
-    | '/blog/$slug'
-    | '/compare/$compareSlug'
-    | '/facts/$factSlug'
-    | '/resources/$resourceSlug'
     | '/tours/$tourSlug'
-    | '/blog/'
-    | '/mr/'
     | '/tours/'
-    | '/blog/author/$authorSlug'
-    | '/blog/category/$categorySlug'
-    | '/blog/tag/$tagSlug'
-    | '/mr/tours/$tourSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/about-shailraj-travels'
     | '/admin'
-    | '/authors'
     | '/cancellation-policy'
     | '/contact'
-    | '/faq'
     | '/features'
     | '/login'
-    | '/pilgrimage-guides'
     | '/privacy-policy'
     | '/refund-policy'
     | '/terms'
-    | '/why-choose-shailraj-travels'
-    | '/yatri-stories'
-    | '/author/$authorSlug'
-    | '/blog/$slug'
-    | '/compare/$compareSlug'
-    | '/facts/$factSlug'
-    | '/resources/$resourceSlug'
     | '/tours/$tourSlug'
-    | '/blog'
-    | '/mr'
     | '/tours'
-    | '/blog/author/$authorSlug'
-    | '/blog/category/$categorySlug'
-    | '/blog/tag/$tagSlug'
-    | '/mr/tours/$tourSlug'
   id:
     | '__root__'
     | '/'
     | '/about'
-    | '/about-shailraj-travels'
     | '/admin'
-    | '/authors'
     | '/cancellation-policy'
     | '/contact'
-    | '/faq'
     | '/features'
     | '/login'
-    | '/pilgrimage-guides'
     | '/privacy-policy'
     | '/refund-policy'
     | '/terms'
-    | '/why-choose-shailraj-travels'
-    | '/yatri-stories'
-    | '/author/$authorSlug'
-    | '/blog/$slug'
-    | '/compare/$compareSlug'
-    | '/facts/$factSlug'
-    | '/resources/$resourceSlug'
     | '/tours/$tourSlug'
-    | '/blog/'
-    | '/mr/'
     | '/tours/'
-    | '/blog/author/$authorSlug'
-    | '/blog/category/$categorySlug'
-    | '/blog/tag/$tagSlug'
-    | '/mr/tours/$tourSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AboutShailrajTravelsRoute: typeof AboutShailrajTravelsRoute
   AdminRoute: typeof AdminRoute
-  AuthorsRoute: typeof AuthorsRoute
   CancellationPolicyRoute: typeof CancellationPolicyRoute
   ContactRoute: typeof ContactRoute
-  FaqRoute: typeof FaqRoute
   FeaturesRoute: typeof FeaturesRoute
   LoginRoute: typeof LoginRoute
-  PilgrimageGuidesRoute: typeof PilgrimageGuidesRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   RefundPolicyRoute: typeof RefundPolicyRoute
   TermsRoute: typeof TermsRoute
-  WhyChooseShailrajTravelsRoute: typeof WhyChooseShailrajTravelsRoute
-  YatriStoriesRoute: typeof YatriStoriesRoute
-  AuthorAuthorSlugRoute: typeof AuthorAuthorSlugRoute
-  CompareCompareSlugRoute: typeof CompareCompareSlugRoute
-  FactsFactSlugRoute: typeof FactsFactSlugRoute
-  ResourcesResourceSlugRoute: typeof ResourcesResourceSlugRoute
   ToursTourSlugRoute: typeof ToursTourSlugRoute
-  MrIndexRoute: typeof MrIndexRoute
   ToursIndexRoute: typeof ToursIndexRoute
-  MrToursTourSlugRoute: typeof MrToursTourSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/yatri-stories': {
-      id: '/yatri-stories'
-      path: '/yatri-stories'
-      fullPath: '/yatri-stories'
-      preLoaderRoute: typeof YatriStoriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/why-choose-shailraj-travels': {
-      id: '/why-choose-shailraj-travels'
-      path: '/why-choose-shailraj-travels'
-      fullPath: '/why-choose-shailraj-travels'
-      preLoaderRoute: typeof WhyChooseShailrajTravelsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -441,13 +209,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pilgrimage-guides': {
-      id: '/pilgrimage-guides'
-      path: '/pilgrimage-guides'
-      fullPath: '/pilgrimage-guides'
-      preLoaderRoute: typeof PilgrimageGuidesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -460,13 +221,6 @@ declare module '@tanstack/react-router' {
       path: '/features'
       fullPath: '/features'
       preLoaderRoute: typeof FeaturesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -483,25 +237,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CancellationPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/authors': {
-      id: '/authors'
-      path: '/authors'
-      fullPath: '/authors'
-      preLoaderRoute: typeof AuthorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin': {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about-shailraj-travels': {
-      id: '/about-shailraj-travels'
-      path: '/about-shailraj-travels'
-      fullPath: '/about-shailraj-travels'
-      preLoaderRoute: typeof AboutShailrajTravelsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -525,20 +265,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToursIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mr/': {
-      id: '/mr/'
-      path: '/mr'
-      fullPath: '/mr/'
-      preLoaderRoute: typeof MrIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/': {
-      id: '/blog/'
-      path: '/'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
-      parentRoute: typeof BlogRoute
-    }
     '/tours/$tourSlug': {
       id: '/tours/$tourSlug'
       path: '/tours/$tourSlug'
@@ -546,97 +272,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToursTourSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/resources/$resourceSlug': {
-      id: '/resources/$resourceSlug'
-      path: '/resources/$resourceSlug'
-      fullPath: '/resources/$resourceSlug'
-      preLoaderRoute: typeof ResourcesResourceSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/facts/$factSlug': {
-      id: '/facts/$factSlug'
-      path: '/facts/$factSlug'
-      fullPath: '/facts/$factSlug'
-      preLoaderRoute: typeof FactsFactSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/compare/$compareSlug': {
-      id: '/compare/$compareSlug'
-      path: '/compare/$compareSlug'
-      fullPath: '/compare/$compareSlug'
-      preLoaderRoute: typeof CompareCompareSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof BlogRoute
-    }
-    '/author/$authorSlug': {
-      id: '/author/$authorSlug'
-      path: '/author/$authorSlug'
-      fullPath: '/author/$authorSlug'
-      preLoaderRoute: typeof AuthorAuthorSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mr/tours/$tourSlug': {
-      id: '/mr/tours/$tourSlug'
-      path: '/mr/tours/$tourSlug'
-      fullPath: '/mr/tours/$tourSlug'
-      preLoaderRoute: typeof MrToursTourSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/tag/$tagSlug': {
-      id: '/blog/tag/$tagSlug'
-      path: '/tag/$tagSlug'
-      fullPath: '/blog/tag/$tagSlug'
-      preLoaderRoute: typeof BlogTagTagSlugRouteImport
-      parentRoute: typeof BlogRoute
-    }
-    '/blog/category/$categorySlug': {
-      id: '/blog/category/$categorySlug'
-      path: '/category/$categorySlug'
-      fullPath: '/blog/category/$categorySlug'
-      preLoaderRoute: typeof BlogCategoryCategorySlugRouteImport
-      parentRoute: typeof BlogRoute
-    }
-    '/blog/author/$authorSlug': {
-      id: '/blog/author/$authorSlug'
-      path: '/author/$authorSlug'
-      fullPath: '/blog/author/$authorSlug'
-      preLoaderRoute: typeof BlogAuthorAuthorSlugRouteImport
-      parentRoute: typeof BlogRoute
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AboutShailrajTravelsRoute: AboutShailrajTravelsRoute,
   AdminRoute: AdminRoute,
-  AuthorsRoute: AuthorsRoute,
   CancellationPolicyRoute: CancellationPolicyRoute,
   ContactRoute: ContactRoute,
-  FaqRoute: FaqRoute,
   FeaturesRoute: FeaturesRoute,
   LoginRoute: LoginRoute,
-  PilgrimageGuidesRoute: PilgrimageGuidesRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   RefundPolicyRoute: RefundPolicyRoute,
   TermsRoute: TermsRoute,
-  WhyChooseShailrajTravelsRoute: WhyChooseShailrajTravelsRoute,
-  YatriStoriesRoute: YatriStoriesRoute,
-  AuthorAuthorSlugRoute: AuthorAuthorSlugRoute,
-  CompareCompareSlugRoute: CompareCompareSlugRoute,
-  FactsFactSlugRoute: FactsFactSlugRoute,
-  ResourcesResourceSlugRoute: ResourcesResourceSlugRoute,
   ToursTourSlugRoute: ToursTourSlugRoute,
-  MrIndexRoute: MrIndexRoute,
   ToursIndexRoute: ToursIndexRoute,
-  MrToursTourSlugRoute: MrToursTourSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
