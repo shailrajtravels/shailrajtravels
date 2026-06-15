@@ -2,7 +2,7 @@ import React from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { getTourBySlugFn } from '../backend/lib/tours';
 import { TourPageTemplate } from '../frontend/templates/TourPageTemplate';
-import { generateSEO } from '../backend/lib/seo';
+import {  generateSEO  } from '../backend/lib/seo';
 import { generateProductSchema } from '../backend/lib/schema-generators';
 
 export const Route = createFileRoute('/tours/$tourSlug')({

@@ -1,4 +1,4 @@
-import { Author } from '../frontend/types/author';
+import { Author } from '../types/author';
 
 export const authors: Record<string, Author> = {
   'shailesh-raj': {

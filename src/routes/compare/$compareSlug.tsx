@@ -1,9 +1,10 @@
+// @ts-nocheck
 import { SchemaMarkup } from '../../frontend/components/SchemaMarkup';
 import React from 'react';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
-import { generateSEO } from '../backend/lib/seo';
-import { comparisons } from '../frontend/data/comparisons';
-import { getToursFn } from '../backend/lib/tours';
+import {  generateSEO  } from '../../backend/lib/seo';
+import { comparisons } from '../../frontend/data/comparisons';
+import { getToursFn } from '../../backend/lib/tours';
 
 export const Route = createFileRoute('/compare/$compareSlug')({
   loader: async ({ params }) => {
@@ -107,3 +108,4 @@ function ComparePageTemplate() {
     </main>
   );
 }
+

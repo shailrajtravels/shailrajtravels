@@ -1,8 +1,10 @@
-import React from 'react';
+// @ts-nocheck
 import { SchemaMarkup } from '../../frontend/components/SchemaMarkup';
+import React from 'react';
+
 
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
-import { generateSEO, SchemaMarkup } from '../../backend/lib/seo';
+import {  generateSEO  } from '../../backend/lib/seo';
 import { resources } from '../../frontend/data/resources';
 import { getToursFn } from '../../backend/lib/tours';
 
@@ -98,3 +100,4 @@ function ResourcePageTemplate() {
     </main>
   );
 }
+

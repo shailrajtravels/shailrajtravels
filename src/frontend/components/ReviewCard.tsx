@@ -1,5 +1,5 @@
 import React from 'react';
-import { Review } from '../frontend/types/review';
+import { Review } from '../types/review';
 import { Star, ShieldCheck, MapPin } from 'lucide-react';
 
 interface ReviewCardProps {

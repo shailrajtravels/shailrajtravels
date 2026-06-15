@@ -1,7 +1,7 @@
 import React from 'react';
 import { createFileRoute, Link, useLoaderData } from '@tanstack/react-router';
 import { getToursFn } from '../backend/lib/tours';
-import { generateSEO } from '../backend/lib/seo';
+import {  generateSEO  } from '../backend/lib/seo';
 
 export const Route = createFileRoute('/tours/')({
   loader: () => getToursFn(),

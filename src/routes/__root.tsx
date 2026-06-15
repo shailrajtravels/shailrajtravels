@@ -13,7 +13,7 @@ import { Languages } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../backend/lib/lovable-error-reporting";
-import { generateSEO } from "../backend/lib/seo";
+import { generateSEO } from '../backend/lib/seo';
 import { AnalyticsScripts } from "../frontend/components/AnalyticsScripts";
 import { SchemaMarkup } from "../frontend/components/SchemaMarkup";
 import { generateLocalBusinessSchema } from "../backend/lib/schema-generators";

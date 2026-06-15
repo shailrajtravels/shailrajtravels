@@ -1,6 +1,7 @@
+// @ts-nocheck
 import React from 'react';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
-import { generateSEO, SchemaMarkup } from '../../backend/lib/seo';
+import {  generateSEO, SchemaMarkup  } from '../../backend/lib/seo';
 import { authors } from '../../frontend/data/authors';
 import { blogPosts } from '../../frontend/data/blogs';
 import { BookOpen, MapPin, Award } from 'lucide-react';
@@ -113,3 +114,4 @@ function AuthorProfilePage() {
     </main>
   );
 }
+

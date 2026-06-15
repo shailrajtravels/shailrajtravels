@@ -1,4 +1,4 @@
-import { BlogPost } from '../types/blog';
+import { BlogPost } from '../frontend/types/blog';
 import { authors as blogAuthors } from './authors';
 
 export { blogAuthors };

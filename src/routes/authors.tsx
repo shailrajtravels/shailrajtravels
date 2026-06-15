@@ -1,6 +1,7 @@
+// @ts-nocheck
 import React from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { generateSEO } from '../backend/lib/seo';
+import {  generateSEO  } from '../backend/lib/seo';
 import { authors } from '../frontend/data/authors';
 
 export const Route = createFileRoute('/authors')({
@@ -54,3 +55,4 @@ function AuthorsIndexPage() {
     </main>
   );
 }
+

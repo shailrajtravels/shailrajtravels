@@ -1,5 +1,5 @@
 import React from 'react';
-import { Author } from '../frontend/types/author';
+import { Author } from '../types/author';
 
 interface AuthorProfileProps {
   author: Author;

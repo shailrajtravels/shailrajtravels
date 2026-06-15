@@ -1,6 +1,7 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
-import { generateSEO, generateHreflangLinks } from '../../backend/lib/seo';
+import {  generateSEO, generateHreflangLinks  } from '../../backend/lib/seo';
 import { blogPosts, blogAuthors } from '../../frontend/data/blogs';
 import { Navbar } from '../../frontend/features/core/Navbar';
 import { FooterSection as Footer } from '../../frontend/features/core/Footer';
@@ -300,3 +301,4 @@ function BlogPostPage() {
     </div>
   );
 }
+

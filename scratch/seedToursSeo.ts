@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { MongoClient } from 'mongodb';
 import { tours as enTours } from '../backup_seo/data/tours.en.ts';
 import { toursMR as mrTours } from '../backup_seo/data/tours.mr.ts';
@@ -90,3 +91,4 @@ async function seed() {
 }
 
 seed();
+

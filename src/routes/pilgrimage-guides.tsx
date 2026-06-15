@@ -1,6 +1,6 @@
 import React from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { generateSEO } from '../backend/lib/seo';
+import {  generateSEO  } from '../backend/lib/seo';
 import { blogPosts } from '../frontend/data/blogs';
 import { BookOpen, Map, MapPin } from 'lucide-react';
 
@@ -72,7 +72,7 @@ function PilgrimageGuidesPage() {
                       <h3 className="text-lg font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-brand-blue-deep transition-colors">{post.title}</h3>
                       <p className="text-slate-600 text-sm mb-4 line-clamp-3">{post.excerpt}</p>
                       <div className="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center text-sm text-slate-500">
-                        <span>{post.readTimeMinutes} min read</span>
+                        <span>{post.readingTimeMinutes} min read</span>
                         <span className="font-semibold text-brand-blue-deep">Read Guide &rarr;</span>
                       </div>
                     </div>

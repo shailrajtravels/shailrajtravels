@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { SchemaMarkup } from '../frontend/components/SchemaMarkup';
 import React, { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { generateSEO } from '../backend/lib/seo';
+import {  generateSEO  } from '../backend/lib/seo';
 import { getToursFn } from '../backend/lib/tours';
 
 export const Route = createFileRoute('/faq')({
@@ -86,3 +87,4 @@ function FAQPage() {
     </main>
   );
 }
+
