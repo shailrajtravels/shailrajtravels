@@ -23,6 +23,7 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
   ];
 
   const isUpcomingDate = (dateStr: string) => {
+    if (typeof dateStr !== 'string') return false;
     const match = dateStr.match(/(\d+)\s+([a-zA-Z]+)(?:\s+(\d{4}))?/);
     if (!match) return true;
     const now = new Date();
@@ -33,7 +34,7 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
     return parsedDate >= now;
   };
 
-  const validDates = data.dates ? data.dates.filter(isUpcomingDate) : [];
+  const validDates = Array.isArray(data.dates) ? data.dates.filter(isUpcomingDate) : [];
 
   return (
     <main className="w-full bg-white pb-16">

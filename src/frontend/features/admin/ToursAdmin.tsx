@@ -106,18 +106,22 @@ function TourForm({ token, initialData, onClose, onSuccess }: any) {
 
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
 
+  const [datesInput, setDatesInput] = useState(
+    Array.isArray(initialData?.dates) ? initialData.dates.join(', ') : ''
+  );
+  const [highlightsInput, setHighlightsInput] = useState(
+    Array.isArray(initialData?.highlights) ? initialData.highlights.join(', ') : ''
+  );
+  const [destinationsInput, setDestinationsInput] = useState(
+    Array.isArray(initialData?.destinations) ? initialData.destinations.join(', ') : ''
+  );
+
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleHeroChange = (e: any) => {
     setFormData({ ...formData, heroContent: { ...formData.heroContent, [e.target.name]: e.target.value } });
-  };
-
-  const handleArrayChange = (e: any, field: string) => {
-    // converts comma separated to array
-    const val = e.target.value;
-    setFormData({ ...formData, [field]: val.split(',').map((s: string) => s.trim()).filter(Boolean) });
   };
 
   const handleImageChange = (e: any) => {
@@ -138,11 +142,18 @@ function TourForm({ token, initialData, onClose, onSuccess }: any) {
     e.preventDefault();
     setLoading(true);
     
+    const payload = {
+      ...formData,
+      dates: datesInput.split(',').map((s: string) => s.trim()).filter(Boolean),
+      highlights: highlightsInput.split(',').map((s: string) => s.trim()).filter(Boolean),
+      destinations: destinationsInput.split(',').map((s: string) => s.trim()).filter(Boolean)
+    };
+    
     try {
       if (initialData?._id) {
-        await updateTourFn({ data: { adminToken: token, id: initialData._id, data: formData } });
+        await updateTourFn({ data: { adminToken: token, id: initialData._id, data: payload } });
       } else {
-        await createTourFn({ data: { adminToken: token, data: formData } });
+        await createTourFn({ data: { adminToken: token, data: payload } });
       }
       onSuccess();
     } catch (e) {
@@ -203,13 +214,13 @@ function TourForm({ token, initialData, onClose, onSuccess }: any) {
           <div className="md:col-span-2"><hr className="border-slate-100 my-2" /></div>
           
           <div className="md:col-span-2">
-            <Input label="Highlights (comma separated)" value={formData.highlights?.join(', ')} onChange={(e: any) => handleArrayChange(e, 'highlights')} />
+            <Input label="Highlights (comma separated)" value={highlightsInput} onChange={(e: any) => setHighlightsInput(e.target.value)} />
           </div>
           <div className="md:col-span-2">
-            <Input label="Destinations (comma separated)" value={formData.destinations?.join(', ')} onChange={(e: any) => handleArrayChange(e, 'destinations')} />
+            <Input label="Destinations (comma separated)" value={destinationsInput} onChange={(e: any) => setDestinationsInput(e.target.value)} />
           </div>
           <div className="md:col-span-2">
-            <Input label="Available Dates (comma separated, e.g. 2026-07-15, 2026-08-20)" value={formData.dates?.join(', ')} onChange={(e: any) => handleArrayChange(e, 'dates')} />
+            <Input label="Available Dates (comma separated, e.g. 2026-07-15, 2026-08-20)" value={datesInput} onChange={(e: any) => setDatesInput(e.target.value)} />
           </div>
 
           <div className="md:col-span-2 p-4 bg-yellow-50 text-yellow-800 rounded-xl text-sm border border-yellow-200">

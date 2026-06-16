@@ -9,7 +9,7 @@ import { getAuditLogsFn } from '../backend/lib/audit';
 import { getToursFn, deleteTourFn } from '../backend/lib/tours';
 import { ToursAdmin } from '../frontend/features/admin/ToursAdmin';
 import * as XLSX from 'xlsx-js-style';
-import { LayoutDashboard, Package, LogOut, Plus, Trash2, Edit, Loader2, Search, ArrowLeft, Image as ImageIcon, MessageSquare, Menu, X, Map, CalendarCheck, MoreVertical, Clock, Users, Eye, FileSpreadsheet, Download, Activity, Printer, MapPin } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Plus, Trash2, Edit, Loader2, Search, ArrowLeft, Image as ImageIcon, MessageSquare, Menu, X, Map, CalendarCheck, MoreVertical, Clock, Users, Eye, FileSpreadsheet, Download, Activity, Printer, MapPin, Lock } from 'lucide-react';
 import logo from '@/frontend/assets/logo11.png';
 import { Calendar } from '@/frontend/components/ui/calendar';
 import { format } from 'date-fns';
@@ -24,6 +24,13 @@ export const Route = createFileRoute('/admin')({
     }
   },
   component: AdminPage,
+  errorComponent: ({ error }) => (
+    <div className="p-8 bg-white text-red-600 font-mono text-sm max-w-full overflow-auto h-screen">
+      <h1 className="text-2xl font-bold mb-4">React Error Details</h1>
+      <p className="font-bold mb-2">Message: {error?.message}</p>
+      <pre className="bg-slate-100 p-4 rounded">{error?.stack}</pre>
+    </div>
+  ),
 });
 
 function AdminPage() {
@@ -459,7 +466,9 @@ function AdminPage() {
                     <table className="w-full text-left border-collapse min-w-[800px]">
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[12px] uppercase tracking-wider font-bold">
-                          <th className="px-6 py-4 w-1/3">Trip Name</th>
+                          <th className="px-6 py-4 w-16">Image</th>
+                          <th className="px-6 py-4 w-1/4">Trip Name</th>
+                          <th className="px-6 py-4">Price</th>
                           <th className="px-6 py-4">Available Travel Dates</th>
                           <th className="px-6 py-4 text-right">Actions</th>
                         </tr>
@@ -467,15 +476,33 @@ function AdminPage() {
                       <tbody>
                         {tripOptions.map(trip => (
                           <tr key={trip._id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="w-12 h-12 rounded-lg bg-slate-100 overflow-hidden shrink-0">
+                                {trip.image ? (
+                                  <img src={trip.image} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <ImageIcon className="w-6 h-6 m-3 text-slate-300" />
+                                )}
+                              </div>
+                            </td>
                             <td className="px-6 py-4 font-bold text-brand-blue-deep">{trip.name}</td>
+                            <td className="px-6 py-4 font-bold text-brand-green">{trip.price || "On Request"}</td>
                             <td className="px-6 py-4">
                               <div className="flex flex-wrap gap-2">
-                                {trip.dates.map((d: string, i: number) => (
-                                  <span key={i} className="px-3 py-1 bg-brand-green/10 text-brand-green-dark text-[13px] font-bold rounded-lg border border-brand-green/20">
-                                    {d}
+                                {trip.schedule && (
+                                  <span className="px-3 py-1 bg-brand-blue/10 text-brand-blue-deep text-[13px] font-bold rounded-lg border border-brand-blue/20">
+                                    {trip.schedule}
                                   </span>
-                                ))}
-                                {trip.dates.length === 0 && <span className="text-slate-400 italic text-sm">No dates added</span>}
+                                )}
+                                {Array.isArray(trip.dates) && trip.dates.length > 0 ? (
+                                  trip.dates.map((d: any, i: number) => (
+                                    <span key={i} className="px-3 py-1 bg-brand-green/10 text-brand-green-dark text-[13px] font-bold rounded-lg border border-brand-green/20">
+                                      {typeof d === 'object' && d ? (typeof d.toLocaleDateString === 'function' ? d.toLocaleDateString() : String(d)) : String(d)}
+                                    </span>
+                                  ))
+                                ) : (
+                                  !trip.schedule && <span className="text-slate-400 italic text-sm">No schedule added</span>
+                                )}
                               </div>
                             </td>
                             <td className="px-6 py-4">
@@ -627,7 +654,7 @@ function AdminPage() {
           ) : activeTab === 'reports' ? (
             <ReportsView bookings={bookings} />
           ) : activeTab === 'invoices' ? (
-            <InvoicesView bookings={bookings} />
+            <InvoicesView bookings={bookings} token={token} loadData={loadData} />
           ) : null}
           
         </div>
@@ -830,16 +857,18 @@ function Input({ label, ...props }: any) {
 function TripOptionForm({ token, initialData, onClose, onSuccess }: any) {
   const [loading, setLoading] = useState(false);
   
-  // Initialize with Date objects
-  const initialDates = initialData?.dates && Array.isArray(initialData.dates) 
-    ? initialData.dates.map((d: string) => new Date(d)).filter((d: Date) => !isNaN(d.getTime()))
-    : [];
-
   const [formData, setFormData] = useState({
     ...(initialData || {}),
     name: initialData?.name || '',
-    dates: initialDates as Date[],
+    schedule: initialData?.schedule || '',
+    price: initialData?.price || '',
+    image: initialData?.image || '',
+    dates: initialData?.dates || [],
   });
+
+  const [datesInput, setDatesInput] = useState(
+    Array.isArray(initialData?.dates) ? initialData.dates.join(', ') : ''
+  );
 
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -849,10 +878,9 @@ function TripOptionForm({ token, initialData, onClose, onSuccess }: any) {
     e.preventDefault();
     setLoading(true);
     
-    // Format dates back to string array
     const payload = { 
       ...formData,
-      dates: formData.dates.map((d: Date) => format(d, 'MMM dd, yyyy'))
+      dates: datesInput.split(',').map((s: string) => s.trim()).filter(Boolean)
     };
     
     try {
@@ -871,13 +899,11 @@ function TripOptionForm({ token, initialData, onClose, onSuccess }: any) {
 
   useEffect(() => {
     if (initialData) {
-      const parsedDates = initialData.dates && Array.isArray(initialData.dates) 
-        ? initialData.dates.map((d: string) => new Date(d)).filter((d: Date) => !isNaN(d.getTime()))
-        : [];
       setFormData({
         ...initialData,
-        dates: parsedDates,
+        dates: initialData.dates || [],
       });
+      setDatesInput(Array.isArray(initialData.dates) ? initialData.dates.join(', ') : '');
     }
   }, [initialData]);
 
@@ -902,27 +928,56 @@ function TripOptionForm({ token, initialData, onClose, onSuccess }: any) {
             placeholder="e.g. Pune - Ujjain - Pune" 
             required 
           />
+          <Input 
+            label="Price" 
+            name="price" 
+            value={formData.price} 
+            onChange={handleChange} 
+            placeholder="e.g. ₹5,999" 
+          />
           <div className="flex flex-col gap-2">
-            <label className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">Select Travel Dates</label>
-            <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 flex justify-center">
-              <Calendar
-                mode="multiple"
-                selected={formData.dates}
-                onSelect={(dates) => setFormData({ ...formData, dates: dates || [] })}
-                className="bg-white rounded-lg shadow-sm"
-              />
-            </div>
-            {formData.dates.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {formData.dates.map((date: Date, i: number) => (
-                  <span key={i} className="px-3 py-1 bg-brand-blue/10 text-brand-blue text-[13px] font-bold rounded-lg border border-brand-blue/20">
-                    {format(date, 'MMM dd, yyyy')}
-                  </span>
-                ))}
+            <label className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">Cover Image</label>
+            <div className="flex items-center gap-4">
+              {formData.image && (
+                <div className="relative w-24 h-24 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
+                  <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                  <button type="button" onClick={() => setFormData({ ...formData, image: '' })} className="absolute top-1 right-1 bg-slate-900/60 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 transition-colors shadow-sm">
+                    ×
+                  </button>
+                </div>
+              )}
+              <div className="flex-1">
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setFormData({ ...formData, image: reader.result as string });
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-brand-blue/10 file:text-brand-blue-deep hover:file:bg-brand-blue/20 cursor-pointer text-sm text-slate-500"
+                />
               </div>
-            )}
-            <p className="text-xs text-slate-400 mt-1">Click dates on the calendar to select multiple options.</p>
+            </div>
           </div>
+          <Input 
+            label="Schedule" 
+            name="schedule" 
+            value={formData.schedule} 
+            onChange={handleChange} 
+            placeholder="e.g. Every month friday to sunday" 
+          />
+          <Input 
+            label="Available Dates (comma separated)" 
+            name="dates"
+            value={datesInput} 
+            onChange={(e: any) => setDatesInput(e.target.value)} 
+            placeholder="e.g. Sat 12 june to 13 june, 19 june to 20 june, 25 june to 26 june" 
+          />
         </div>
 
         <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-slate-100">
@@ -1641,8 +1696,8 @@ function AuditLogsPanel({ logs }: { logs: any[] }) {
 
 import { InvoicePrint } from '../frontend/components/InvoicePrint';
 
-function InvoicesView({ bookings }: { bookings: any[] }) {
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: string | null; loadData: (t?: string) => Promise<void> }) {
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Filter for confirmed bookings whose travelDate is today or in the past
@@ -1661,7 +1716,9 @@ function InvoicesView({ bookings }: { bookings: any[] }) {
     const index = idx + 1;
     const letter = String.fromCharCode(65 + ((index - 1) % 26));
     const padded = String(index).padStart(4, '0');
-    return { ...bk, generatedInvoiceNo: `INV-${letter}${padded}` };
+    // Use custom invoice number if already locked/saved
+    const customNo = bk.invoiceCustomData?.invoiceNo;
+    return { ...bk, generatedInvoiceNo: customNo || `INV-${letter}${padded}` };
   });
 
   // Reverse so newest are shown first
@@ -1671,18 +1728,22 @@ function InvoicesView({ bookings }: { bookings: any[] }) {
     const q = searchQuery.toLowerCase().trim();
     generatedInvoices = generatedInvoices.filter(bk => {
       const invoiceNo = bk.generatedInvoiceNo;
+      const custom = bk.invoiceCustomData || {};
+      const customerName = custom.customerName || bk.customerName || bk.name || '';
       return (
         invoiceNo.toLowerCase().includes(q) ||
-        (bk.name && bk.name.toLowerCase().includes(q))
+        customerName.toLowerCase().includes(q)
       );
     });
   }
 
-  if (selectedBooking) {
+  const selectedBooking = generatedInvoices.find(b => b._id === selectedBookingId);
+
+  if (selectedBookingId && selectedBooking) {
     return (
       <div className="animate-reveal">
         <div className="no-print flex items-center justify-between mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <button onClick={() => setSelectedBooking(null)} className="text-brand-blue-deep flex items-center font-bold hover:underline">
+          <button onClick={() => setSelectedBookingId(null)} className="text-brand-blue-deep flex items-center font-bold hover:underline">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to List
           </button>
           <button 
@@ -1711,7 +1772,13 @@ function InvoicesView({ bookings }: { bookings: any[] }) {
                 .no-print { display: none !important; }
              }
            `}</style>
-           <InvoicePrint booking={selectedBooking} />
+           <InvoicePrint 
+             booking={selectedBooking} 
+             token={token} 
+             onSuccess={() => {
+               if (token) loadData(token);
+             }} 
+           />
         </div>
       </div>
     );
@@ -1749,16 +1816,29 @@ function InvoicesView({ bookings }: { bookings: any[] }) {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {generatedInvoices.map((bk) => {
+                const custom = bk.invoiceCustomData || {};
                 const invoiceNo = bk.generatedInvoiceNo;
-                const rate = 6000;
-                const total = rate * (bk.persons || 1);
+                const rate = custom.rate !== undefined ? Number(custom.rate) : 6000;
+                const persons = custom.persons !== undefined ? Number(custom.persons) : (bk.persons || 1);
+                const total = rate * persons;
+                const customerName = custom.customerName || bk.customerName || bk.name || '';
+                const tripName = custom.packageName || bk.packageName || bk.tripName || '';
                 
                 return (
                   <tr key={bk._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4 font-bold text-brand-blue-deep">{invoiceNo}</td>
+                    <td className="px-6 py-4 font-bold text-brand-blue-deep">
+                      <div className="flex items-center gap-2">
+                        <span>{invoiceNo}</span>
+                        {bk.isInvoiceLocked && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded">
+                            <Lock size={10} className="text-slate-400" /> Locked
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
-                      <p className="font-bold text-slate-800">{bk.name}</p>
-                      <p className="text-xs text-slate-500">{bk.tripName}</p>
+                      <p className="font-bold text-slate-800">{customerName}</p>
+                      <p className="text-xs text-slate-500">{tripName}</p>
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-slate-600">
                       {new Date(bk.travelDate).toLocaleDateString()}
@@ -1766,7 +1846,7 @@ function InvoicesView({ bookings }: { bookings: any[] }) {
                     <td className="px-6 py-4 font-bold text-brand-green-dark">₹ {total.toLocaleString()}</td>
                     <td className="px-6 py-4 text-right">
                       <button 
-                        onClick={() => setSelectedBooking(bk)}
+                        onClick={() => setSelectedBookingId(bk._id)}
                         className="inline-flex items-center gap-2 bg-brand-green/10 text-brand-green-dark px-4 py-2 rounded-lg font-bold hover:bg-brand-green/20 transition-colors"
                       >
                         <Eye className="w-4 h-4" /> View Invoice

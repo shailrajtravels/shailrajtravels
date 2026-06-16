@@ -1,55 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { MapPin, Phone, Mail, Globe, ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { MapPin, Phone, Mail, Globe, ZoomIn, ZoomOut, Maximize, Lock } from "lucide-react";
 import logo from "@/frontend/assets/Shailraj travels-Punelogo.png";
 import onlyNameLogo from "@/frontend/assets/only-name-logo.png";
 import stamp from "@/frontend/assets/stamp1.png";
+import { saveInvoiceFn } from "../../backend/lib/bookings";
 
 const BLUE = "#0B3D91";
 const DARK = "#082F70";
 const BORDER = "#1E4D9E";
 const GREEN = "#1E8E3E";
 
-export function InvoicePrint({ booking }: { booking: any }) {
+export function InvoicePrint({ 
+  booking, 
+  token, 
+  onSuccess 
+}: { 
+  booking: any; 
+  token?: string | null; 
+  onSuccess?: () => void; 
+}) {
   const [scale, setScale] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const safeDate = (dateStr: string) => {
+  const safeDate = (dateStr: any) => {
     if (!dateStr) return new Date();
-    const d = new Date(dateStr);
+    let d = new Date(dateStr);
+    if (isNaN(d.getTime()) && typeof dateStr === 'string') {
+      const cleaned = dateStr.replace(/\s*\(.*\)\s*/g, '');
+      d = new Date(cleaned);
+    }
     return isNaN(d.getTime()) ? new Date() : d;
   };
   
-  const [data, setData] = useState({
-    invoiceNo: booking.generatedInvoiceNo || `INV-${safeDate(booking.createdAt).getFullYear()}-${booking._id ? booking._id.slice(-6).toUpperCase() : '0001'}`,
-    invoiceDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-    bookingId: booking.generatedBookingId || booking.bookingId || booking._id?.slice(-8).toUpperCase() || '',
-    travelDate: format(safeDate(booking.travelDate), 'dd MMM yyyy'),
-    customerName: booking.customerName || '',
-    customerPhone: booking.customerPhone || '',
-    packageName: booking.packageId?.name || booking.packageName || 'Custom Trip',
-    travelDateTime: format(safeDate(booking.travelDate), 'dd MMM yyyy, HH:mm'),
-    pickupPoint: booking.pickupPoint || 'Pune',
-    rate: 6000,
-    persons: booking.persons || 1,
-    paymentStatus: booking.paymentStatus || 'PENDING'
-  });
+  const getInitialData = (b: any) => {
+    const custom = b.invoiceCustomData || {};
+    return {
+      invoiceNo: custom.invoiceNo || b.generatedInvoiceNo || `INV-${safeDate(b.createdAt).getFullYear()}-${b._id ? b._id.slice(-6).toUpperCase() : '0001'}`,
+      invoiceDate: custom.invoiceDate || safeDate(b.createdAt || Date.now()).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      bookingId: custom.bookingId || b.generatedBookingId || b.bookingId || b._id?.slice(-8).toUpperCase() || '',
+      travelDate: custom.travelDate || format(safeDate(b.travelDate), 'dd MMM yyyy'),
+      customerName: custom.customerName || b.customerName || b.name || '',
+      customerPhone: custom.customerPhone || b.customerPhone || b.phone || '',
+      packageName: custom.packageName || b.packageId?.name || b.packageName || 'Custom Trip',
+      travelDateTime: custom.travelDateTime || format(safeDate(b.travelDate), 'dd MMM yyyy, HH:mm'),
+      pickupPoint: custom.pickupPoint || b.pickupPoint || 'Pune',
+      rate: custom.rate !== undefined ? Number(custom.rate) : 6000,
+      persons: custom.persons !== undefined ? Number(custom.persons) : (b.persons || 1),
+      paymentStatus: custom.paymentStatus || b.paymentStatus || 'PENDING'
+    };
+  };
+
+  const [data, setData] = useState(() => getInitialData(booking));
 
   useEffect(() => {
-    setData({
-      invoiceNo: booking.generatedInvoiceNo || `INV-${safeDate(booking.createdAt).getFullYear()}-${booking._id ? booking._id.slice(-6).toUpperCase() : '0001'}`,
-      invoiceDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-      bookingId: booking.generatedBookingId || booking.bookingId || booking._id?.slice(-8).toUpperCase() || '',
-      travelDate: format(safeDate(booking.travelDate), 'dd MMM yyyy'),
-      customerName: booking.customerName || '',
-      customerPhone: booking.customerPhone || '',
-      packageName: booking.packageId?.name || booking.packageName || 'Custom Trip',
-      travelDateTime: format(safeDate(booking.travelDate), 'dd MMM yyyy, HH:mm'),
-      pickupPoint: booking.pickupPoint || 'Pune',
-      rate: 6000,
-      persons: booking.persons || 1,
-      paymentStatus: booking.paymentStatus || 'PENDING'
-    });
+    setData(getInitialData(booking));
   }, [booking]);
 
   useEffect(() => {
@@ -63,6 +69,51 @@ export function InvoicePrint({ booking }: { booking: any }) {
   
   const updateData = (key: string, value: any) => {
     setData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const getCreatedAtDate = (dateStr: any) => {
+    if (!dateStr) return null;
+    let d = new Date(dateStr);
+    if (isNaN(d.getTime()) && typeof dateStr === 'string') {
+      const cleaned = dateStr.replace(/\s*\(.*\)\s*/g, '');
+      d = new Date(cleaned);
+    }
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  const createdAtDate = getCreatedAtDate(booking.createdAt);
+  const isOlderThan24Hours = createdAtDate ? (Date.now() - createdAtDate.getTime()) > 24 * 60 * 60 * 1000 : true;
+  const isLocked = !!booking.isInvoiceLocked;
+  const isEditable = !isLocked && !isOlderThan24Hours;
+
+  const handleSaveAndLock = async () => {
+    if (!token) {
+      alert("Unauthorized: No admin token found.");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to Save & Lock this invoice? After locking, you will not be able to edit it again.")) {
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const res = await saveInvoiceFn({
+        data: {
+          adminToken: token,
+          bookingId: booking._id,
+          invoiceCustomData: data
+        }
+      });
+      if (res?.success) {
+        setIsEditing(false);
+        if (onSuccess) onSuccess();
+      } else {
+        alert("Failed to save and lock invoice.");
+      }
+    } catch (err: any) {
+      alert(err.message || "Failed to save and lock invoice.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -95,12 +146,42 @@ export function InvoicePrint({ booking }: { booking: any }) {
         </div>
 
         <div className="bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-slate-200 px-4 py-2 flex items-center gap-3">
-          {isEditing ? (
-            <button onClick={() => setIsEditing(false)} className="px-3 py-1 bg-green-600 text-white rounded font-bold text-sm">Save Invoice</button>
+          {isEditable ? (
+            isEditing ? (
+              <>
+                <button 
+                  onClick={handleSaveAndLock} 
+                  disabled={isSaving}
+                  className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded font-bold text-sm disabled:opacity-50"
+                >
+                  {isSaving ? "Saving..." : "Save & Lock Invoice"}
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsEditing(false);
+                    setData(getInitialData(booking));
+                  }} 
+                  disabled={isSaving}
+                  className="px-3 py-1 bg-slate-400 hover:bg-slate-500 text-white rounded font-bold text-sm disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button 
+                onClick={() => setIsEditing(true)} 
+                className="px-3 py-1 bg-[#0B3D91] hover:bg-[#082F70] text-white rounded font-bold text-sm"
+              >
+                Edit Invoice
+              </button>
+            )
           ) : (
-            <button onClick={() => setIsEditing(true)} className="px-3 py-1 bg-[#0B3D91] text-white rounded font-bold text-sm">Edit Invoice</button>
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 px-3 py-1 bg-slate-100 rounded border border-slate-200 select-none">
+              <Lock size={14} className="text-slate-400" />
+              {isLocked ? "Invoice Locked" : "Invoice Expired (Older than 24h)"}
+            </div>
           )}
-          <button onClick={() => window.print()} className="px-3 py-1 bg-slate-800 text-white rounded font-bold text-sm">Print</button>
+          <button onClick={() => window.print()} className="px-3 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded font-bold text-sm">Print</button>
         </div>
       </div>
 

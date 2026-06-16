@@ -3,8 +3,25 @@ import clientPromise from './db';
 import { getAdminToken } from './token';
 import { ObjectId } from 'mongodb';
 import { logAuditAction } from './audit';
+import { uploadImageToCloudinary } from './cloudinary';
 
 // ---- TRIP OPTIONS ----
+
+const formatDateSafe = (d: any): string => {
+  if (!d) return '';
+  if (d instanceof Date) {
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  if (typeof d === 'object') {
+    try {
+      const parsed = new Date(d);
+      if (!isNaN(parsed.getTime())) {
+        return parsed.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      }
+    } catch (e) {}
+  }
+  return String(d);
+};
 
 export const getTripOptionsFn = createServerFn({ method: 'POST' }).handler(async () => {
   try {
@@ -14,7 +31,14 @@ export const getTripOptionsFn = createServerFn({ method: 'POST' }).handler(async
     return options.map((o: any) => ({
       _id: o._id.toString(),
       name: o.name,
-      dates: o.dates || [],
+      dates: Array.isArray(o.dates)
+        ? o.dates.map((d: any) => formatDateSafe(d))
+        : typeof o.dates === 'string'
+        ? o.dates.split(',').map((s: string) => s.trim()).filter(Boolean)
+        : [],
+      schedule: o.schedule || '',
+      price: o.price || '',
+      image: o.image || '',
     }));
   } catch (error) {
     console.error("Failed to fetch trip options", error);
@@ -22,14 +46,23 @@ export const getTripOptionsFn = createServerFn({ method: 'POST' }).handler(async
   }
 });
 
+const processTripImages = async (tripData: any) => {
+  const newData = { ...tripData };
+  if (newData.image && newData.image.startsWith('data:image')) {
+    newData.image = await uploadImageToCloudinary(newData.image, "trips");
+  }
+  return newData;
+};
+
 export const createTripOptionFn = createServerFn({ method: 'POST' })
   .validator((data: { adminToken: string, data: any }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
     const client = await clientPromise;
     const db = client.db('shailraj');
-    const res = await db.collection('trip_options').insertOne(data.data);
-    await logAuditAction({ data: { action: "Create Trip Option", entityType: "TripOption", details: `Added new trip option: ${data.data.name}`, entityId: res.insertedId.toString() } });
+    const processedData = await processTripImages(data.data);
+    const res = await db.collection('trip_options').insertOne(processedData);
+    await logAuditAction({ data: { action: "Create Trip Option", entityType: "TripOption", details: `Added new trip option: ${processedData.name}`, entityId: res.insertedId.toString() } });
     return { success: true, _id: res.insertedId.toString() };
   });
 
@@ -39,11 +72,13 @@ export const updateTripOptionFn = createServerFn({ method: 'POST' })
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
     const client = await clientPromise;
     const db = client.db('shailraj');
+    const processedData = await processTripImages(data.data);
+    delete processedData._id; // Prevent MongoDB immutable field error
     await db.collection('trip_options').updateOne(
       { _id: new ObjectId(data.id) },
-      { $set: data.data }
+      { $set: processedData }
     );
-    await logAuditAction({ data: { action: "Update Trip Option", entityType: "TripOption", details: `Updated trip option: ${data.data.name}`, entityId: data.id } });
+    await logAuditAction({ data: { action: "Update Trip Option", entityType: "TripOption", details: `Updated trip option: ${processedData.name}`, entityId: data.id } });
     return { success: true };
   });
 
@@ -81,11 +116,27 @@ export const getBookingsFn = createServerFn({ method: 'POST' })
         travelDate: b.travelDate,
         status: b.status || 'Pending',
         createdAt: b.createdAt,
+        isInvoiceLocked: b.isInvoiceLocked || false,
+        invoiceCustomData: b.invoiceCustomData || null,
       }));
     } catch (error) {
       console.error("Failed to fetch bookings", error);
       return [];
     }
+  });
+
+export const saveInvoiceFn = createServerFn({ method: 'POST' })
+  .validator((data: { adminToken: string, bookingId: string, invoiceCustomData: any }) => data)
+  .handler(async ({ data }) => {
+    if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
+    const client = await clientPromise;
+    const db = client.db('shailraj');
+    await db.collection('bookings').updateOne(
+      { _id: new ObjectId(data.bookingId) },
+      { $set: { isInvoiceLocked: true, invoiceCustomData: data.invoiceCustomData } }
+    );
+    await logAuditAction({ data: { action: "Lock Invoice", entityType: "Booking", details: `Saved custom invoice data and locked invoice`, entityId: data.bookingId } });
+    return { success: true };
   });
 
 export const createBookingFn = createServerFn({ method: 'POST' })

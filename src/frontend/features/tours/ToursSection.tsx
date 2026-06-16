@@ -13,18 +13,18 @@ export function ToursSection({ lang, t, packages, tripOptions }: { lang: 'mr' | 
   const mappedTripOptions = (tripOptions || []).map((trip: any) => ({
     id: trip._id,
     slug: trip._id,
-    image: bgFallback,
-    durationBadge: "Custom Trip",
+    image: trip.image || bgFallback,
+    durationBadge: "Weekly Trip",
     subtitle: trip.name,
     title: trip.name,
     location: "Various",
-    schedule: trip.dates && trip.dates.length > 0 ? "Specific Dates" : "Flexible",
-    frequency: "Custom",
+    schedule: trip.schedule || (Array.isArray(trip.dates) && trip.dates.length > 0 ? trip.dates.join(', ') : "Flexible"),
+    frequency: "Weekly",
     route: [],
     tags: ["Pilgrimage"],
     seatsAvailable: 15,
     seatsTotal: 20,
-    price: "On Request",
+    price: trip.price || "On Request",
     itinerary: [],
     includes: []
   }));

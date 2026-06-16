@@ -29,6 +29,7 @@ export function Hero({ lang, t, tripOptions = [] }: { lang: "en" | "mr"; t: type
   const selectedTripData = tripOptions.find(t => t._id === selectedTrip);
   
   const isUpcomingDate = (dateStr: string) => {
+    if (typeof dateStr !== 'string') return false;
     const match = dateStr.match(/(\d+)\s+([a-zA-Z]+)(?:\s+(\d{4}))?/);
     if (!match) return true;
     const now = new Date();
@@ -39,7 +40,9 @@ export function Hero({ lang, t, tripOptions = [] }: { lang: "en" | "mr"; t: type
     return parsedDate >= now;
   };
 
-  const validDates = selectedTripData?.dates ? selectedTripData.dates.filter(isUpcomingDate) : [];
+  const validDates = Array.isArray(selectedTripData?.dates)
+    ? selectedTripData.dates.filter(isUpcomingDate)
+    : [];
 
   return (
     <section
