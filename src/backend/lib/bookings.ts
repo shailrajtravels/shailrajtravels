@@ -186,6 +186,16 @@ export const createBookingFn = createServerFn({ method: 'POST' })
         createdAt: new Date(),
       };
       const res = await db.collection('bookings').insertOne(newBooking);
+
+      // Send WhatsApp Notification
+      try {
+        const { sendAdminNotification } = await import('./whatsapp');
+        const msg = `*New Booking Received!*\nName: ${newBooking.name}\nPhone: ${newBooking.phone}\nTrip: ${newBooking.tripName || newBooking.customDestination}\nPersons: ${newBooking.persons}\nDate: ${newBooking.travelDate || 'N/A'}`;
+        await sendAdminNotification(msg);
+      } catch (waErr) {
+        console.error("Failed to send WhatsApp notification", waErr);
+      }
+
       return { success: true, _id: res.insertedId.toString() };
     } catch (error: any) {
       console.error("Failed to submit booking", error);

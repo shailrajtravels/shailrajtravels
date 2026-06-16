@@ -24,6 +24,17 @@ export default defineConfig({
           "/tours/tirupati-balaji-tour"
         ]
       })
-    ]
+    ],
+    optimizeDeps: {
+      exclude: ['@aws-sdk/client-s3', 'whatsapp-web.js', 'puppeteer', 'pdfkit']
+    },
+    ssr: {
+      external: ['whatsapp-web.js', 'puppeteer', 'pdfkit', '@aws-sdk/client-s3', 'qrcode']
+    },
+    build: {
+      rollupOptions: {
+        external: ['@aws-sdk/client-s3']
+      }
+    }
   }
 });

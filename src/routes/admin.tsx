@@ -7,9 +7,10 @@ import { getTripOptionsFn, createTripOptionFn, updateTripOptionFn, deleteTripOpt
 import { getGalleryPhotosFn, addGalleryPhotoFn, deleteGalleryPhotoFn } from '../backend/lib/gallery';
 import { getAuditLogsFn } from '../backend/lib/audit';
 import { getToursFn, deleteTourFn } from '../backend/lib/tours';
+import { getWhatsAppStatusFn, restartWhatsAppFn } from '../backend/lib/whatsapp-api';
 import { ToursAdmin } from '../frontend/features/admin/ToursAdmin';
 import * as XLSX from 'xlsx-js-style';
-import { LayoutDashboard, Package, LogOut, Plus, Trash2, Edit, Loader2, Search, ArrowLeft, Image as ImageIcon, MessageSquare, Menu, X, Map, CalendarCheck, MoreVertical, Clock, Users, Eye, FileSpreadsheet, Download, Activity, Printer, MapPin, Lock, BadgeIndianRupee } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Plus, Trash2, Edit, Loader2, Search, ArrowLeft, Image as ImageIcon, MessageSquare, Menu, X, Map, CalendarCheck, MoreVertical, Clock, Users, Eye, FileSpreadsheet, Download, Activity, Printer, MapPin, Lock, BadgeIndianRupee, Smartphone } from 'lucide-react';
 import logo from '@/frontend/assets/logo11.png';
 import { Calendar } from '@/frontend/components/ui/calendar';
 import { format } from 'date-fns';
@@ -47,7 +48,7 @@ function AdminPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null); // Shared for editing
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'packages' | 'tours' | 'reviews' | 'trips' | 'bookings' | 'gallery' | 'customers' | 'reports' | 'invoices' | 'audit' | 'revenue'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'packages' | 'tours' | 'reviews' | 'trips' | 'bookings' | 'gallery' | 'customers' | 'reports' | 'invoices' | 'audit' | 'revenue' | 'whatsapp'>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string; type: 'package' | 'review' | 'photo' | 'trip' | 'booking' | 'tour' } | null>(null);
 
@@ -270,6 +271,13 @@ function AdminPage() {
             <Activity className="w-5 h-5" />
             Audit Logs
           </button>
+          <button 
+            onClick={() => { setActiveTab('whatsapp'); setIsFormOpen(false); setIsMobileMenuOpen(false); }}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'whatsapp' ? 'bg-brand-blue-deep text-white shadow-md' : 'text-slate-500 hover:bg-slate-50 hover:text-brand-blue-deep'}`}
+          >
+            <Smartphone className="w-5 h-5" />
+            WhatsApp Engine
+          </button>
         </div>
         <div className="p-4 border-t border-slate-100">
           <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 w-full text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl font-bold transition-all">
@@ -297,7 +305,9 @@ function AdminPage() {
                activeTab === 'customers' ? 'Customers' : 
                activeTab === 'reports' ? 'Reports & Exports' : 
                activeTab === 'invoices' ? 'Generated Invoices' : 
-               activeTab === 'audit' ? 'Audit Logs' : 'Booking Management'}
+               activeTab === 'audit' ? 'Audit Logs' : 
+               activeTab === 'revenue' ? 'Revenue Overview' :
+               activeTab === 'whatsapp' ? 'WhatsApp Engine' : 'Booking Management'}
             </h1>
           </div>
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
@@ -664,6 +674,8 @@ function AdminPage() {
             <InvoicesView bookings={bookings} token={token} loadData={loadData} />
           ) : activeTab === 'revenue' ? (
             <RevenueView bookings={bookings} />
+          ) : activeTab === 'whatsapp' ? (
+            <WhatsAppEngineView token={token} />
           ) : null}
           
         </div>
@@ -2093,4 +2105,84 @@ function RevenueView({ bookings }: { bookings: any[] }) {
       </div>
     </div>
   );
+}
+
+function WhatsAppEngineView({ token }: { token: string }) {
+  const [status, setStatus] = useState<string>('Loading...');
+  const [qrCode, setQrCode] = useState<string | null>(null);
+
+  const fetchStatus = async () => {
+    try {
+      const res = await getWhatsAppStatusFn({ data: { adminToken: token } });
+      setStatus(res.status);
+      setQrCode(res.qr || null);
+    } catch (e) {
+      console.error(e);
+      setStatus('Error fetching status');
+    }
+  };
+
+  useEffect(() => {
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 5000);
+    return () => clearInterval(interval);
+  }, [token]);
+
+  const handleRestart = async () => {
+    setStatus('Restarting...');
+    await restartWhatsAppFn({ data: { adminToken: token } });
+    setTimeout(fetchStatus, 3000);
+  };
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-8 max-w-2xl mx-auto animate-reveal text-center">
+      <Smartphone className="w-16 h-16 mx-auto mb-4 text-brand-blue-deep" />
+      <h2 className="text-2xl font-bold font-display text-brand-blue-deep mb-2">WhatsApp Engine</h2>
+      <p className="text-slate-500 mb-8">
+        Manage the WhatsApp bot connection. This bot automatically notifies you of new bookings and responds to commands.
+      </p>
+
+      <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 mb-8 inline-block w-full max-w-sm">
+        <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Status</p>
+        <p className={`text-xl font-bold ${
+          status === 'Connected' ? 'text-green-600' : 
+          status === 'Error' ? 'text-red-600' : 
+          'text-yellow-600'
+        }`}>
+          {status}
+        </p>
+
+        {status === 'Awaiting QR' && qrCode && (
+          <div className="mt-6 flex flex-col items-center">
+            <p className="text-sm text-slate-600 mb-4">Scan this QR code with your WhatsApp app to link the bot.</p>
+            {/* Generate QR image from string */}
+            <QRCodeDisplay qr={qrCode} />
+          </div>
+        )}
+      </div>
+
+      <div>
+        <button 
+          onClick={handleRestart}
+          className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+        >
+          Restart Engine
+        </button>
+      </div>
+    </div>
+  );
+}
+
+import QRCode from 'qrcode';
+function QRCodeDisplay({ qr }: { qr: string }) {
+  const [dataUrl, setDataUrl] = useState<string | null>(null);
+  
+  useEffect(() => {
+    QRCode.toDataURL(qr, { width: 256, margin: 2 }, (err: any, url: string) => {
+      if (!err) setDataUrl(url);
+    });
+  }, [qr]);
+
+  if (!dataUrl) return <Loader2 className="w-8 h-8 animate-spin mx-auto text-brand-blue" />;
+  return <img src={dataUrl} alt="QR Code" className="mx-auto rounded-xl shadow-sm border border-slate-200" />;
 }

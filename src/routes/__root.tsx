@@ -92,7 +92,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export type Language = "mr" | "en";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): { lang?: Language } => {
     return { lang: (search.lang === 'mr' ? 'mr' : 'en') as Language };
   },
   head: () => ({
@@ -198,7 +198,7 @@ function RootComponent() {
   const toggleLang = () => {
     const newLang = lang === "mr" ? "en" : "mr";
     setLangState(newLang);
-    navigate({ search: (old: any) => ({ ...old, lang: newLang }), replace: true });
+    navigate({ search: ((old: any) => ({ ...old, lang: newLang })) as any, replace: true });
   };
 
   return (
