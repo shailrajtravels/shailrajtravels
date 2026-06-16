@@ -106,6 +106,23 @@ export const getBookingsFn = createServerFn({ method: 'POST' })
       const client = await clientPromise;
       const db = client.db('shailraj');
       const bookings = await db.collection('bookings').find({}).sort({ createdAt: -1 }).toArray();
+      const trips = await db.collection('trip_options').find({}).toArray();
+      const packages = await db.collection('packages').find({}).toArray();
+
+      const getBookingDefaultRate = (tripName: string) => {
+        const trip = trips.find((t: any) => t.name === tripName);
+        if (trip && trip.price) {
+          const parsed = parseFloat(trip.price.replace(/[^\d.]/g, ''));
+          if (!isNaN(parsed)) return parsed;
+        }
+        const pkg = packages.find((p: any) => p.title === tripName);
+        if (pkg && pkg.price) {
+          const parsed = parseFloat(pkg.price.replace(/[^\d.]/g, ''));
+          if (!isNaN(parsed)) return parsed;
+        }
+        return 6000;
+      };
+
       return bookings.map((b: any) => ({
         _id: b._id.toString(),
         name: b.name,
@@ -118,6 +135,7 @@ export const getBookingsFn = createServerFn({ method: 'POST' })
         createdAt: b.createdAt,
         isInvoiceLocked: b.isInvoiceLocked || false,
         invoiceCustomData: b.invoiceCustomData || null,
+        defaultRate: getBookingDefaultRate(b.tripName),
       }));
     } catch (error) {
       console.error("Failed to fetch bookings", error);

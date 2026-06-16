@@ -46,7 +46,7 @@ export function InvoicePrint({
       packageName: custom.packageName || b.packageId?.name || b.packageName || 'Custom Trip',
       travelDateTime: custom.travelDateTime || format(safeDate(b.travelDate), 'dd MMM yyyy, HH:mm'),
       pickupPoint: custom.pickupPoint || b.pickupPoint || 'Pune',
-      rate: custom.rate !== undefined ? Number(custom.rate) : 6000,
+      rate: custom.rate !== undefined ? Number(custom.rate) : (b.defaultRate || 6000),
       persons: custom.persons !== undefined ? Number(custom.persons) : (b.persons || 1),
       paymentStatus: custom.paymentStatus || b.paymentStatus || 'PENDING'
     };

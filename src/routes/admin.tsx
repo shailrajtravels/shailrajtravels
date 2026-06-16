@@ -9,7 +9,7 @@ import { getAuditLogsFn } from '../backend/lib/audit';
 import { getToursFn, deleteTourFn } from '../backend/lib/tours';
 import { ToursAdmin } from '../frontend/features/admin/ToursAdmin';
 import * as XLSX from 'xlsx-js-style';
-import { LayoutDashboard, Package, LogOut, Plus, Trash2, Edit, Loader2, Search, ArrowLeft, Image as ImageIcon, MessageSquare, Menu, X, Map, CalendarCheck, MoreVertical, Clock, Users, Eye, FileSpreadsheet, Download, Activity, Printer, MapPin, Lock } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Plus, Trash2, Edit, Loader2, Search, ArrowLeft, Image as ImageIcon, MessageSquare, Menu, X, Map, CalendarCheck, MoreVertical, Clock, Users, Eye, FileSpreadsheet, Download, Activity, Printer, MapPin, Lock, BadgeIndianRupee } from 'lucide-react';
 import logo from '@/frontend/assets/logo11.png';
 import { Calendar } from '@/frontend/components/ui/calendar';
 import { format } from 'date-fns';
@@ -47,7 +47,7 @@ function AdminPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null); // Shared for editing
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'packages' | 'tours' | 'reviews' | 'trips' | 'bookings' | 'gallery' | 'customers' | 'reports' | 'invoices' | 'audit'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'packages' | 'tours' | 'reviews' | 'trips' | 'bookings' | 'gallery' | 'customers' | 'reports' | 'invoices' | 'audit' | 'revenue'>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string; type: 'package' | 'review' | 'photo' | 'trip' | 'booking' | 'tour' } | null>(null);
 
@@ -234,6 +234,13 @@ function AdminPage() {
           >
             <Printer className="w-5 h-5" />
             Invoices
+          </button>
+          <button 
+            onClick={() => { setActiveTab('revenue'); setIsFormOpen(false); setIsMobileMenuOpen(false); }}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'revenue' ? 'bg-brand-blue-deep text-white shadow-md' : 'text-slate-500 hover:bg-slate-50 hover:text-brand-blue-deep'}`}
+          >
+            <BadgeIndianRupee className="w-5 h-5" />
+            Revenue
           </button>
           <button 
             onClick={() => { setActiveTab('gallery'); setIsFormOpen(false); setIsMobileMenuOpen(false); }}
@@ -655,6 +662,8 @@ function AdminPage() {
             <ReportsView bookings={bookings} />
           ) : activeTab === 'invoices' ? (
             <InvoicesView bookings={bookings} token={token} loadData={loadData} />
+          ) : activeTab === 'revenue' ? (
+            <RevenueView bookings={bookings} />
           ) : null}
           
         </div>
@@ -1818,8 +1827,8 @@ function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: s
               {generatedInvoices.map((bk) => {
                 const custom = bk.invoiceCustomData || {};
                 const invoiceNo = bk.generatedInvoiceNo;
-                const rate = custom.rate !== undefined ? Number(custom.rate) : 6000;
-                const persons = custom.persons !== undefined ? Number(custom.persons) : (bk.persons || 1);
+                const rate = custom.rate !== undefined ? Number(custom.rate) : (bk.defaultRate || 6000);
+                const persons = custom.persons !== undefined ? Number(custom.persons) : (Number(bk.persons) || 1);
                 const total = rate * persons;
                 const customerName = custom.customerName || bk.customerName || bk.name || '';
                 const tripName = custom.packageName || bk.packageName || bk.tripName || '';
@@ -1861,5 +1870,227 @@ function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: s
       )}
     </div>
     </>
+  );
+}
+
+function RevenueView({ bookings }: { bookings: any[] }) {
+  const getBookingRevenue = (bk: any) => {
+    const custom = bk.invoiceCustomData || {};
+    const rate = custom.rate !== undefined ? Number(custom.rate) : (bk.defaultRate || 6000);
+    const persons = custom.persons !== undefined ? Number(custom.persons) : (Number(bk.persons) || 1);
+    return rate * persons;
+  };
+
+  const confirmedBookings = bookings.filter(b => b.status === 'Confirmed');
+  const confirmedRevenue = confirmedBookings.reduce((sum, b) => sum + getBookingRevenue(b), 0);
+
+  const pendingBookings = bookings.filter(b => b.status === 'Pending');
+  const pendingRevenue = pendingBookings.reduce((sum, b) => sum + getBookingRevenue(b), 0);
+
+  const totalPotentialRevenue = confirmedRevenue + pendingRevenue;
+  const activeBookingsCount = confirmedBookings.length + pendingBookings.length;
+  const averageBookingRevenue = activeBookingsCount > 0 ? totalPotentialRevenue / activeBookingsCount : 0;
+
+  // Destination Breakdown
+  const tripBreakdown: { [key: string]: { name: string; count: number; revenue: number } } = {};
+  bookings.filter(b => b.status !== 'Cancelled').forEach(b => {
+    const name = b.tripName === 'custom' ? 'Custom Trip' : b.tripName;
+    const rev = getBookingRevenue(b);
+    if (!tripBreakdown[name]) {
+      tripBreakdown[name] = { name, count: 0, revenue: 0 };
+    }
+    tripBreakdown[name].revenue += rev;
+    tripBreakdown[name].count += 1;
+  });
+  const tripList = Object.values(tripBreakdown).sort((a, b) => b.revenue - a.revenue);
+  const totalBreakdownRevenue = tripList.reduce((sum, t) => sum + t.revenue, 0);
+
+  // Monthly Breakdown
+  const monthlyData: { [key: string]: number } = {};
+  bookings.filter(b => b.status !== 'Cancelled').forEach(b => {
+    const d = b.createdAt ? new Date(b.createdAt) : new Date();
+    if (isNaN(d.getTime())) return;
+    const key = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    monthlyData[key] = (monthlyData[key] || 0) + getBookingRevenue(b);
+  });
+  const sortedMonths = Object.keys(monthlyData).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+  const maxMonthRevenue = sortedMonths.length > 0 ? Math.max(...Object.values(monthlyData)) : 1;
+
+  return (
+    <div className="flex flex-col gap-8 animate-reveal">
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-reveal">
+        {/* Card 1 */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 to-violet-700 text-white p-6 rounded-2xl border border-indigo-700 shadow-md">
+          <div className="absolute top-0 right-0 p-4 opacity-15">
+            <BadgeIndianRupee className="w-24 h-24 animate-pulse" />
+          </div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-200">Potential Revenue</p>
+          <p className="text-3xl font-display font-bold mt-2">₹ {totalPotentialRevenue.toLocaleString()}</p>
+          <div className="mt-4 flex items-center justify-between text-xs text-indigo-200">
+            <span>Confirmed + Pending</span>
+            <span className="bg-indigo-500/30 px-2 py-0.5 rounded font-semibold">{activeBookingsCount} bookings</span>
+          </div>
+        </div>
+
+        {/* Card 2 */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-6 rounded-2xl border border-emerald-700 shadow-md">
+          <div className="absolute top-0 right-0 p-4 opacity-15">
+            <BadgeIndianRupee className="w-24 h-24 animate-pulse" />
+          </div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-200">Confirmed Revenue</p>
+          <p className="text-3xl font-display font-bold mt-2">₹ {confirmedRevenue.toLocaleString()}</p>
+          <div className="mt-4 flex items-center justify-between text-xs text-emerald-200">
+            <span>Realized Income</span>
+            <span className="bg-emerald-500/30 px-2 py-0.5 rounded font-semibold">{confirmedBookings.length} confirmed</span>
+          </div>
+        </div>
+
+        {/* Card 3 */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 text-white p-6 rounded-2xl border border-amber-600 shadow-md">
+          <div className="absolute top-0 right-0 p-4 opacity-15">
+            <BadgeIndianRupee className="w-24 h-24 animate-pulse" />
+          </div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-amber-200">Pipeline Revenue</p>
+          <p className="text-3xl font-display font-bold mt-2">₹ {pendingRevenue.toLocaleString()}</p>
+          <div className="mt-4 flex items-center justify-between text-xs text-amber-200">
+            <span>Expected Pending</span>
+            <span className="bg-amber-500/30 px-2 py-0.5 rounded font-semibold">{pendingBookings.length} pending</span>
+          </div>
+        </div>
+
+        {/* Card 4 */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-cyan-600 to-blue-700 text-white p-6 rounded-2xl border border-cyan-700 shadow-md">
+          <div className="absolute top-0 right-0 p-4 opacity-15">
+            <BadgeIndianRupee className="w-24 h-24 animate-pulse" />
+          </div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-cyan-200">Avg Booking Revenue</p>
+          <p className="text-3xl font-display font-bold mt-2">₹ {Math.round(averageBookingRevenue).toLocaleString()}</p>
+          <div className="mt-4 flex items-center justify-between text-xs text-cyan-200">
+            <span>Average Deal Size</span>
+            <span className="bg-cyan-500/30 px-2 py-0.5 rounded font-semibold">Per booking</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Charts / Visual Breakdown Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Destination performance */}
+        <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+          <h2 className="text-lg font-bold text-brand-blue-deep mb-6">Revenue by Destination</h2>
+          <div className="flex flex-col gap-5 flex-1 justify-center">
+            {tripList.map((trip) => {
+              const pct = totalBreakdownRevenue > 0 ? (trip.revenue / totalBreakdownRevenue) * 100 : 0;
+              return (
+                <div key={trip.name} className="flex flex-col">
+                  <div className="flex justify-between items-center text-sm mb-1.5">
+                    <span className="font-bold text-slate-700">{trip.name}</span>
+                    <div className="flex gap-3 text-slate-500">
+                      <span className="text-xs font-medium bg-slate-100 px-2 py-0.5 rounded">{trip.count} bookings</span>
+                      <span className="font-bold text-brand-blue-deep">₹ {trip.revenue.toLocaleString()} ({Math.round(pct)}%)</span>
+                    </div>
+                  </div>
+                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-brand-blue h-full rounded-full transition-all duration-500" 
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            {tripList.length === 0 && (
+              <div className="text-center text-slate-400 py-8">No booking data available</div>
+            )}
+          </div>
+        </div>
+
+        {/* Monthly Trend */}
+        <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+          <h2 className="text-lg font-bold text-brand-blue-deep mb-6">Monthly Revenue Trend</h2>
+          <div className="flex-1 flex items-end justify-around gap-2 pt-6 pb-2 min-h-[220px]">
+            {sortedMonths.map((month) => {
+              const val = monthlyData[month];
+              const pct = (val / maxMonthRevenue) * 100;
+              return (
+                <div key={month} className="flex flex-col items-center gap-2 flex-1 group relative">
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full mb-2 bg-slate-800 text-white text-[11px] font-bold px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                    ₹ {val.toLocaleString()}
+                  </div>
+                  <div className="w-full bg-slate-50 rounded-t-lg flex items-end h-[160px] overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-t from-brand-blue to-cyan-500 w-full rounded-t-md group-hover:opacity-90 transition-all duration-300"
+                      style={{ height: `${Math.max(5, pct)}%` }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">{month}</span>
+                </div>
+              );
+            })}
+            {sortedMonths.length === 0 && (
+              <div className="text-center text-slate-400 py-8 w-full">No trend data available</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Ledger Table */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-100">
+          <h2 className="text-lg font-bold text-brand-blue-deep">Booking Revenue Ledger</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[12px] uppercase tracking-wider font-bold">
+                <th className="px-6 py-4">Booking ID</th>
+                <th className="px-6 py-4">Customer</th>
+                <th className="px-6 py-4">Trip Destination</th>
+                <th className="px-6 py-4">Calculated Rate</th>
+                <th className="px-6 py-4">Qty</th>
+                <th className="px-6 py-4">Total Revenue</th>
+                <th className="px-6 py-4">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-sm">
+              {bookings.filter(b => b.status !== 'Cancelled').map((bk) => {
+                const custom = bk.invoiceCustomData || {};
+                const rate = custom.rate !== undefined ? Number(custom.rate) : 6000;
+                const persons = custom.persons !== undefined ? Number(custom.persons) : (bk.persons || 1);
+                const total = rate * persons;
+                const customerName = custom.customerName || bk.customerName || bk.name || '';
+                const tripName = custom.packageName || bk.packageName || bk.tripName || '';
+                
+                return (
+                  <tr key={bk._id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4 font-mono text-xs font-bold text-slate-500">
+                      {bk.generatedBookingId || bk._id.slice(-8).toUpperCase()}
+                    </td>
+                    <td className="px-6 py-4 font-bold text-slate-800">{customerName}</td>
+                    <td className="px-6 py-4 text-slate-600">{tripName}</td>
+                    <td className="px-6 py-4 text-slate-600">₹ {rate.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-slate-600 text-center w-12">{persons}</td>
+                    <td className="px-6 py-4 font-bold text-brand-blue-deep">₹ {total.toLocaleString()}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                        bk.status === 'Confirmed' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                      }`}>
+                        {bk.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+              {bookings.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-6 py-8 text-center text-slate-400 font-medium">No transactions found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }
