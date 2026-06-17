@@ -81,7 +81,7 @@ function ContactPage() {
                 <MapPin className="w-6 h-6 text-brand-orange shrink-0 mt-1" />
                 <div>
                   <h3 className="font-semibold text-gray-900">Our Office</h3>
-                  <p>Shailraj Travels, Main Office<br />Pune, Maharashtra, 411001, India</p>
+                  <p>Shailraj Travels, Gopal Patti Manjri budruk,<br />Hadapsar, Pune, Maharashtra 412307, India</p>
                 </div>
               </div>
               <div className="flex items-start gap-4 text-gray-700">
@@ -102,7 +102,7 @@ function ContactPage() {
 
             <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100 h-[300px] overflow-hidden">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d121058.92836573516!2d73.79292671569084!3d18.524766326442654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf2e67461101%3A0x828d43bf9d9ee343!2sPune%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+                src="https://maps.google.com/maps?q=Shailraj%20Travels%2C%20Gopal%20Patti%2C%20Manjri%20budruk%2C%20Hadapsar%2C%20Pune%2C%20Maharashtra%20412307&t=&z=14&ie=UTF8&iwloc=&output=embed" 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0, borderRadius: '0.75rem' }} 

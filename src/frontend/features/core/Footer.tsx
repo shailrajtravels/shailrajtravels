@@ -139,7 +139,7 @@ export function FooterSection({ t, lang = 'en' }: { t: typeof translations.mr, l
                 <div className="w-8 h-8 rounded-full bg-slate-800/50 flex items-center justify-center shrink-0 group-hover:bg-brand-green/20 transition-colors">
                   <MapPin className="w-4 h-4 text-brand-green" />
                 </div>
-                <span className="mt-1 leading-relaxed line-clamp-2">{t.footerAddress}</span>
+                <span className="mt-1 leading-relaxed">{t.footerAddress}</span>
               </li>
               <li className="flex items-center gap-3.5 group">
                 <div className="w-8 h-8 rounded-full bg-slate-800/50 flex items-center justify-center shrink-0 group-hover:bg-brand-green/20 transition-colors">
@@ -156,6 +156,19 @@ export function FooterSection({ t, lang = 'en' }: { t: typeof translations.mr, l
                 <a href="mailto:contact@shailrajtravels.com" className="whitespace-nowrap hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm overflow-hidden text-ellipsis">
                   contact@shailrajtravels.com
                 </a>
+              </li>
+              <li className="mt-2 rounded-xl overflow-hidden h-[150px] border border-slate-700/50 shadow-lg relative group">
+                <iframe 
+                  src="https://maps.google.com/maps?q=Shailraj%20Travels%2C%20Gopal%20Patti%2C%20Manjri%20budruk%2C%20Hadapsar%2C%20Pune%2C%20Maharashtra%20412307&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen={true} 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Shailraj Travels Location Map"
+                  className="opacity-80 group-hover:opacity-100 transition-opacity"
+                ></iframe>
               </li>
             </ul>
           </div>

@@ -9,10 +9,10 @@ export function generateLocalBusinessSchema() {
     "telephone": "+919763433556", 
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Pune",
+      "streetAddress": "Gopal Patti, Manjri Budruk, Hadapsar",
       "addressLocality": "Pune",
       "addressRegion": "Maharashtra",
-      "postalCode": "411001",
+      "postalCode": "412307",
       "addressCountry": "IN"
     },
     "geo": {
