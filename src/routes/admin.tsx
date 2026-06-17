@@ -728,8 +728,28 @@ function PackageForm({ token, initialData, onClose, onSuccess }: any) {
     includes: '',
   });
 
+  const [itinerary, setItinerary] = useState<{ day: string; title: string }[]>(
+    Array.isArray(initialData?.itinerary) ? initialData.itinerary : []
+  );
+
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleAddItineraryDay = () => {
+    const nextDayNum = itinerary.length + 1;
+    setItinerary([...itinerary, { day: `Day ${nextDayNum}`, title: '' }]);
+  };
+
+  const handleRemoveItineraryDay = (index: number) => {
+    const updated = itinerary.filter((_, i) => i !== index);
+    setItinerary(updated);
+  };
+
+  const handleItineraryChange = (index: number, field: 'day' | 'title', value: string) => {
+    const updated = [...itinerary];
+    updated[index] = { ...updated[index], [field]: value };
+    setItinerary(updated);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -737,7 +757,10 @@ function PackageForm({ token, initialData, onClose, onSuccess }: any) {
     setLoading(true);
     
     // Convert comma-separated strings to arrays
-    const payload = { ...formData };
+    const payload = { 
+      ...formData,
+      itinerary: itinerary.map(item => ({ day: item.day.trim(), title: item.title.trim() })).filter(item => item.day || item.title)
+    };
     if (typeof payload.route === 'string') payload.route = payload.route.split(',').map((s: string) => s.trim()).filter(Boolean);
     if (typeof payload.tags === 'string') payload.tags = payload.tags.split(',').map((s: string) => s.trim()).filter(Boolean);
     if (typeof payload.includes === 'string') payload.includes = payload.includes.split(',').map((s: string) => s.trim()).filter(Boolean);
@@ -766,6 +789,7 @@ function PackageForm({ token, initialData, onClose, onSuccess }: any) {
         tags: Array.isArray(initialData.tags) ? initialData.tags.join(', ') : '',
         includes: Array.isArray(initialData.includes) ? initialData.includes.join(', ') : '',
       });
+      setItinerary(Array.isArray(initialData.itinerary) ? initialData.itinerary : []);
     }
   }, [initialData]);
 
@@ -820,16 +844,16 @@ function PackageForm({ token, initialData, onClose, onSuccess }: any) {
                     let processedCount = 0;
 
                     files.forEach(file => {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        newImages.push(reader.result as string);
-                        processedCount++;
-                        
-                        if (processedCount === files.length) {
-                          setFormData({ ...formData, images: newImages, image: newImages[0] });
-                        }
-                      };
-                      reader.readAsDataURL(file);
+                       const reader = new FileReader();
+                       reader.onloadend = () => {
+                         newImages.push(reader.result as string);
+                         processedCount++;
+                         
+                         if (processedCount === files.length) {
+                           setFormData({ ...formData, images: newImages, image: newImages[0] });
+                         }
+                       };
+                       reader.readAsDataURL(file);
                     });
                   }}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-brand-blue/10 file:text-brand-blue-deep hover:file:bg-brand-blue/20 cursor-pointer text-sm text-slate-500"
@@ -846,6 +870,66 @@ function PackageForm({ token, initialData, onClose, onSuccess }: any) {
           </div>
           <div className="md:col-span-2">
             <Input label="Includes (comma separated)" name="includes" value={formData.includes} onChange={handleChange} placeholder="AC Bus, Hotel, Meals" />
+          </div>
+
+          <div className="md:col-span-2 flex flex-col gap-4 border-t border-slate-100 pt-6">
+            <div className="flex items-center justify-between">
+              <label className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">Itinerary (Day by Day)</label>
+              <button 
+                type="button" 
+                onClick={handleAddItineraryDay}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-green/10 hover:bg-brand-green/20 text-brand-green rounded-xl transition-colors font-bold text-xs"
+              >
+                <Plus className="w-4 h-4" />
+                Add Day
+              </button>
+            </div>
+            
+            {itinerary.length === 0 ? (
+              <div className="text-center py-6 border border-dashed border-slate-200 rounded-xl text-slate-400 text-sm font-medium">
+                No itinerary days added yet. Click "Add Day" to begin.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 max-h-[350px] overflow-y-auto pr-1">
+                {itinerary.map((item, index) => (
+                  <div key={index} className="flex flex-col gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl relative">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs text-brand-blue-deep uppercase tracking-wider">Day {index + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItineraryDay(index)}
+                        className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Remove Day"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                      <div className="md:col-span-1">
+                        <input
+                          type="text"
+                          placeholder="e.g. Day 1"
+                          value={item.day}
+                          onChange={(e) => handleItineraryChange(index, 'day', e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-brand-blue-deep outline-none focus:ring-2 focus:ring-brand-green"
+                          required
+                        />
+                      </div>
+                      <div className="md:col-span-3">
+                        <textarea
+                          placeholder="Describe the plan for this day..."
+                          value={item.title}
+                          onChange={(e) => handleItineraryChange(index, 'title', e.target.value)}
+                          rows={2}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 outline-none focus:ring-2 focus:ring-brand-green resize-y"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -879,20 +963,41 @@ function TripOptionForm({ token, initialData, onClose, onSuccess }: any) {
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
-    ...(initialData || {}),
     name: initialData?.name || '',
     schedule: initialData?.schedule || '',
     price: initialData?.price || '',
     image: initialData?.image || '',
     dates: initialData?.dates || [],
+    route: Array.isArray(initialData?.route) ? initialData.route.join(', ') : '',
+    includes: Array.isArray(initialData?.includes) ? initialData.includes.join(', ') : '',
   });
 
   const [datesInput, setDatesInput] = useState(
     Array.isArray(initialData?.dates) ? initialData.dates.join(', ') : ''
   );
 
+  const [itinerary, setItinerary] = useState<{ day: string; title: string }[]>(
+    Array.isArray(initialData?.itinerary) ? initialData.itinerary : []
+  );
+
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleAddItineraryDay = () => {
+    const nextDayNum = itinerary.length + 1;
+    setItinerary([...itinerary, { day: `Day ${nextDayNum}`, title: '' }]);
+  };
+
+  const handleRemoveItineraryDay = (index: number) => {
+    const updated = itinerary.filter((_, i) => i !== index);
+    setItinerary(updated);
+  };
+
+  const handleItineraryChange = (index: number, field: 'day' | 'title', value: string) => {
+    const updated = [...itinerary];
+    updated[index] = { ...updated[index], [field]: value };
+    setItinerary(updated);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -901,7 +1006,10 @@ function TripOptionForm({ token, initialData, onClose, onSuccess }: any) {
     
     const payload = { 
       ...formData,
-      dates: datesInput.split(',').map((s: string) => s.trim()).filter(Boolean)
+      dates: datesInput.split(',').map((s: string) => s.trim()).filter(Boolean),
+      route: typeof formData.route === 'string' ? formData.route.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
+      includes: typeof formData.includes === 'string' ? formData.includes.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
+      itinerary: itinerary.map(item => ({ day: item.day.trim(), title: item.title.trim() })).filter(item => item.day || item.title)
     };
     
     try {
@@ -921,10 +1029,16 @@ function TripOptionForm({ token, initialData, onClose, onSuccess }: any) {
   useEffect(() => {
     if (initialData) {
       setFormData({
-        ...initialData,
+        name: initialData.name || '',
+        schedule: initialData.schedule || '',
+        price: initialData.price || '',
+        image: initialData.image || '',
         dates: initialData.dates || [],
+        route: Array.isArray(initialData.route) ? initialData.route.join(', ') : '',
+        includes: Array.isArray(initialData.includes) ? initialData.includes.join(', ') : '',
       });
       setDatesInput(Array.isArray(initialData.dates) ? initialData.dates.join(', ') : '');
+      setItinerary(Array.isArray(initialData.itinerary) ? initialData.itinerary : []);
     }
   }, [initialData]);
 
@@ -999,6 +1113,80 @@ function TripOptionForm({ token, initialData, onClose, onSuccess }: any) {
             onChange={(e: any) => setDatesInput(e.target.value)} 
             placeholder="e.g. Sat 12 june to 13 june, 19 june to 20 june, 25 june to 26 june" 
           />
+          <Input 
+            label="Route (comma separated)" 
+            name="route" 
+            value={formData.route} 
+            onChange={handleChange} 
+            placeholder="e.g. Pune, Omkareshwar, Ujjain, Pune" 
+          />
+          <Input 
+            label="Includes (comma separated)" 
+            name="includes" 
+            value={formData.includes} 
+            onChange={handleChange} 
+            placeholder="e.g. AC Bus, Hotel Stay, VIP Darshan, Meals" 
+          />
+
+          <div className="flex flex-col gap-4 border-t border-slate-100 pt-6">
+            <div className="flex items-center justify-between">
+              <label className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">Itinerary (Day by Day)</label>
+              <button 
+                type="button" 
+                onClick={handleAddItineraryDay}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-green/10 hover:bg-brand-green/20 text-brand-green rounded-xl transition-colors font-bold text-xs"
+              >
+                <Plus className="w-4 h-4" />
+                Add Day
+              </button>
+            </div>
+            
+            {itinerary.length === 0 ? (
+              <div className="text-center py-6 border border-dashed border-slate-200 rounded-xl text-slate-400 text-sm font-medium">
+                No itinerary days added yet. Click "Add Day" to begin.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 max-h-[350px] overflow-y-auto pr-1">
+                {itinerary.map((item, index) => (
+                  <div key={index} className="flex flex-col gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl relative">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs text-brand-blue-deep uppercase tracking-wider">Day {index + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItineraryDay(index)}
+                        className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Remove Day"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                      <div className="md:col-span-1">
+                        <input
+                          type="text"
+                          placeholder="e.g. Day 1"
+                          value={item.day}
+                          onChange={(e) => handleItineraryChange(index, 'day', e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-brand-blue-deep outline-none focus:ring-2 focus:ring-brand-green"
+                          required
+                        />
+                      </div>
+                      <div className="md:col-span-3">
+                        <textarea
+                          placeholder="Describe the plan for this day..."
+                          value={item.title}
+                          onChange={(e) => handleItineraryChange(index, 'title', e.target.value)}
+                          rows={2}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 outline-none focus:ring-2 focus:ring-brand-green resize-y"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-slate-100">
@@ -1721,13 +1909,8 @@ function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: s
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter for confirmed bookings whose travelDate is today or in the past
-  let generatedInvoices = bookings.filter(b => {
-    if (b.status !== 'Confirmed') return false;
-    const travelTime = new Date(b.travelDate).getTime();
-    if (isNaN(travelTime)) return true; // Show it if parsing fails
-    return travelTime <= Date.now();
-  });
+  // Filter for confirmed bookings
+  let generatedInvoices = bookings.filter(b => b.status === 'Confirmed');
 
   // Sort them chronologically by createdAt so older bookings get smaller IDs
   generatedInvoices.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
@@ -1821,7 +2004,7 @@ function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: s
         <div className="p-12 text-center text-slate-500">
           <Printer className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <h3 className="text-xl font-bold text-slate-600 mb-2">No Invoices Ready</h3>
-          <p className="text-sm">Invoices are automatically generated when a "Confirmed" booking reaches its Trip Start Date.</p>
+          <p className="text-sm">Invoices are automatically generated for all confirmed bookings.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -1839,7 +2022,8 @@ function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: s
               {generatedInvoices.map((bk) => {
                 const custom = bk.invoiceCustomData || {};
                 const invoiceNo = bk.generatedInvoiceNo;
-                const rate = custom.rate !== undefined ? Number(custom.rate) : (bk.defaultRate || 6000);
+                const isCustomUnlocked = bk.tripName === 'custom' && !bk.isInvoiceLocked;
+                const rate = custom.rate !== undefined ? Number(custom.rate) : (bk.tripName === 'custom' ? 0 : (bk.defaultRate || 6000));
                 const persons = custom.persons !== undefined ? Number(custom.persons) : (Number(bk.persons) || 1);
                 const total = rate * persons;
                 const customerName = custom.customerName || bk.customerName || bk.name || '';
@@ -1864,7 +2048,13 @@ function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: s
                     <td className="px-6 py-4 text-sm font-medium text-slate-600">
                       {new Date(bk.travelDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 font-bold text-brand-green-dark">₹ {total.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-bold text-brand-green-dark">
+                      {isCustomUnlocked ? (
+                        <span className="text-slate-400 italic text-sm">On Request</span>
+                      ) : (
+                        `₹ ${total.toLocaleString()}`
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <button 
                         onClick={() => setSelectedBookingId(bk._id)}
@@ -1888,6 +2078,9 @@ function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: s
 function RevenueView({ bookings }: { bookings: any[] }) {
   const getBookingRevenue = (bk: any) => {
     const custom = bk.invoiceCustomData || {};
+    if (bk.tripName === 'custom' && !bk.isInvoiceLocked) {
+      return 0;
+    }
     const rate = custom.rate !== undefined ? Number(custom.rate) : (bk.defaultRate || 6000);
     const persons = custom.persons !== undefined ? Number(custom.persons) : (Number(bk.persons) || 1);
     return rate * persons;
@@ -2068,7 +2261,8 @@ function RevenueView({ bookings }: { bookings: any[] }) {
             <tbody className="divide-y divide-slate-100 text-sm">
               {bookings.filter(b => b.status !== 'Cancelled').map((bk) => {
                 const custom = bk.invoiceCustomData || {};
-                const rate = custom.rate !== undefined ? Number(custom.rate) : 6000;
+                const isCustomUnlocked = bk.tripName === 'custom' && !bk.isInvoiceLocked;
+                const rate = custom.rate !== undefined ? Number(custom.rate) : (bk.tripName === 'custom' ? 0 : (bk.defaultRate || 6000));
                 const persons = custom.persons !== undefined ? Number(custom.persons) : (bk.persons || 1);
                 const total = rate * persons;
                 const customerName = custom.customerName || bk.customerName || bk.name || '';
@@ -2080,10 +2274,22 @@ function RevenueView({ bookings }: { bookings: any[] }) {
                       {bk.generatedBookingId || bk._id.slice(-8).toUpperCase()}
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-800">{customerName}</td>
-                    <td className="px-6 py-4 text-slate-600">{tripName}</td>
-                    <td className="px-6 py-4 text-slate-600">₹ {rate.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-slate-600">{tripName === 'custom' ? 'Custom Trip' : tripName}</td>
+                    <td className="px-6 py-4 text-slate-600">
+                      {isCustomUnlocked ? (
+                        <span className="text-slate-400 italic">On Request</span>
+                      ) : (
+                        `₹ ${rate.toLocaleString()}`
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-slate-600 text-center w-12">{persons}</td>
-                    <td className="px-6 py-4 font-bold text-brand-blue-deep">₹ {total.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-bold text-brand-blue-deep">
+                      {isCustomUnlocked ? (
+                        <span className="text-slate-400 italic">Pending Invoice</span>
+                      ) : (
+                        `₹ ${total.toLocaleString()}`
+                      )}
+                    </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                         bk.status === 'Confirmed' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-yellow-50 text-yellow-700 border border-yellow-200'

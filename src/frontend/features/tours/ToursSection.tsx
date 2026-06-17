@@ -12,7 +12,6 @@ export function ToursSection({ lang, t, packages, tripOptions }: { lang: 'mr' | 
 
   const mappedTripOptions = (tripOptions || []).map((trip: any) => ({
     id: trip._id,
-    slug: trip._id,
     image: trip.image || bgFallback,
     durationBadge: "Weekly Trip",
     subtitle: trip.name,
@@ -20,13 +19,13 @@ export function ToursSection({ lang, t, packages, tripOptions }: { lang: 'mr' | 
     location: "Various",
     schedule: trip.schedule || (Array.isArray(trip.dates) && trip.dates.length > 0 ? trip.dates.join(', ') : "Flexible"),
     frequency: "Weekly",
-    route: [],
+    route: trip.route || [],
     tags: ["Pilgrimage"],
     seatsAvailable: 15,
     seatsTotal: 20,
     price: trip.price || "On Request",
-    itinerary: [],
-    includes: []
+    itinerary: trip.itinerary || [],
+    includes: trip.includes || []
   }));
 
   // Display DB packages and mapped trip options

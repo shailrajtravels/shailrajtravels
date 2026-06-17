@@ -46,7 +46,7 @@ export function InvoicePrint({
       packageName: custom.packageName || b.packageId?.name || b.packageName || 'Custom Trip',
       travelDateTime: custom.travelDateTime || format(safeDate(b.travelDate), 'dd MMM yyyy, HH:mm'),
       pickupPoint: custom.pickupPoint || b.pickupPoint || 'Pune',
-      rate: custom.rate !== undefined ? Number(custom.rate) : (b.defaultRate || 6000),
+      rate: custom.rate !== undefined ? Number(custom.rate) : (b.tripName === 'custom' ? 0 : (b.defaultRate || 6000)),
       persons: custom.persons !== undefined ? Number(custom.persons) : (b.persons || 1),
       paymentStatus: custom.paymentStatus || b.paymentStatus || 'PENDING'
     };
@@ -81,10 +81,8 @@ export function InvoicePrint({
     return isNaN(d.getTime()) ? null : d;
   };
 
-  const createdAtDate = getCreatedAtDate(booking.createdAt);
-  const isOlderThan24Hours = createdAtDate ? (Date.now() - createdAtDate.getTime()) > 24 * 60 * 60 * 1000 : true;
   const isLocked = !!booking.isInvoiceLocked;
-  const isEditable = !isLocked && !isOlderThan24Hours;
+  const isEditable = !isLocked;
 
   const handleSaveAndLock = async () => {
     if (!token) {
@@ -178,7 +176,7 @@ export function InvoicePrint({
           ) : (
             <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 px-3 py-1 bg-slate-100 rounded border border-slate-200 select-none">
               <Lock size={14} className="text-slate-400" />
-              {isLocked ? "Invoice Locked" : "Invoice Expired (Older than 24h)"}
+              Invoice Locked
             </div>
           )}
           <button onClick={() => window.print()} className="px-3 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded font-bold text-sm">Print</button>

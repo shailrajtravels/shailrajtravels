@@ -1,3 +1,5 @@
+import './db';
+
 export function getAdminToken() {
   const pwd = process.env.ADMIN_PASSWORD;
   const email = process.env.ADMIN_EMAIL || 'khudeshivam@gmail.com';

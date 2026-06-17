@@ -39,6 +39,9 @@ export const getTripOptionsFn = createServerFn({ method: 'POST' }).handler(async
       schedule: o.schedule || '',
       price: o.price || '',
       image: o.image || '',
+      route: o.route || [],
+      itinerary: o.itinerary || [],
+      includes: o.includes || [],
     }));
   } catch (error) {
     console.error("Failed to fetch trip options", error);
