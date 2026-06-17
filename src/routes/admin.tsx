@@ -2046,7 +2046,10 @@ function InvoicesView({ bookings, token, loadData }: { bookings: any[]; token: s
                       <p className="text-xs text-slate-500">{tripName}</p>
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-slate-600">
-                      {new Date(bk.travelDate).toLocaleDateString()}
+                      {(() => {
+                        const d = new Date(bk.travelDate);
+                        return isNaN(d.getTime()) ? String(bk.travelDate || '') : d.toLocaleDateString();
+                      })()}
                     </td>
                     <td className="px-6 py-4 font-bold text-brand-green-dark">
                       {isCustomUnlocked ? (
