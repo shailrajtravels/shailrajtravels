@@ -7,7 +7,7 @@ import { getTripOptionsFn, createTripOptionFn, updateTripOptionFn, deleteTripOpt
 import { getGalleryPhotosFn, addGalleryPhotoFn, deleteGalleryPhotoFn } from '../backend/lib/gallery';
 import { getAuditLogsFn } from '../backend/lib/audit';
 import { getToursFn, deleteTourFn } from '../backend/lib/tours';
-import { getWhatsAppStatusFn, restartWhatsAppFn } from '../backend/lib/whatsapp-api';
+import { getWhatsAppStatusFn, restartWhatsAppFn, logoutWhatsAppFn } from '../backend/lib/whatsapp-api';
 import { ToursAdmin } from '../frontend/features/admin/ToursAdmin';
 import * as XLSX from 'xlsx-js-style';
 import { LayoutDashboard, Package, LogOut, Plus, Trash2, Edit, Loader2, Search, ArrowLeft, Image as ImageIcon, MessageSquare, Menu, X, Map, CalendarCheck, MoreVertical, Clock, Users, Eye, FileSpreadsheet, Download, Activity, Printer, MapPin, Lock, BadgeIndianRupee, Smartphone } from 'lucide-react';
@@ -684,10 +684,22 @@ function AdminPage() {
                             <select 
                               value={bk.paymentStatus || 'PENDING'}
                               onChange={async (e) => {
+                                const newStatus = e.target.value;
                                 try {
-                                  await updateBookingPaymentStatusFn({ data: { adminToken: token, id: bk._id, paymentStatus: e.target.value }});
+                                  const res = await updateBookingPaymentStatusFn({ data: { adminToken: token, id: bk._id, paymentStatus: newStatus }});
                                   loadData();
-                                } catch (err) {}
+                                  if (newStatus === 'PAID') {
+                                    if (res?.whatsappSent) {
+                                      alert("Payment status updated to PAID. Invoice PDF successfully sent to customer via WhatsApp.");
+                                    } else {
+                                      alert("Payment status updated to PAID, but WhatsApp invoice could not be sent. Make sure WhatsApp Engine is connected and customer phone number is correct.");
+                                    }
+                                  } else {
+                                    alert(`Payment status updated to ${newStatus}.`);
+                                  }
+                                } catch (err: any) {
+                                  alert(err.message || "Failed to update payment status.");
+                                }
                               }}
                               className={`text-sm font-bold px-3 py-1.5 rounded-lg border outline-none cursor-pointer ${
                                 (bk.paymentStatus || 'PENDING') === 'PAID' ? 'bg-green-50 text-green-700 border-green-200' : 
@@ -2392,8 +2404,15 @@ function WhatsAppEngineView({ token }: { token: string }) {
   }, [token]);
 
   const handleRestart = async () => {
-    setStatus('Restarting...');
+    setStatus('Connecting...');
     await restartWhatsAppFn({ data: { adminToken: token } });
+    setTimeout(fetchStatus, 3000);
+  };
+
+  const handleLogout = async () => {
+    if (!window.confirm("Are you sure you want to log out the WhatsApp bot and reset the session? You will need to scan the QR code again.")) return;
+    setStatus('Logging out...');
+    await logoutWhatsAppFn({ data: { adminToken: token } });
     setTimeout(fetchStatus, 3000);
   };
 
@@ -2424,12 +2443,18 @@ function WhatsAppEngineView({ token }: { token: string }) {
         )}
       </div>
 
-      <div>
+      <div className="flex gap-4 justify-center">
         <button 
           onClick={handleRestart}
           className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
         >
-          Restart Engine
+          {status === 'Disconnected' || status === 'Error' ? 'Connect Bot' : 'Restart Engine'}
+        </button>
+        <button 
+          onClick={handleLogout}
+          className="px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors"
+        >
+          Logout / Reset Bot
         </button>
       </div>
     </div>

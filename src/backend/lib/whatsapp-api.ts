@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getAdminToken } from './token';
-import { getStatus, initWhatsApp } from './whatsapp';
+import { getStatus, initWhatsApp, restartWhatsApp, logoutWhatsApp } from './whatsapp';
 
 export const getWhatsAppStatusFn = createServerFn({ method: 'POST' })
   .validator((data: { adminToken: string }) => data)
@@ -14,8 +14,17 @@ export const restartWhatsAppFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
     
-    // Asynchronously init so we don't block the request if it takes time
-    initWhatsApp().catch(err => console.error("WhatsApp Init Error:", err));
+    // Asynchronously restart so we don't block the request if it takes time
+    restartWhatsApp().catch(err => console.error("WhatsApp Restart Error:", err));
     
     return { success: true };
   });
+
+export const logoutWhatsAppFn = createServerFn({ method: 'POST' })
+  .validator((data: { adminToken: string }) => data)
+  .handler(async ({ data }) => {
+    if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
+    await logoutWhatsApp();
+    return { success: true };
+  });
+

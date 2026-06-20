@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { MapPin, Phone, Mail, Globe, ZoomIn, ZoomOut, Maximize, Lock } from "lucide-react";
+import { MapPin, Phone, Mail, Globe, ZoomIn, ZoomOut, Maximize, Lock, Send } from "lucide-react";
 import logo from "@/frontend/assets/Shailraj travels-Punelogo.png";
 import onlyNameLogo from "@/frontend/assets/only-name-logo.png";
 import stamp from "@/frontend/assets/stamp1.png";
-import { saveInvoiceFn } from "../../backend/lib/bookings";
+import { saveInvoiceFn, sendInvoiceWhatsAppFn } from "../../backend/lib/bookings";
 
 const BLUE = "#0B3D91";
 const DARK = "#082F70";
@@ -23,6 +23,7 @@ export function InvoicePrint({
   const [scale, setScale] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
 
   const safeDate = (dateStr: any) => {
     if (!dateStr) return new Date();
@@ -104,6 +105,15 @@ export function InvoicePrint({
       if (res?.success) {
         setIsEditing(false);
         if (onSuccess) onSuccess();
+        if (data.paymentStatus === 'PAID') {
+          if (res.whatsappSent) {
+            alert("Invoice saved, locked, and sent successfully via WhatsApp.");
+          } else {
+            alert("Invoice saved and locked, but WhatsApp invoice could not be sent. Make sure WhatsApp Engine is connected and customer phone number is correct.");
+          }
+        } else {
+          alert("Invoice saved and locked successfully.");
+        }
       } else {
         alert("Failed to save and lock invoice.");
       }
@@ -111,6 +121,46 @@ export function InvoicePrint({
       alert(err.message || "Failed to save and lock invoice.");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSendWhatsApp = async () => {
+    if (!token) {
+      alert("Unauthorized: No admin token found.");
+      return;
+    }
+    
+    const inputPhone = window.prompt(
+      "Confirm or enter the WhatsApp number to send this invoice to (digits only, with country code, e.g. 919763433556):", 
+      data.customerPhone || ""
+    );
+    
+    if (inputPhone === null) return; // User cancelled
+    
+    const sanitizedPhone = inputPhone.replace(/\D/g, "");
+    if (!sanitizedPhone) {
+      alert("Please enter a valid phone number.");
+      return;
+    }
+
+    setIsSendingWhatsApp(true);
+    try {
+      const res = await sendInvoiceWhatsAppFn({
+        data: {
+          adminToken: token,
+          bookingId: booking._id,
+          phone: sanitizedPhone
+        }
+      });
+      if (res?.success) {
+        alert("Invoice successfully sent via WhatsApp!");
+      } else {
+        alert("Failed to send WhatsApp invoice.");
+      }
+    } catch (err: any) {
+      alert(err.message || "Failed to send WhatsApp invoice. Make sure WhatsApp Engine is connected.");
+    } finally {
+      setIsSendingWhatsApp(false);
     }
   };
 
@@ -174,10 +224,20 @@ export function InvoicePrint({
               </button>
             )
           ) : (
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 px-3 py-1 bg-slate-100 rounded border border-slate-200 select-none">
-              <Lock size={14} className="text-slate-400" />
-              Invoice Locked
-            </div>
+            <>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 px-3 py-1 bg-slate-100 rounded border border-slate-200 select-none">
+                <Lock size={14} className="text-slate-400" />
+                Invoice Locked
+              </div>
+              <button 
+                onClick={handleSendWhatsApp}
+                disabled={isSendingWhatsApp}
+                className="px-3 py-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded font-bold text-sm flex items-center gap-1.5 transition-colors"
+              >
+                <Send size={14} />
+                {isSendingWhatsApp ? "Sending..." : "Send via WhatsApp"}
+              </button>
+            </>
           )}
           <button onClick={() => window.print()} className="px-3 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded font-bold text-sm">Print</button>
         </div>

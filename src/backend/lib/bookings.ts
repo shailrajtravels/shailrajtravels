@@ -105,6 +105,17 @@ export const getBookingsFn = createServerFn({ method: 'POST' })
   .validator((data: { adminToken: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
+    
+    // Background lazy-start WhatsApp engine if disconnected
+    try {
+      const { initWhatsApp, getStatus } = await import('./whatsapp');
+      if (getStatus().status === 'Disconnected') {
+        initWhatsApp().catch(err => console.error("WhatsApp background auto-start error:", err));
+      }
+    } catch (e) {
+      console.error("Failed to trigger WhatsApp background auto-start:", e);
+    }
+
     try {
       const client = await clientPromise;
       const db = client.db('shailraj');
@@ -164,6 +175,45 @@ export const saveInvoiceFn = createServerFn({ method: 'POST' })
       }
     );
     await logAuditAction({ data: { action: "Lock Invoice", entityType: "Booking", details: `Saved custom invoice data and locked invoice`, entityId: data.bookingId } });
+    
+    // Auto-send PDF invoice via WhatsApp if status is PAID
+    let whatsappSent = false;
+    let whatsappError = undefined;
+
+    if (data.invoiceCustomData?.paymentStatus === 'PAID') {
+      try {
+        const booking = await db.collection('bookings').findOne({ _id: new ObjectId(data.bookingId) });
+        if (booking) {
+          const { sendBookingInvoicePDF } = await import('./whatsapp');
+          whatsappSent = await sendBookingInvoicePDF(booking);
+        }
+      } catch (err: any) {
+        console.error("Failed to auto-send PDF invoice from saveInvoiceFn:", err);
+        whatsappError = err.message || String(err);
+      }
+    }
+    
+    return { success: true, whatsappSent, whatsappError };
+  });
+
+export const sendInvoiceWhatsAppFn = createServerFn({ method: 'POST' })
+  .validator((data: { adminToken: string, bookingId: string, phone?: string }) => data)
+  .handler(async ({ data }) => {
+    if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
+    const client = await clientPromise;
+    const db = client.db('shailraj');
+    const booking = await db.collection('bookings').findOne({ _id: new ObjectId(data.bookingId) });
+    if (!booking) throw new Error("Booking not found");
+
+    if (data.phone) {
+      booking.phone = data.phone;
+    }
+
+    const { sendBookingInvoicePDF } = await import('./whatsapp');
+    const success = await sendBookingInvoicePDF(booking);
+    if (!success) {
+      throw new Error("Failed to send WhatsApp invoice. Make sure WhatsApp Engine is connected and customer phone number is correct.");
+    }
     return { success: true };
   });
 
@@ -263,13 +313,38 @@ export const updateBookingPaymentStatusFn = createServerFn({ method: 'POST' })
     const client = await clientPromise;
     const db = client.db('shailraj');
     
+    const booking = await db.collection('bookings').findOne({ _id: new ObjectId(data.id) });
+    if (!booking) throw new Error("Booking not found");
+
+    const updateFields: any = { paymentStatus: data.paymentStatus };
+    if (booking.invoiceCustomData) {
+      updateFields['invoiceCustomData.paymentStatus'] = data.paymentStatus;
+      booking.invoiceCustomData.paymentStatus = data.paymentStatus;
+    }
+    booking.paymentStatus = data.paymentStatus;
+
     await db.collection('bookings').updateOne(
       { _id: new ObjectId(data.id) },
-      { $set: { paymentStatus: data.paymentStatus } }
+      { $set: updateFields }
     );
     
     await logAuditAction({ data: { action: "Update Booking Payment Status", entityType: "Booking", details: `Changed payment status to ${data.paymentStatus}`, entityId: data.id } });
-    return { success: true };
+    
+    // Auto-send PDF invoice via WhatsApp if status is PAID
+    let whatsappSent = false;
+    let whatsappError = undefined;
+
+    if (data.paymentStatus === 'PAID') {
+      try {
+        const { sendBookingInvoicePDF } = await import('./whatsapp');
+        whatsappSent = await sendBookingInvoicePDF(booking);
+      } catch (err: any) {
+        console.error("Failed to auto-send PDF invoice from updateBookingPaymentStatusFn:", err);
+        whatsappError = err.message || String(err);
+      }
+    }
+    
+    return { success: true, whatsappSent, whatsappError };
   });
 
 export const deleteBookingFn = createServerFn({ method: 'POST' })
