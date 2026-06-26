@@ -9,6 +9,7 @@ import { Star, User, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/yatri-stories")({
   component: BlogPage,
+  pendingComponent: YatriStoriesSkeleton,
   loader: async () => {
     try {
       const reviews = await getReviewsFn();
@@ -19,6 +20,59 @@ export const Route = createFileRoute("/yatri-stories")({
     }
   },
 });
+
+function YatriStoriesSkeleton() {
+  const lang = "en";
+  const t = translations[lang];
+
+  return (
+    <div className="font-sans text-slate-800 bg-slate-50 min-h-screen selection:bg-brand-green/20 selection:text-brand-blue-deep overflow-x-hidden flex flex-col">
+      <Navbar t={t} />
+      <main className="flex-1 pt-32 pb-20 px-4 md:px-8 max-w-[1200px] mx-auto w-full">
+        <div className="text-center mb-16">
+          <span className="inline-block h-6 bg-slate-200 rounded-full w-24 mb-4 animate-pulse" />
+          <div className="h-12 bg-slate-200 rounded-md w-72 md:w-96 mx-auto mb-6 animate-pulse" />
+          <div className="h-5 bg-slate-200 rounded-md max-w-xl mx-auto mb-2 animate-pulse" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[...Array(6)].map((_, idx) => (
+            <div key={idx} className="bg-white rounded-3xl border border-slate-100 shadow-sm p-8 flex flex-col h-full">
+              {/* Stars Skeleton */}
+              <div className="flex items-center gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="w-4 h-4 bg-slate-200 rounded-full animate-pulse" />
+                ))}
+              </div>
+              
+              {/* Title Skeleton */}
+              <div className="h-6 bg-slate-200 rounded-md w-5/6 mb-4 animate-pulse" />
+              
+              {/* Content Skeleton */}
+              <div className="space-y-2 mb-6 flex-grow">
+                <div className="h-4 bg-slate-200 rounded-md w-full animate-pulse" />
+                <div className="h-4 bg-slate-200 rounded-md w-full animate-pulse" />
+                <div className="h-4 bg-slate-200 rounded-md w-4/5 animate-pulse" />
+                <div className="h-4 bg-slate-200 rounded-md w-full animate-pulse" />
+                <div className="h-4 bg-slate-200 rounded-md w-3/4 animate-pulse" />
+              </div>
+              
+              {/* Author Skeleton */}
+              <div className="pt-6 border-t border-slate-100 mt-auto flex items-center gap-3">
+                <div className="w-10 h-10 bg-slate-200 rounded-full animate-pulse" />
+                <div className="space-y-1.5 flex-grow">
+                  <div className="h-4 bg-slate-200 rounded-md w-24 animate-pulse" />
+                  <div className="h-3 bg-slate-200 rounded-md w-16 animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
+      <Footer t={t} lang={lang} />
+    </div>
+  );
+}
 
 function BlogPage() {
   const lang = "en";

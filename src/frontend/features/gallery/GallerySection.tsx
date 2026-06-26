@@ -2,6 +2,7 @@ import React from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { LazyImage } from "../../components/ui/lazy-image";
 
 export function GallerySection({ t, photos = [] }: { t: any; photos?: any[] }) {
   if (!photos || photos.length === 0) return null;
@@ -38,11 +39,10 @@ export function GallerySection({ t, photos = [] }: { t: any; photos?: any[] }) {
                   className="flex-[0_0_100%] md:flex-[0_0_calc(50%-0.75rem)] lg:flex-[0_0_calc(33.333%-1rem)] min-w-0 flex flex-col transition-transform"
                 >
                   <div className="relative h-[300px] md:h-[400px] w-full overflow-hidden rounded-2xl group/item border border-slate-100 shadow-sm bg-white flex items-center justify-center p-4">
-                    <img
+                    <LazyImage
                       src={photo.imageUrl}
                       alt="Gallery"
                       className="h-full w-full object-contain transition-transform duration-700 group-hover/item:scale-110"
-                      loading="lazy"
                     />
                   </div>
                 </div>

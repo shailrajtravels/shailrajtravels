@@ -24,6 +24,8 @@ export const logoutWhatsAppFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    await logoutWhatsApp();
+    
+    // Asynchronously log out so we don't block the request if it takes time
+    logoutWhatsApp().catch(err => console.error("WhatsApp Logout Error:", err));
     return { success: true };
   });

@@ -7,6 +7,7 @@ import { translations } from "../frontend/features/core/i18n";
 import { Search, MapPin, Filter } from "lucide-react";
 import { Navbar } from "../frontend/features/core/Navbar";
 import { FooterSection as Footer } from "../frontend/features/core/Footer";
+import { LazyImage } from "../frontend/components/ui/lazy-image";
 
 export const Route = createFileRoute("/tours/")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -24,7 +25,46 @@ export const Route = createFileRoute("/tours/")({
     links: [{ rel: "canonical", href: "https://www.shailrajtravels.com/tours" }],
   }),
   component: ToursListingPage,
+  pendingComponent: ToursListingSkeleton
 });
+
+function ToursListingSkeleton() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+
+  return (
+    <main className="w-full bg-white pb-16 pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="text-center mb-12">
+        {/* Skeleton for Title */}
+        <div className="h-12 bg-slate-100 rounded-md w-72 mx-auto mb-4 animate-pulse" />
+        {/* Skeleton for Description */}
+        <div className="h-6 bg-slate-100 rounded-md max-w-xl mx-auto mb-2 animate-pulse" />
+        <div className="h-6 bg-slate-100 rounded-md max-w-lg mx-auto animate-pulse" />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="border border-gray-200 rounded-xl overflow-hidden shadow-sm h-full flex flex-col bg-white">
+            {/* Skeleton for Hero Image */}
+            <div className="h-48 bg-slate-100 animate-pulse" />
+            <div className="p-6 flex flex-col flex-grow">
+              {/* Skeleton for Title */}
+              <div className="h-6 bg-slate-100 rounded-md w-3/4 mb-3 animate-pulse" />
+              {/* Skeleton for Description */}
+              <div className="h-4 bg-slate-100 rounded-md w-full mb-2 animate-pulse" />
+              <div className="h-4 bg-slate-100 rounded-md w-full mb-2 animate-pulse" />
+              <div className="h-4 bg-slate-100 rounded-md w-1/2 mb-4 animate-pulse" />
+              <div className="mt-auto animate-pulse">
+                {/* Skeleton for link */}
+                <div className="h-5 bg-slate-100 rounded-md w-32" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}
 
 function ToursListingPage() {
   const tours = useLoaderData({ from: "/tours/" });
@@ -138,7 +178,7 @@ function ToursListingPage() {
                 >
                   <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col bg-white hover:-translate-y-1">
                     <div className="h-56 relative overflow-hidden bg-slate-100">
-                      <img
+                      <LazyImage
                         src={tour.heroContent?.image || ""}
                         alt={tour.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"

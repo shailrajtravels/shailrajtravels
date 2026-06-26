@@ -43,6 +43,9 @@ if (typeof window === "undefined") {
   }
 }
 
+const uri =
+  process.env.MONGO_URI || process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/shailraj";
+console.log("[DB Env Debug] Final MongoDB URI resolved:", uri.replace(/:[^:@]+@/, ":***@"));
 // Helper to generate a 24-character hex ID (similar to MongoDB ObjectId)
 function generateHexId(): string {
   const chars = "0123456789abcdef";
@@ -241,7 +244,7 @@ async function initClient() {
 
   try {
     const client = new MongoClient(connectionUri, {
-      serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+      serverSelectionTimeoutMS: parseInt(process.env.MONGODB_TIMEOUT || "10000", 10),
     });
     await client.connect();
     // Ping the server to verify it is actually online

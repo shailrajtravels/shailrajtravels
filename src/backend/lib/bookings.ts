@@ -317,7 +317,23 @@ export const createBookingFn = createServerFn({ method: "POST" })
 
       const requestedPersons = Number(data.persons) || 1;
 
-      // Prevent overbooking (Max 16 seats)
+      // Determine dynamic seats limit based on database or frontend fallback
+      let seatsLimit = 16;
+      const pkg = await db.collection("packages").findOne({ title: data.tripName });
+      if (pkg) {
+        seatsLimit =
+          pkg.seatsTotal !== undefined && pkg.seatsTotal !== null ? Number(pkg.seatsTotal) : 16;
+      } else {
+        const tripOption = await db.collection("trip_options").findOne({ name: data.tripName });
+        if (tripOption) {
+          seatsLimit =
+            tripOption.seatsTotal !== undefined && tripOption.seatsTotal !== null
+              ? Number(tripOption.seatsTotal)
+              : 20;
+        }
+      }
+
+      // Prevent overbooking
       const existingBookings = await db
         .collection("bookings")
         .find({
@@ -332,9 +348,9 @@ export const createBookingFn = createServerFn({ method: "POST" })
         0,
       );
 
-      if (totalExistingPersons + requestedPersons > 16) {
+      if (totalExistingPersons + requestedPersons > seatsLimit) {
         throw new Error(
-          `Not enough seats available. Only ${Math.max(0, 16 - totalExistingPersons)} seats left.`,
+          `Not enough seats available. Only ${Math.max(0, seatsLimit - totalExistingPersons)} seats left.`,
         );
       }
 
@@ -346,7 +362,6 @@ export const createBookingFn = createServerFn({ method: "POST" })
         createdAt: new Date(),
       };
       const res = await db.collection("bookings").insertOne(newBooking);
-
       // Save Idempotency Key
       if (data.idempotencyKey && redis) {
         await redis.set(`idempotency:booking:${data.idempotencyKey}`, res.insertedId.toString(), {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
 import { MapPin, Calendar, Repeat, Route, Info } from "lucide-react";
+import { LazyImage } from "@/frontend/components/ui/lazy-image";
 
 export interface TourData {
   id: string;
@@ -37,8 +38,7 @@ export function TourCard({ tour, onOpenDetails, onBookSeat, t }: TourCardProps) 
     <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col max-w-[400px] w-full mx-auto h-full">
       {/* Image Header */}
       <div className="relative h-[220px] w-full overflow-hidden">
-        <img src={tour.image} alt={tour.title} className="w-full h-full object-cover" />
-
+        <LazyImage src={tour.image} alt={tour.title} className="w-full h-full object-cover" />
         {/* Gradient Overlay for Text Readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#112233] via-[#112233]/60 to-transparent" />
 

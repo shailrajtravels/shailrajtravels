@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
 import { RelatedItem } from "../types/tour";
+import { LazyImage } from "../components/ui/lazy-image";
 
 export function RelatedTours({ tours }: { tours: RelatedItem[] }) {
   if (!tours || tours.length === 0) return null;
@@ -19,7 +20,7 @@ export function RelatedTours({ tours }: { tours: RelatedItem[] }) {
             <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <div className="bg-gray-100 h-32 flex items-center justify-center relative overflow-hidden">
                 {tour.image ? (
-                  <img
+                  <LazyImage
                     src={tour.image}
                     alt={tour.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

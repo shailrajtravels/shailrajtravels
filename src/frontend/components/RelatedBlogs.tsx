@@ -1,5 +1,6 @@
 import React from "react";
 import { RelatedItem } from "../types/tour";
+import { LazyImage } from "../components/ui/lazy-image";
 
 export function RelatedBlogs({ blogs }: { blogs: RelatedItem[] }) {
   if (!blogs || blogs.length === 0) return null;
@@ -12,7 +13,7 @@ export function RelatedBlogs({ blogs }: { blogs: RelatedItem[] }) {
           <a key={blog.slug} href={`/blog/${blog.slug}`} className="group flex items-start">
             <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden shrink-0 mr-4">
               {blog.image ? (
-                <img
+                <LazyImage
                   src={blog.image}
                   alt={blog.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
