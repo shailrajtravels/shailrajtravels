@@ -59,11 +59,27 @@ export function InvoicePrint({
         b.bookingId ||
         b._id?.slice(-8).toUpperCase() ||
         "",
-      travelDate: custom.travelDate || format(safeDate(b.travelDate), "dd MMM yyyy"),
+      travelDate: (() => {
+        if (custom.travelDate) return custom.travelDate;
+        if (!b.travelDate) return "";
+        const parsed = new Date(b.travelDate);
+        if (isNaN(parsed.getTime())) {
+          return b.travelDate; // Return raw string (e.g. "Fri 3 Jul to Sun 5 Jul 2026")
+        }
+        return format(parsed, "dd MMM yyyy");
+      })(),
       customerName: custom.customerName || b.customerName || b.name || "",
       customerPhone: custom.customerPhone || b.customerPhone || b.phone || "",
-      packageName: custom.packageName || b.packageId?.name || b.packageName || "Custom Trip",
-      travelDateTime: custom.travelDateTime || format(safeDate(b.travelDate), "dd MMM yyyy, HH:mm"),
+      packageName: custom.packageName || b.tripName || b.packageId?.name || b.packageName || "Custom Trip",
+      travelDateTime: (() => {
+        if (custom.travelDateTime) return custom.travelDateTime;
+        if (!b.travelDate) return "";
+        const parsed = new Date(b.travelDate);
+        if (isNaN(parsed.getTime())) {
+          return b.travelDate;
+        }
+        return format(parsed, "dd MMM yyyy, HH:mm");
+      })(),
       pickupPoint: custom.pickupPoint || b.pickupLocation || b.pickupPoint || "Pune",
       rate:
         custom.rate !== undefined
