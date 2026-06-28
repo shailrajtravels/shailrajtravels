@@ -213,7 +213,7 @@ function RootComponent() {
       <LanguageContext.Provider value={{ lang, toggleLang }}>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
-        {!isAdmin && (
+        {!isAdmin && location.pathname !== "/login" && (
           <>
             <LanguageToggle />
             <FloatingWhatsApp />

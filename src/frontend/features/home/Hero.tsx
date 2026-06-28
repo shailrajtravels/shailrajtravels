@@ -20,8 +20,8 @@ import {
 } from "lucide-react";
 import { Leaf } from "../core/icons";
 import { translations } from "../core/i18n";
-import bgMobile from "@/frontend/assets/hero-pandharpur.jpg";
-import temple from "@/frontend/assets/hero-pandharpur.jpg"; // fallback until correct image is found
+import bgMobile from "@/frontend/assets/hero-pandharpur.webp";
+import temple from "@/frontend/assets/hero-pandharpur.webp"; // fallback until correct image is found
 import { createBookingFn } from "../../../backend/lib/bookings";
 
 export function getUpcomingDates(allowedDaysOfWeek: number[]) {

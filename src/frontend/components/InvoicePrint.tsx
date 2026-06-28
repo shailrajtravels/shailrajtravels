@@ -60,7 +60,7 @@ export function InvoicePrint({
       customerPhone: custom.customerPhone || b.customerPhone || b.phone || "",
       packageName: custom.packageName || b.packageId?.name || b.packageName || "Custom Trip",
       travelDateTime: custom.travelDateTime || format(safeDate(b.travelDate), "dd MMM yyyy, HH:mm"),
-      pickupPoint: custom.pickupPoint || b.pickupPoint || "Pune",
+      pickupPoint: custom.pickupPoint || b.pickupLocation || b.pickupPoint || "Pune",
       rate:
         custom.rate !== undefined
           ? Number(custom.rate)

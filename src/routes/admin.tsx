@@ -60,6 +60,8 @@ import {
   Lock,
   BadgeIndianRupee,
   Smartphone,
+  TrendingUp,
+  CreditCard,
 } from "lucide-react";
 import logo from "@/frontend/assets/Shailraj travels-Punelogo.png";
 import { Calendar } from "@/frontend/components/ui/calendar";
@@ -75,6 +77,7 @@ import {
   PieChart,
   Pie,
   Cell,
+  LabelList,
 } from "recharts";
 
 export const Route = createFileRoute("/admin")({
@@ -2509,20 +2512,28 @@ function CustomersView({ bookings = [] }: { bookings?: any[] }) {
   }
 }
 
-const applyTableStyles = (ws: any, titleSz = 16, subtitleSz = 14) => {
+const applyTableStyles = (ws: any, titleSz = 14, subtitleSz = 11) => {
   if (ws["A1"])
     ws["A1"].s = {
-      font: { bold: true, sz: titleSz, color: { rgb: "000000" } },
-      alignment: { horizontal: "center", vertical: "center" },
+      font: { bold: true, sz: titleSz, color: { rgb: "1A237E" } },
+      alignment: { horizontal: "center", vertical: "center", wrapText: false },
+      fill: { patternType: "solid", fgColor: { rgb: "E8EAF6" } },
     };
   if (ws["A2"])
     ws["A2"].s = {
       font: { bold: true, sz: subtitleSz, color: { rgb: "333333" } },
-      alignment: { horizontal: "center", vertical: "center" },
+      alignment: { horizontal: "center", vertical: "center", wrapText: false },
     };
 
   if (ws["!ref"]) {
     const range = XLSX.utils.decode_range(ws["!ref"]);
+    // Set row heights: title row, subtitle row, blank row, header row
+    ws["!rows"] = ws["!rows"] || [];
+    ws["!rows"][0] = { hpt: 28 }; // Title row height
+    ws["!rows"][1] = { hpt: 22 }; // Subtitle row height
+    ws["!rows"][2] = { hpt: 6 };  // Blank spacer row
+    ws["!rows"][3] = { hpt: 20 }; // Header row height
+
     for (let R = 3; R <= range.e.r; ++R) {
       for (let C = 0; C <= range.e.c; ++C) {
         const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
@@ -2536,9 +2547,11 @@ const applyTableStyles = (ws: any, titleSz = 16, subtitleSz = 14) => {
             left: { style: "thin", color: { auto: 1 } },
             right: { style: "thin", color: { auto: 1 } },
           },
-          alignment: { vertical: "center", wrapText: true },
-          font: isHeader ? { bold: true, color: { rgb: "FFFFFF" } } : undefined,
-          fill: isHeader ? { patternType: "solid", fgColor: { rgb: "4F81BD" } } : undefined,
+          alignment: { vertical: "center", wrapText: !isHeader },
+          font: isHeader
+            ? { bold: true, sz: 10, color: { rgb: "FFFFFF" } }
+            : { sz: 9 },
+          fill: isHeader ? { patternType: "solid", fgColor: { rgb: "1E3A8A" } } : undefined,
         };
       }
     }
@@ -2548,12 +2561,17 @@ const applyTableStyles = (ws: any, titleSz = 16, subtitleSz = 14) => {
 function ReportsView({ bookings = [] }: { bookings?: any[] }) {
   const [startDate, setStartDate] = React.useState<string>("");
   const [endDate, setEndDate] = React.useState<string>("");
-  const [dateFilterType, setDateFilterType] = React.useState<"created" | "travel">("created");
+  const [dateFilterType, setDateFilterType] = React.useState<"all" | "custom" | "created" | "travel">("created");
 
   const exportBookings = () => {
     let targetBookings = bookings;
 
-    if (startDate || endDate) {
+    // Quick filters: All / Custom
+    if (dateFilterType === "all") {
+      // No filtering — export everything
+    } else if (dateFilterType === "custom") {
+      targetBookings = targetBookings.filter((bk) => bk.tripName === "custom");
+    } else if (startDate || endDate) {
       targetBookings = targetBookings.filter((bk) => {
         if (dateFilterType === "created") {
           if (!bk.createdAt) return false;
@@ -2599,21 +2617,35 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
 
     const headers = [
       "Booking ID",
-      "Customer Name",
-      "Phone Number",
+      "Cus_Name",
+      "Contact",
       "Trip Name",
       "Persons",
       "Travel Date",
       "Status",
-      "Submission Date",
-      "Pickup Location",
-      "Custom Destination",
+      "Sub date",
+      "Pickup Point",
+      "Custom Dest",
     ];
 
-    const rows = targetBookings.map((bk, idx) => {
+    const getBookingIndex = (bk: any) => {
+      const match = (bk.generatedBookingId || "").match(/\d+$/);
+      return match ? parseInt(match[0], 10) : 0;
+    };
+
+    const sortedTarget = [...targetBookings].sort((a, b) => {
+      const idxA = getBookingIndex(a);
+      const idxB = getBookingIndex(b);
+      if (idxA !== idxB) return idxA - idxB;
+      return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+    });
+
+    const rows = sortedTarget.map((bk, idx) => {
       const bId = bk.generatedBookingId;
       const phoneStr = (bk.phone || "").replace(/[\r\n]+/g, " ");
       const dateStr = bk.createdAt ? new Date(bk.createdAt).toLocaleDateString() : "";
+      const custom = bk.invoiceCustomData || {};
+      const pickupPoint = custom.pickupPoint || bk.pickupLocation || bk.pickupPoint || "Pune";
       return [
         bId,
         (bk.name || "").replace(/[\r\n]+/g, " "),
@@ -2623,14 +2655,45 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
         (bk.travelDate || "").replace(/[\r\n]+/g, " "),
         bk.status || "",
         dateStr,
-        (bk.pickupLocation || "").replace(/[\r\n]+/g, " "),
+        pickupPoint.replace(/[\r\n]+/g, " "),
         (bk.customDestination || "").replace(/[\r\n]+/g, " "),
       ];
     });
 
+    let reportTitle = "Booking Report";
+    if (dateFilterType === "all") {
+      reportTitle = "Booking Report: All Bookings";
+    } else if (dateFilterType === "custom") {
+      reportTitle = "Booking Report for Custom Trips";
+    } else if (dateFilterType === "created") {
+      const startStr = startDate ? new Date(startDate).toLocaleDateString("en-GB") : "";
+      const endStr = endDate ? new Date(endDate).toLocaleDateString("en-GB") : "";
+      if (startStr && endStr) {
+        reportTitle = `Booking Report: Submission Date from ${startStr} to ${endStr}`;
+      } else if (startStr) {
+        reportTitle = `Booking Report: Submission Date starting ${startStr}`;
+      } else if (endStr) {
+        reportTitle = `Booking Report: Submission Date ending ${endStr}`;
+      } else {
+        reportTitle = "Booking Report: Filter by Submission Date";
+      }
+    } else if (dateFilterType === "travel") {
+      const startStr = startDate ? new Date(startDate).toLocaleDateString("en-GB") : "";
+      const endStr = endDate ? new Date(endDate).toLocaleDateString("en-GB") : "";
+      if (startStr && endStr) {
+        reportTitle = `Booking Report: Travel Date from ${startStr} to ${endStr}`;
+      } else if (startStr) {
+        reportTitle = `Booking Report: Travel Date starting ${startStr}`;
+      } else if (endStr) {
+        reportTitle = `Booking Report: Travel Date ending ${endStr}`;
+      } else {
+        reportTitle = "Booking Report: Filter by Travel Date";
+      }
+    }
+
     const ws = XLSX.utils.aoa_to_sheet([
       ["SHAILRAJ TRAVELS PUNE"],
-      ["Booking Report"],
+      [reportTitle],
       [],
       headers,
       ...rows,
@@ -2644,28 +2707,31 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
     ];
 
     ws["!cols"] = [
-      { wch: 10 }, // Booking ID
-      { wch: 20 }, // Customer Name
-      { wch: 12 }, // Phone Number
-      { wch: 25 }, // Trip Name
-      { wch: 8 }, // Persons
-      { wch: 18 }, // Travel Date
-      { wch: 12 }, // Status
-      { wch: 12 }, // Submission Date
-      { wch: 25 }, // Pickup Location
-      { wch: 20 }, // Custom Destination
+      { wch: 9  }, // Booking ID
+      { wch: 14 }, // Cus_Name
+      { wch: 11 }, // Contact
+      { wch: 16 }, // Trip Name
+      { wch: 7  }, // Persons
+      { wch: 11 }, // Travel Date
+      { wch: 9  }, // Status
+      { wch: 11 }, // Sub date
+      { wch: 14 }, // Pickup Point
+      { wch: 15 }, // Custom Dest
     ];
 
     ws["!fitToPage"] = true;
-    ws["!pageSetup"] = { orientation: "landscape", fitToWidth: 1, fitToHeight: 0 };
+    ws["!pageSetup"] = {
+      orientation: "landscape",
+      fitToWidth: 1,
+      fitToHeight: 0,
+    };
     ws["!margins"] = {
-      left: 0.5,
-      right: 0.5,
+      left: 0.4,
+      right: 0.4,
       top: 0.5,
       bottom: 0.5,
-      header: 0.3,
-      footer: 0.3,
-      horizontallyCenter: true,
+      header: 0.2,
+      footer: 0.2,
     } as any;
 
     const wb = XLSX.utils.book_new();
@@ -2719,8 +2785,8 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
 
     const headers = [
       "Customer ID",
-      "Customer Name",
-      "Phone Number",
+      "Cus_Name",
+      "Contact",
       "Total Bookings",
       "First Booking Date",
       "Latest Booking Date",
@@ -2764,25 +2830,27 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
     ];
 
     ws["!cols"] = [
-      { wch: 12 }, // Customer ID
-      { wch: 20 }, // Customer Name
+      { wch: 11 }, // Customer ID
+      { wch: 18 }, // Customer Name
       { wch: 12 }, // Phone Number
-      { wch: 15 }, // Total Bookings
-      { wch: 15 }, // First Booking Date
-      { wch: 15 }, // Latest Booking Date
-      { wch: 40 }, // Trips Taken
+      { wch: 13 }, // Total Bookings
+      { wch: 14 }, // First Booking Date
+      { wch: 14 }, // Latest Booking Date
+      { wch: 35 }, // Trips Taken
     ];
-
     ws["!fitToPage"] = true;
-    ws["!pageSetup"] = { orientation: "landscape", fitToWidth: 1, fitToHeight: 0 };
+    ws["!pageSetup"] = {
+      orientation: "landscape",
+      fitToWidth: 1,
+      fitToHeight: 0,
+    };
     ws["!margins"] = {
-      left: 0.5,
-      right: 0.5,
+      left: 0.4,
+      right: 0.4,
       top: 0.5,
       bottom: 0.5,
-      header: 0.3,
-      footer: 0.3,
-      horizontallyCenter: true,
+      header: 0.2,
+      footer: 0.2,
     } as any;
 
     const wb = XLSX.utils.book_new();
@@ -2816,20 +2884,34 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
     const [groupName, groupBks] = group;
     const headers = [
       "Booking ID",
-      "Customer Name",
-      "Phone Number",
+      "Cus_Name",
+      "Contact",
       "Trip Name",
       "Persons",
       "Travel Date",
       "Status",
-      "Submission Date",
-      "Custom Destination",
+      "Sub date",
+      "Pickup Point",
     ];
 
-    const rows = groupBks.map((bk: any) => {
+    const getBookingIndex = (bk: any) => {
+      const match = (bk.generatedBookingId || "").match(/\d+$/);
+      return match ? parseInt(match[0], 10) : 0;
+    };
+
+    const sortedGroupBks = [...groupBks].sort((a, b) => {
+      const idxA = getBookingIndex(a);
+      const idxB = getBookingIndex(b);
+      if (idxA !== idxB) return idxA - idxB;
+      return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+    });
+
+    const rows = sortedGroupBks.map((bk: any) => {
       const bId = bk.generatedBookingId;
       const phoneStr = (bk.phone || "").replace(/[\r\n]+/g, " ");
       const dateStr = bk.createdAt ? new Date(bk.createdAt).toLocaleDateString() : "";
+      const custom = bk.invoiceCustomData || {};
+      const pickupPoint = custom.pickupPoint || bk.pickupLocation || bk.pickupPoint || "Pune";
       return [
         bId,
         (bk.name || "").replace(/[\r\n]+/g, " "),
@@ -2839,7 +2921,7 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
         (bk.travelDate || "").replace(/[\r\n]+/g, " "),
         bk.status || "",
         dateStr,
-        (bk.customDestination || "").replace(/[\r\n]+/g, " "),
+        pickupPoint.replace(/[\r\n]+/g, " "),
       ];
     });
 
@@ -2859,27 +2941,29 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
     ];
 
     ws["!cols"] = [
-      { wch: 10 },
-      { wch: 20 },
-      { wch: 12 },
-      { wch: 25 },
-      { wch: 8 },
-      { wch: 18 },
-      { wch: 12 },
-      { wch: 12 },
-      { wch: 20 },
+      { wch: 9  }, // Booking ID
+      { wch: 15 }, // Customer Name
+      { wch: 11 }, // Phone Number
+      { wch: 18 }, // Trip Name
+      { wch: 7  }, // Persons
+      { wch: 12 }, // Travel Date
+      { wch: 9  }, // Status
+      { wch: 11 }, // Submission Date
+      { wch: 14 }, // Pickup Location
     ];
-
     ws["!fitToPage"] = true;
-    ws["!pageSetup"] = { orientation: "landscape", fitToWidth: 1, fitToHeight: 0 };
+    ws["!pageSetup"] = {
+      orientation: "landscape",
+      fitToWidth: 1,
+      fitToHeight: 0,
+    };
     ws["!margins"] = {
-      left: 0.5,
-      right: 0.5,
+      left: 0.4,
+      right: 0.4,
       top: 0.5,
       bottom: 0.5,
-      header: 0.3,
-      footer: 0.3,
-      horizontallyCenter: true,
+      header: 0.2,
+      footer: 0.2,
     } as any;
 
     const wb = XLSX.utils.book_new();
@@ -2910,6 +2994,8 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
             onChange={(e) => setDateFilterType(e.target.value as any)}
             className="w-full p-2 text-sm border border-slate-200 rounded-lg outline-none"
           >
+            <option value="all">All Bookings</option>
+            <option value="custom">Custom Trip Bookings</option>
             <option value="created">Filter by Submission Date</option>
             <option value="travel">Filter by Travel Date</option>
           </select>
@@ -3237,6 +3323,9 @@ function InvoicesView({
 }
 
 function RevenueView({ bookings }: { bookings: any[] }) {
+  const [timeFilter, setTimeFilter] = useState<"all" | "today" | "7days" | "30days">("all");
+  const [yearFilter, setYearFilter] = useState<"thisYear" | "lastYear" | "all">("thisYear");
+
   const getBookingRevenue = (bk: any) => {
     const custom = bk.invoiceCustomData || {};
     if (bk.tripName === "custom" && !bk.isInvoiceLocked) {
@@ -3247,19 +3336,109 @@ function RevenueView({ bookings }: { bookings: any[] }) {
     return rate * persons;
   };
 
-  const confirmedBookings = bookings.filter((b) => b.status === "Confirmed");
+  const formatYAxis = (value: number) => {
+    if (value === 0) return "₹ 0";
+    if (value >= 100000) {
+      return `₹ ${(value / 100000).toFixed(1).replace(/\.0$/, "")}L`;
+    }
+    if (value >= 1000) {
+      return `₹ ${(value / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+    }
+    return `₹ ${value}`;
+  };
+
+  const formatBarLabel = (value: number) => {
+    if (value === 0) return "";
+    if (value >= 100000) {
+      return `₹ ${(value / 100000).toFixed(1).replace(/\.0$/, "")}L`;
+    }
+    if (value >= 1000) {
+      return `₹ ${(value / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+    }
+    return `₹ ${value}`;
+  };
+
+  // Get monthly data for the selected year
+  const currentYear = new Date().getFullYear();
+  const targetYear = yearFilter === "thisYear" ? currentYear : yearFilter === "lastYear" ? currentYear - 1 : null;
+  const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const chartData = monthsShort.map((month, index) => {
+    const monthBookings = bookings.filter((b) => {
+      if (b.status !== "Confirmed") return false;
+      const d = b.createdAt ? new Date(b.createdAt) : new Date();
+      if (isNaN(d.getTime())) return false;
+      
+      const isMonthMatch = d.getMonth() === index;
+      const isYearMatch = targetYear ? d.getFullYear() === targetYear : true;
+      return isMonthMatch && isYearMatch;
+    });
+    
+    const revenue = monthBookings.reduce((sum, b) => sum + getBookingRevenue(b), 0);
+    return {
+      name: month,
+      revenue,
+    };
+  });
+
+  // Filter bookings based on selected period
+  const filteredBookings = bookings.filter((b) => {
+    if (timeFilter === "all") return true;
+
+    const d = b.createdAt ? new Date(b.createdAt) : new Date();
+    if (isNaN(d.getTime())) return false;
+
+    const now = new Date();
+    const diffTime = now.getTime() - d.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    if (timeFilter === "today") return diffDays <= 1;
+    if (timeFilter === "7days") return diffDays <= 7;
+    if (timeFilter === "30days") return diffDays <= 30;
+    return true;
+  });
+
+  const confirmedBookings = filteredBookings.filter((b) => b.status === "Confirmed");
   const confirmedRevenue = confirmedBookings.reduce((sum, b) => sum + getBookingRevenue(b), 0);
 
-  const pendingBookings = bookings.filter((b) => b.status === "Pending");
+  const pendingBookings = filteredBookings.filter((b) => b.status === "Pending");
   const pendingRevenue = pendingBookings.reduce((sum, b) => sum + getBookingRevenue(b), 0);
 
   const totalPotentialRevenue = confirmedRevenue + pendingRevenue;
   const activeBookingsCount = confirmedBookings.length + pendingBookings.length;
   const averageBookingRevenue = confirmedBookings.length > 0 ? confirmedRevenue / confirmedBookings.length : 0;
 
-  // Destination Breakdown
+  // Calculate Revenue This Month and Last Month using RAW bookings (unfiltered)
+  const now = new Date();
+  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+  const rawConfirmedBookings = bookings.filter((b) => b.status === "Confirmed");
+
+  const bookingsThisMonth = rawConfirmedBookings.filter((b) => {
+    const d = b.createdAt ? new Date(b.createdAt) : new Date();
+    return !isNaN(d.getTime()) && d >= startOfThisMonth;
+  });
+  const revenueThisMonth = bookingsThisMonth.reduce((sum, b) => sum + getBookingRevenue(b), 0);
+
+  const bookingsLastMonth = rawConfirmedBookings.filter((b) => {
+    const d = b.createdAt ? new Date(b.createdAt) : new Date();
+    return !isNaN(d.getTime()) && d >= startOfLastMonth && d <= endOfLastMonth;
+  });
+  const revenueLastMonth = bookingsLastMonth.reduce((sum, b) => sum + getBookingRevenue(b), 0);
+
+  let growthPercent = 0;
+  if (revenueLastMonth > 0) {
+    growthPercent = Math.round(((revenueThisMonth - revenueLastMonth) / revenueLastMonth) * 100);
+  } else {
+    // If no data for last month, default to +18% as requested
+    growthPercent = 18;
+  }
+
+  // Destination Breakdown (using filtered bookings)
   const tripBreakdown: { [key: string]: { name: string; count: number; revenue: number } } = {};
-  bookings
+  filteredBookings
     .filter((b) => b.status === "Confirmed")
     .forEach((b) => {
       const name = b.tripName === "custom" ? "Custom Trip" : b.tripName;
@@ -3273,9 +3452,9 @@ function RevenueView({ bookings }: { bookings: any[] }) {
   const tripList = Object.values(tripBreakdown).sort((a, b) => b.revenue - a.revenue);
   const totalBreakdownRevenue = tripList.reduce((sum, t) => sum + t.revenue, 0);
 
-  // Monthly Breakdown
+  // Monthly Breakdown (using filtered bookings)
   const monthlyData: { [key: string]: number } = {};
-  bookings
+  filteredBookings
     .filter((b) => b.status === "Confirmed")
     .forEach((b) => {
       const d = b.createdAt ? new Date(b.createdAt) : new Date();
@@ -3290,79 +3469,121 @@ function RevenueView({ bookings }: { bookings: any[] }) {
 
   return (
     <div className="flex flex-col gap-8 animate-reveal">
+      {/* Header with Filter */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div>
+          <h2 className="text-xl font-bold text-brand-blue-deep">Revenue Overview</h2>
+          <p className="text-slate-500 text-sm mt-1">Track financial metrics and performance trends</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-semibold text-slate-600">Period:</span>
+          <select
+            value={timeFilter}
+            onChange={(e) => setTimeFilter(e.target.value as any)}
+            className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-brand-blue-deep focus:ring-2 focus:ring-brand-green focus:border-brand-green outline-none transition-all cursor-pointer"
+          >
+            <option value="all">All Time</option>
+            <option value="today">Today (Last 24 Hours)</option>
+            <option value="7days">Last 7 Days</option>
+            <option value="30days">Last 30 Days</option>
+          </select>
+        </div>
+      </div>
+
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-reveal">
-        {/* Card 1 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 animate-reveal">
+        {/* Card 1: Total Revenue */}
         <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 to-violet-700 text-white p-6 rounded-2xl border border-indigo-700 shadow-md">
           <div className="absolute top-0 right-0 p-4 opacity-15">
             <BadgeIndianRupee className="w-24 h-24 animate-pulse" />
           </div>
           <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-200">
-            Potential Revenue
+            Total Revenue
           </p>
           <p className="text-3xl font-display font-bold mt-2">
-            ₹ {totalPotentialRevenue.toLocaleString()}
+            ₹ {confirmedRevenue.toLocaleString("en-IN")}
           </p>
           <div className="mt-4 flex items-center justify-between text-xs text-indigo-200">
-            <span>Confirmed + Pending</span>
+            <span>All confirmed revenue</span>
             <span className="bg-indigo-500/30 px-2 py-0.5 rounded font-semibold">
-              {activeBookingsCount} bookings
+              +{growthPercent}% vs Last Month
             </span>
           </div>
         </div>
 
-        {/* Card 2 */}
+        {/* Card 2: Revenue This Month */}
         <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-6 rounded-2xl border border-emerald-700 shadow-md">
           <div className="absolute top-0 right-0 p-4 opacity-15">
-            <BadgeIndianRupee className="w-24 h-24 animate-pulse" />
+            <CalendarCheck className="w-24 h-24 animate-pulse" />
           </div>
           <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-200">
-            Confirmed Revenue
+            Revenue This Month
           </p>
           <p className="text-3xl font-display font-bold mt-2">
-            ₹ {confirmedRevenue.toLocaleString()}
+            ₹ {revenueThisMonth.toLocaleString("en-IN")}
           </p>
           <div className="mt-4 flex items-center justify-between text-xs text-emerald-200">
-            <span>Realized Income</span>
+            <span>Current month earnings</span>
             <span className="bg-emerald-500/30 px-2 py-0.5 rounded font-semibold">
-              {confirmedBookings.length} confirmed
+              {bookingsThisMonth.length} bookings
             </span>
           </div>
         </div>
 
-        {/* Card 3 */}
+        {/* Card 3: Pending Payments */}
         <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 text-white p-6 rounded-2xl border border-amber-600 shadow-md">
           <div className="absolute top-0 right-0 p-4 opacity-15">
-            <BadgeIndianRupee className="w-24 h-24 animate-pulse" />
+            <CreditCard className="w-24 h-24 animate-pulse" />
           </div>
           <p className="text-[11px] font-bold uppercase tracking-widest text-amber-200">
-            Pipeline Revenue
+            Pending Payments
           </p>
           <p className="text-3xl font-display font-bold mt-2">
-            ₹ {pendingRevenue.toLocaleString()}
+            ₹ {pendingRevenue.toLocaleString("en-IN")}
           </p>
           <div className="mt-4 flex items-center justify-between text-xs text-amber-200">
-            <span>Expected Pending</span>
+            <span>Amount customers still owe</span>
             <span className="bg-amber-500/30 px-2 py-0.5 rounded font-semibold">
               {pendingBookings.length} pending
             </span>
           </div>
         </div>
 
-        {/* Card 4 */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-cyan-600 to-blue-700 text-white p-6 rounded-2xl border border-cyan-700 shadow-md">
+        {/* Card 4: Total Bookings */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-sky-600 to-blue-700 text-white p-6 rounded-2xl border border-sky-700 shadow-md">
           <div className="absolute top-0 right-0 p-4 opacity-15">
-            <BadgeIndianRupee className="w-24 h-24 animate-pulse" />
+            <Package className="w-24 h-24 animate-pulse" />
           </div>
-          <p className="text-[11px] font-bold uppercase tracking-widest text-cyan-200">
-            Avg Booking Revenue
+          <p className="text-[11px] font-bold uppercase tracking-widest text-sky-200">
+            Total Bookings
           </p>
           <p className="text-3xl font-display font-bold mt-2">
-            ₹ {Math.round(averageBookingRevenue).toLocaleString()}
+            {confirmedBookings.length}
           </p>
-          <div className="mt-4 flex items-center justify-between text-xs text-cyan-200">
-            <span>Average Deal Size</span>
-            <span className="bg-cyan-500/30 px-2 py-0.5 rounded font-semibold">Per booking</span>
+          <div className="mt-4 flex items-center justify-between text-xs text-sky-200">
+            <span>Total confirmed bookings</span>
+            <span className="bg-sky-500/30 px-2 py-0.5 rounded font-semibold">
+              Confirmed
+            </span>
+          </div>
+        </div>
+
+        {/* Card 5: Average Booking Value */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 to-cyan-700 text-white p-6 rounded-2xl border border-teal-700 shadow-md">
+          <div className="absolute top-0 right-0 p-4 opacity-15">
+            <Users className="w-24 h-24 animate-pulse" />
+          </div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-teal-200">
+            Average Booking Value
+          </p>
+          <p className="text-3xl font-display font-bold mt-2">
+            ₹ {Math.round(averageBookingRevenue).toLocaleString("en-IN")}
+          </p>
+          <div className="mt-4 flex items-center justify-between text-xs text-teal-200">
+            <span>Average revenue per booking</span>
+            <span className="bg-teal-500/30 px-2 py-0.5 rounded font-semibold">
+              Per booking
+            </span>
           </div>
         </div>
       </div>
@@ -3420,50 +3641,100 @@ function RevenueView({ bookings }: { bookings: any[] }) {
 
         {/* Monthly Trend */}
         <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
-          <h2 className="text-lg font-bold text-brand-blue-deep mb-6">Monthly Revenue Trend</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-lg font-bold text-brand-blue-deep">Monthly Revenue Trend</h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {yearFilter === "thisYear" ? `This Year (${new Date().getFullYear()})` : yearFilter === "lastYear" ? `Last Year (${new Date().getFullYear() - 1})` : "All Years Combined"}
+              </p>
+            </div>
+            <select
+              value={yearFilter}
+              onChange={(e) => setYearFilter(e.target.value as any)}
+              className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-brand-blue-deep focus:ring-2 focus:ring-brand-green focus:border-brand-green outline-none transition-all cursor-pointer"
+            >
+              <option value="thisYear">This Year</option>
+              <option value="lastYear">Last Year</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
           <div className="flex-1 min-h-[300px] w-full">
-            {sortedMonths.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-slate-400">
-                No trend data available
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={sortedMonths.map((m) => ({ name: m, revenue: monthlyData[m] }))}
-                  margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{ top: 28, right: 10, left: 10, bottom: 0 }}
+                barCategoryGap="25%"
+              >
+                <defs>
+                  <linearGradient id="barGradientBlue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.85} />
+                  </linearGradient>
+                  <linearGradient id="barGradientEmpty" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#e2e8f0" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#f1f5f9" stopOpacity={1} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#64748b", fontSize: 12, fontWeight: 600 }}
+                  dy={10}
+                />
+                <YAxis
+                  tickFormatter={formatYAxis}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#94a3b8", fontSize: 11 }}
+                  width={55}
+                />
+                <RechartsTooltip
+                  cursor={{ fill: "#f1f5f9", radius: 4 }}
+                  formatter={(value: number) => [`₹ ${value.toLocaleString("en-IN")}`, "Revenue"]}
+                  contentStyle={{
+                    borderRadius: "12px",
+                    border: "none",
+                    boxShadow: "0 4px 20px -2px rgb(0 0 0 / 0.15)",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                  }}
+                />
+                <Bar
+                  dataKey="revenue"
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={48}
                 >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis
-                    dataKey="name"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "#64748b", fontSize: 12, fontWeight: 600 }}
-                    dy={10}
-                  />
-                  <YAxis hide />
-                  <RechartsTooltip
-                    cursor={{ fill: "#f1f5f9" }}
-                    formatter={(value: number) => [`₹ ${value.toLocaleString()}`, "Revenue"]}
-                    contentStyle={{
-                      borderRadius: "12px",
-                      border: "none",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.revenue > 0 ? "url(#barGradientBlue)" : "url(#barGradientEmpty)"}
+                    />
+                  ))}
+                  <LabelList
+                    dataKey="revenue"
+                    position="top"
+                    content={({ x, y, width, value }: any) => {
+                      const label = formatBarLabel(Number(value));
+                      if (!label) return null;
+                      return (
+                        <text
+                          x={Number(x) + Number(width) / 2}
+                          y={Number(y) - 6}
+                          fill="#1e40af"
+                          textAnchor="middle"
+                          fontSize={10}
+                          fontWeight={700}
+                        >
+                          {label}
+                        </text>
+                      );
                     }}
                   />
-                  <Bar dataKey="revenue" fill="#0ea5e9" radius={[6, 6, 0, 0]} maxBarSize={50}>
-                    {sortedMonths.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill="url(#colorRevenue)" />
-                    ))}
-                  </Bar>
-                  <defs>
-                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.9} />
-                      <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.9} />
-                    </linearGradient>
-                  </defs>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

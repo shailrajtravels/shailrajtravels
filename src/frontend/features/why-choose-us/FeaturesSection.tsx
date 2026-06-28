@@ -1,10 +1,10 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
-import iconPin from "@/frontend/assets/ChatGPT Image Jun 10, 2026, 05_09_01 PM.png";
-import iconTag from "@/frontend/assets/ChatGPT Image Jun 10, 2026, 05_09_26 PM.png";
+import iconPin from "@/frontend/assets/icon-pin.webp";
+import iconTag from "@/frontend/assets/icon-tag.webp";
 // Provide fallback imports for the others
-import iconShield from "@/frontend/assets/ChatGPT Image Jun 10, 2026, 04_55_09 PM.png"; // Fallback
-import iconBus from "@/frontend/assets/ChatGPT Image Jun 10, 2026, 04_57_55 PM.png"; // Fallback
+import iconShield from "@/frontend/assets/icon-shield.webp"; // Fallback
+import iconBus from "@/frontend/assets/icon-bus.webp"; // Fallback
 
 import { FeatureCardBig, CheckItem } from "./components";
 
@@ -102,7 +102,7 @@ export function FeaturesSection({ lang, t }: { lang: "mr" | "en"; t: any }) {
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 md:gap-6 w-full max-w-md mx-auto sm:max-w-none">
           <a
-            href="#about"
+            href="/tours"
             className="flex w-full sm:w-[220px] items-center justify-center gap-2 bg-[#10A34A] hover:bg-[#0D8A3E] text-white rounded-lg px-6 py-4 text-[16px] font-semibold transition-all shadow-sm hover:shadow-[0_8px_20px_rgba(16,163,74,0.25)] hover:-translate-y-0.5"
           >
             {t.btnExplore} <ArrowRight className="w-5 h-5" />

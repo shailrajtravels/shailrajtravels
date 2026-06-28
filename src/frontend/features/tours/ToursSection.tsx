@@ -5,7 +5,7 @@ import { getMockTours, TourData } from "./data";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import bgFallback from "@/frontend/assets/hero-pandharpur.jpg";
+import bgFallback from "@/frontend/assets/hero-pandharpur.webp";
 
 export function ToursSection({
   lang,

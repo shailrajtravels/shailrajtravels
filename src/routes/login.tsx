@@ -75,7 +75,14 @@ function LoginPage() {
 
       <div className="w-full max-w-md relative z-10 animate-reveal">
         <div className="flex flex-col items-center mb-8">
-          <img src={logo} alt="Shailraj Travels" className="h-20 mb-4" />
+          <div className="w-32 h-32 rounded-full bg-white border border-slate-100 shadow-md shadow-brand-blue/5 flex items-center justify-center mb-6 overflow-hidden">
+            <img 
+              src={logo} 
+              alt="Shailraj Travels Logo" 
+              className="h-full w-full object-contain" 
+              style={{ transform: "scale(1.65)" }} 
+            />
+          </div>
           <h1 className="text-2xl font-bold font-display text-brand-blue-deep">Admin Portal</h1>
           <p className="text-slate-500 text-sm mt-1">Secure access to manage your website</p>
         </div>
@@ -86,51 +93,55 @@ function LoginPage() {
             onKeyDown={handleFormKeyDown}
             className="flex flex-col gap-6"
           >
-            <div className="flex flex-col gap-2">
-              <label className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">
+            {/* Email Address */}
+            <div className="flex flex-col gap-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
                 Email Address
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-5 h-5" />
-                </div>
+              <div className="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 h-[56px] transition focus-within:border-brand-green focus-within:ring-2 focus-within:ring-brand-green/15">
+                <Mail className="h-5 w-5 text-slate-400 shrink-0 transition-colors group-focus-within:text-brand-green" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter email address..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] font-medium text-brand-blue-deep placeholder-slate-400 focus:ring-2 focus:ring-brand-green focus:border-brand-green focus:bg-white transition-all outline-none"
+                  className="w-full bg-transparent text-[15px] font-semibold text-brand-blue-deep placeholder:text-slate-400 placeholder:font-medium focus:outline-none"
                   autoFocus
                 />
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">
+            {/* Master Password */}
+            <div className="flex flex-col gap-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
                 Master Password
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-5 h-5" />
-                </div>
+              <div className="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 h-[56px] transition focus-within:border-brand-green focus-within:ring-2 focus-within:ring-brand-green/15">
+                <Lock className="h-5 w-5 text-slate-400 shrink-0 transition-colors group-focus-within:text-brand-green" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] font-medium text-brand-blue-deep placeholder-slate-400 focus:ring-2 focus:ring-brand-green focus:border-brand-green focus:bg-white transition-all outline-none"
+                  className="w-full bg-transparent text-[15px] font-semibold text-brand-blue-deep placeholder:text-slate-400 placeholder:font-medium focus:outline-none"
                 />
               </div>
-              {error && <p className="text-red-500 text-sm font-medium animate-pulse">{error}</p>}
+              {error && <p className="text-red-500 text-sm font-semibold mt-1 animate-pulse">{error}</p>}
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading || !email || !password}
-              className="w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold rounded-xl py-3.5 flex items-center justify-center gap-2 transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2 shadow-lg shadow-brand-green/20"
+              className="w-full h-[56px] bg-[#10A34A] hover:bg-[#0D8A3E] text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 shadow-lg shadow-[#10A34A]/20 hover:shadow-[#10A34A]/30 hover:-translate-y-0.5 cursor-pointer"
             >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
-              {!loading && <ArrowRight className="w-5 h-5" />}
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  Sign In <ArrowRight className="w-5 h-5" />
+                </>
+              )}
             </button>
           </form>
         </div>
@@ -138,7 +149,7 @@ function LoginPage() {
         <div className="text-center mt-8">
           <a
             href="/"
-            className="text-sm font-medium text-slate-500 hover:text-brand-green transition-colors"
+            className="text-sm font-semibold text-slate-500 hover:text-brand-green transition-colors"
           >
             &larr; Back to Website
           </a>
