@@ -67,12 +67,21 @@ export async function initWhatsApp(sessionName = SESSION_NAME) {
     
     // 4. Register Webhook for auto-responder chatbot
     try {
-      console.log("[WhatsApp] Registering webhook for incoming messages...");
-      await openwaRequest(`/api/sessions/${activeSessionId}/webhooks`, 'POST', {
-        url: 'http://127.0.0.1:3001/',
-        events: ['message.received']
-      });
-      console.log("[WhatsApp] Webhook registered successfully!");
+      console.log("[WhatsApp] Checking existing webhooks...");
+      const webhooks = await openwaRequest(`/api/sessions/${activeSessionId}/webhooks`);
+      const targetUrl = 'http://127.0.0.1:3001/';
+      const exists = Array.isArray(webhooks) && webhooks.some((wh: any) => wh.url === targetUrl);
+      
+      if (!exists) {
+        console.log("[WhatsApp] Registering webhook for incoming messages...");
+        await openwaRequest(`/api/sessions/${activeSessionId}/webhooks`, 'POST', {
+          url: targetUrl,
+          events: ['message.received']
+        });
+        console.log("[WhatsApp] Webhook registered successfully!");
+      } else {
+        console.log("[WhatsApp] Webhook already registered.");
+      }
     } catch (e: any) {
       // If it already exists or fails, just log it, don't crash
       console.warn("[WhatsApp] Webhook registration notice:", e.message);
@@ -131,6 +140,13 @@ export async function sendAdminNotification(message: string) {
   if (!activeSessionId) return false;
   try {
     const adminId = `${ADMIN_PHONE}@c.us`;
+
+    // Simulate typing indicator for anti-ban
+    try {
+      await openwaRequest(`/api/sessions/${activeSessionId}/chats/typing`, 'POST', { chatId: adminId });
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 2000));
+
     await openwaRequest(`/api/sessions/${activeSessionId}/messages/send-text`, 'POST', {
       chatId: adminId,
       text: message
@@ -167,6 +183,13 @@ export async function sendWhatsAppMessage(phone: string, message: string) {
   if (!activeSessionId) return false;
   try {
     const targetId = await resolveChatId(phone);
+
+    // Simulate typing indicator for anti-ban
+    try {
+      await openwaRequest(`/api/sessions/${activeSessionId}/chats/typing`, 'POST', { chatId: targetId });
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 2000));
+
     await openwaRequest(`/api/sessions/${activeSessionId}/messages/send-text`, 'POST', {
       chatId: targetId,
       text: message
@@ -192,6 +215,12 @@ export async function sendWhatsAppImage(phone: string, base64Image: string, file
       const match = parts[0].match(/data:(.*?);/);
       if (match) mimeType = match[1];
     }
+
+    // Simulate typing indicator for anti-ban
+    try {
+      await openwaRequest(`/api/sessions/${activeSessionId}/chats/typing`, 'POST', { chatId: targetId });
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 2000));
 
     await openwaRequest(`/api/sessions/${activeSessionId}/messages/send-image`, 'POST', {
       chatId: targetId,
@@ -266,6 +295,12 @@ export async function sendBookingInvoicePDF(
 
     const pkgName = booking.invoiceCustomData?.packageName || booking.packageName || booking.tripName || "Custom Trip";
     const msg = `🙏 *Shailraj Travels Pune* 🙏\n\nHello *${booking.name || "Customer"}*,\n\nWe have received your payment for *${pkgName}*.\nPlease find the official invoice above. Thank you for choosing us! Have a blessed trip! 🚩`;
+
+    // Simulate typing indicator for anti-ban
+    try {
+      await openwaRequest(`/api/sessions/${activeSessionId}/chats/typing`, 'POST', { chatId: targetId });
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 2000));
 
     await openwaRequest(`/api/sessions/${activeSessionId}/messages/send-document`, 'POST', {
       chatId: targetId,

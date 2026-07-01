@@ -49,8 +49,8 @@ export function generateHreflangLinks(currentUrl: string) {
   const mrUrl = path.startsWith("/mr/") ? currentUrl : `${urlObj.origin}/mr${path}`;
 
   return [
-    { rel: "alternate", hreflang: "en", href: enUrl },
-    { rel: "alternate", hreflang: "mr", href: mrUrl },
-    { rel: "alternate", hreflang: "x-default", href: enUrl },
+    { rel: "alternate", hrefLang: "en", href: enUrl },
+    { rel: "alternate", hrefLang: "mr", href: mrUrl },
+    { rel: "alternate", hrefLang: "x-default", href: enUrl },
   ];
 }

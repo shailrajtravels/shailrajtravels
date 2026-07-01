@@ -3,6 +3,7 @@ import { getToursFn } from "../../../backend/lib/tours";
 import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, ArrowRight } from "lucide-react";
 import { translations } from "./i18n";
 import { BrandHighlight } from "./BrandHighlight";
+import { Link } from "@tanstack/react-router";
 
 export function FooterSection({ t, lang = "en" }: { t: typeof translations.mr; lang?: string }) {
   const [popularTours, setPopularTours] = useState<{ label: string; href: string }[]>([]);
@@ -62,7 +63,9 @@ export function FooterSection({ t, lang = "en" }: { t: typeof translations.mr; l
               </span>
               <div className="flex items-center gap-4">
                 <a
-                  href="#"
+                  href="https://www.instagram.com/wings_of_mayur_9999/"
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label="Instagram"
                   className="w-10 h-10 rounded-full bg-slate-800/60 border border-slate-700/50 flex items-center justify-center text-slate-400 hover:bg-brand-green hover:border-brand-green hover:text-[#0a192f] hover:-translate-y-1 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a192f]"
                 >
@@ -103,15 +106,28 @@ export function FooterSection({ t, lang = "en" }: { t: typeof translations.mr; l
                 { label: t.navContact || "Contact", href: "/contact" },
               ].map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="group inline-flex items-center text-[15px] text-slate-400 hover:text-white transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm"
-                  >
-                    <ArrowRight className="w-3.5 h-3.5 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 text-brand-green transition-all duration-300" />
-                    <span className="group-hover:translate-x-1 transition-transform duration-300">
-                      {link.label}
-                    </span>
-                  </a>
+                  {link.href.startsWith("/#") ? (
+                    <Link
+                      to="/"
+                      hash={link.href.replace("/#", "")}
+                      className="group inline-flex items-center text-[15px] text-slate-400 hover:text-white transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm"
+                    >
+                      <ArrowRight className="w-3.5 h-3.5 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 text-brand-green transition-all duration-300" />
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        {link.label}
+                      </span>
+                    </Link>
+                  ) : (
+                    <Link
+                      to={link.href as any}
+                      className="group inline-flex items-center text-[15px] text-slate-400 hover:text-white transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm"
+                    >
+                      <ArrowRight className="w-3.5 h-3.5 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 text-brand-green transition-all duration-300" />
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        {link.label}
+                      </span>
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -127,15 +143,15 @@ export function FooterSection({ t, lang = "en" }: { t: typeof translations.mr; l
               {popularTours.length > 0 ? (
                 popularTours.map((tour) => (
                   <li key={tour.label}>
-                    <a
-                      href={tour.href}
+                    <Link
+                      to={tour.href as any}
                       className="group inline-flex items-center text-[15px] text-slate-400 hover:text-white transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm"
                     >
                       <ArrowRight className="w-3.5 h-3.5 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 text-brand-green transition-all duration-300" />
                       <span className="group-hover:translate-x-1 transition-transform duration-300">
                         {tour.label}
                       </span>
-                    </a>
+                    </Link>
                   </li>
                 ))
               ) : (
@@ -211,15 +227,15 @@ export function FooterSection({ t, lang = "en" }: { t: typeof translations.mr; l
                   { label: t.footerCancel || "Cancellation Policy", href: "/cancellation-policy" },
                 ].map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.href as any}
                       className="group inline-flex items-center text-[15px] text-slate-400 hover:text-white transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm whitespace-nowrap"
                     >
                       <ArrowRight className="w-3.5 h-3.5 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 text-brand-green transition-all duration-300 shrink-0" />
                       <span className="group-hover:translate-x-1 transition-transform duration-300">
                         {link.label}
                       </span>
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -237,15 +253,27 @@ export function FooterSection({ t, lang = "en" }: { t: typeof translations.mr; l
                   { label: t.footerReportIssue || "Report Issue", href: "#" },
                 ].map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="group inline-flex items-center text-[15px] text-slate-400 hover:text-white transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm whitespace-nowrap"
-                    >
-                      <ArrowRight className="w-3.5 h-3.5 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 text-brand-green transition-all duration-300 shrink-0" />
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">
-                        {link.label}
-                      </span>
-                    </a>
+                    {link.href === "#" ? (
+                      <a
+                        href={link.href}
+                        className="group inline-flex items-center text-[15px] text-slate-400 hover:text-white transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm whitespace-nowrap"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 text-brand-green transition-all duration-300 shrink-0" />
+                        <span className="group-hover:translate-x-1 transition-transform duration-300">
+                          {link.label}
+                        </span>
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href as any}
+                        className="group inline-flex items-center text-[15px] text-slate-400 hover:text-white transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded-sm whitespace-nowrap"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 text-brand-green transition-all duration-300 shrink-0" />
+                        <span className="group-hover:translate-x-1 transition-transform duration-300">
+                          {link.label}
+                        </span>
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

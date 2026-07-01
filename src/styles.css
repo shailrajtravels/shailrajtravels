@@ -31,6 +31,8 @@
   --color-brand-green-dark: var(--brand-green-dark);
   --color-brand-ink: var(--brand-ink);
   --color-brand-mist: var(--brand-mist);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-orange-dark: var(--brand-orange-dark);
 
   --font-display: "Plus Jakarta Sans", sans-serif;
   --font-sans: "Inter", sans-serif;
@@ -60,6 +62,8 @@
   --brand-green-dark: #1E8B34;
   --brand-ink: #0a1f4a;
   --brand-mist: #F8FBFA;
+  --brand-orange: #F97316;
+  --brand-orange-dark: #EA580C;
 
   --gradient-cta: linear-gradient(135deg, #0B4DBA 0%, #2FAF43 100%);
   --gradient-cta-hover: linear-gradient(135deg, #083A8C 0%, #1E8B34 100%);

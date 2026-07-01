@@ -171,16 +171,18 @@ export function ReviewsSection({ lang, t }: { lang: "mr" | "en"; t: any }) {
           <div className="lg:col-span-4 flex flex-col">
             <div className="bg-white rounded-[24px] p-6 sm:p-8 shadow-xl shadow-brand-blue/5 border border-slate-100 sticky top-32">
               <form
+                suppressHydrationWarning
                 action="https://formspree.io/f/placeholder"
                 method="POST"
                 onSubmit={handleSubmit}
                 onKeyDown={handleFormKeyDown}
                 className="flex flex-col gap-5"
               >
-                <input type="hidden" name="rating" value={rating} />
+                <input suppressHydrationWarning type="hidden" name="rating" id="review-rating" autoComplete="off" value={rating} />
                 <div className="flex justify-center gap-2 mb-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
+                      suppressHydrationWarning
                       key={star}
                       type="button"
                       onClick={() => setRating(star)}
@@ -194,8 +196,11 @@ export function ReviewsSection({ lang, t }: { lang: "mr" | "en"; t: any }) {
                 </div>
 
                 <input
+                  suppressHydrationWarning
                   type="text"
                   name="name"
+                  id="review-name"
+                  autoComplete="name"
                   required
                   placeholder={t.reviewFormName}
                   value={name}
@@ -205,7 +210,10 @@ export function ReviewsSection({ lang, t }: { lang: "mr" | "en"; t: any }) {
 
                 <div className="relative">
                   <textarea
+                    suppressHydrationWarning
                     name="review"
+                    id="review-text"
+                    autoComplete="off"
                     required
                     placeholder={t.reviewFormText}
                     value={review}
@@ -214,6 +222,7 @@ export function ReviewsSection({ lang, t }: { lang: "mr" | "en"; t: any }) {
                     className="w-full bg-brand-mist border-none rounded-xl px-4 py-3.5 text-[15px] font-medium text-brand-blue-deep placeholder-slate-400 focus:ring-2 focus:ring-brand-blue focus:bg-white transition-all resize-none outline-none pb-12"
                   />
                   <button
+                    suppressHydrationWarning
                     type="button"
                     onClick={handleRefine}
                     disabled={isRefining || !review.trim()}
@@ -229,6 +238,7 @@ export function ReviewsSection({ lang, t }: { lang: "mr" | "en"; t: any }) {
                 </div>
 
                 <button
+                  suppressHydrationWarning
                   type="submit"
                   disabled={isSubmitting || showToast}
                   className="w-full mt-2 bg-brand-blue hover:bg-brand-blue-deep text-white font-bold rounded-xl py-4 flex items-center justify-center gap-2 transition-all disabled:opacity-70 disabled:cursor-not-allowed group"

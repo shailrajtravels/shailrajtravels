@@ -51,12 +51,14 @@ export function GallerySection({ t, photos = [] }: { t: any; photos?: any[] }) {
           </div>
 
           <button
+            suppressHydrationWarning
             onClick={scrollPrev}
             className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg text-brand-blue-deep opacity-0 transition-all hover:bg-brand-green hover:text-white group-hover:opacity-100"
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
           <button
+            suppressHydrationWarning
             onClick={scrollNext}
             className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg text-brand-blue-deep opacity-0 transition-all hover:bg-brand-green hover:text-white group-hover:opacity-100"
           >

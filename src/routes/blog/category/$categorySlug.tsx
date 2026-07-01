@@ -7,13 +7,25 @@ import { FooterSection as Footer } from "../../../frontend/features/core/Footer"
 import { translations } from "../../../frontend/features/core/i18n";
 import { Calendar, Clock, ChevronRight, User } from "lucide-react";
 
+import { getCustomBlogsFn } from "../../../backend/lib/custom-blogs";
+
 export const Route = createFileRoute("/blog/category/$categorySlug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     // Reconstruct category string from slug
     const decodedSlug = params.categorySlug.replace(/-/g, " ").toLowerCase();
 
+    let customBlogs: any[] = [];
+    try {
+      customBlogs = await getCustomBlogsFn();
+    } catch (e) {
+      console.error("Failed to load custom blogs", e);
+    }
+
+    const visibleCustomBlogs = customBlogs.filter((b) => !b.isHidden);
+    const combined = [...visibleCustomBlogs, ...blogPosts];
+
     // Find matching posts
-    const posts = blogPosts.filter((p) => p.category.toLowerCase() === decodedSlug);
+    const posts = combined.filter((p) => p.category.toLowerCase() === decodedSlug);
 
     if (posts.length === 0) throw notFound();
 

@@ -8,6 +8,7 @@ import {
   deletePackageFn,
 } from "../backend/lib/packages";
 import { getReviewsFn, deleteReviewFn } from "../backend/lib/reviews";
+import { getCustomBlogsFn, deleteCustomBlogFn, updateCustomBlogFn, toggleBlogVisibilityFn } from "../backend/lib/custom-blogs";
 import {
   getTripOptionsFn,
   createTripOptionFn,
@@ -30,6 +31,8 @@ import {
   getWhatsAppStatusFn,
   restartWhatsAppFn,
   logoutWhatsAppFn,
+  getChatbotRulesFn,
+  saveChatbotRulesFn,
 } from "../backend/lib/whatsapp-api";
 import { ToursAdmin } from "../frontend/features/admin/ToursAdmin";
 import {
@@ -44,6 +47,7 @@ import {
   ArrowLeft,
   Image as ImageIcon,
   MessageSquare,
+  BookOpen,
   Menu,
   X,
   Map,
@@ -52,6 +56,7 @@ import {
   Clock,
   Users,
   Eye,
+  EyeOff,
   FileSpreadsheet,
   Download,
   Activity,
@@ -110,6 +115,7 @@ function AdminPage() {
   const [galleryPhotos, setGalleryPhotos] = useState<any[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [tours, setTours] = useState<any[]>([]);
+  const [customBlogs, setCustomBlogs] = useState<any[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null); // Shared for editing
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -126,13 +132,14 @@ function AdminPage() {
     | "audit"
     | "revenue"
     | "whatsapp"
+    | "blogs"
   >("dashboard");
   const [subTab, setSubTab] = useState<"tours" | "packages">("tours");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     id: string;
-    type: "package" | "review" | "photo" | "trip" | "booking" | "tour";
+    type: "package" | "review" | "photo" | "trip" | "booking" | "tour" | "blog";
   } | null>(null);
   const [bookingSearch, setBookingSearch] = useState("");
   const [replyModal, setReplyModal] = useState<{isOpen: boolean, booking: any}>({isOpen: false, booking: null});
@@ -201,8 +208,12 @@ function AdminPage() {
         console.error("Tours error:", e);
         return [];
       });
+      const blogsPromise = getCustomBlogsFn().catch((e) => {
+        console.error("Custom blogs error:", e);
+        return [];
+      });
 
-      const [pkgs, revs, trips, bks, photos, logs, trs] = await Promise.all([
+      const [pkgs, revs, trips, bks, photos, logs, trs, dbBlogs] = await Promise.all([
         pkgsPromise,
         revsPromise,
         tripsPromise,
@@ -210,6 +221,7 @@ function AdminPage() {
         photosPromise,
         auditPromise,
         toursPromise,
+        blogsPromise,
       ]);
 
       setPackages(pkgs);
@@ -232,6 +244,7 @@ function AdminPage() {
       setGalleryPhotos(photos);
       setAuditLogs(logs);
       setTours(trs);
+      setCustomBlogs(dbBlogs || []);
     } catch (e: any) {
       console.error("loadData fatal error:", e);
       setErrorMsg(e.message || String(e));
@@ -277,6 +290,8 @@ function AdminPage() {
         await deleteBookingFn({ data: { adminToken: token, id: deleteConfirm.id } });
       else if (deleteConfirm.type === "tour")
         await deleteTourFn({ data: { adminToken: token, id: deleteConfirm.id } });
+      else if (deleteConfirm.type === "blog")
+        await deleteCustomBlogFn({ data: { adminToken: token, id: deleteConfirm.id } });
 
       loadData();
     } catch (e) {
@@ -482,6 +497,17 @@ function AdminPage() {
             <Smartphone className="w-5 h-5" />
             WhatsApp Engine
           </button>
+          <button
+            onClick={() => {
+              setActiveTab("blogs");
+              setIsFormOpen(false);
+              setIsMobileMenuOpen(false);
+            }}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === "blogs" ? "bg-brand-blue-deep text-white shadow-md" : "text-slate-500 hover:bg-slate-50 hover:text-brand-blue-deep"}`}
+          >
+            <ImageIcon className="w-5 h-5" />
+            Custom Blogs
+          </button>
         </div>
         <div className="p-4 border-t border-slate-100">
           <button
@@ -528,7 +554,9 @@ function AdminPage() {
                                   ? "Revenue Overview"
                                   : activeTab === "whatsapp"
                                     ? "WhatsApp Engine"
-                                    : "Booking Management"}
+                                    : activeTab === "blogs"
+                                      ? "Blogs Management"
+                                      : "Booking Management"}
             </h1>
           </div>
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
@@ -1360,6 +1388,12 @@ function AdminPage() {
             <RevenueView bookings={bookings} />
           ) : activeTab === "whatsapp" ? (
             <WhatsAppEngineView token={token} />
+          ) : activeTab === "blogs" ? (
+            <BlogsAdminView
+              token={token}
+              blogs={customBlogs}
+              setDeleteConfirm={setDeleteConfirm}
+            />
           ) : null}
         </div>
       </main>
@@ -4310,6 +4344,11 @@ function WhatsAppEngineView({ token }: { token: string }) {
   const [status, setStatus] = useState<string>("Loading...");
   const [qrCode, setQrCode] = useState<string | null>(null);
 
+  const [rules, setRules] = useState<any[]>([]);
+  const [loadingRules, setLoadingRules] = useState(true);
+  const [editingRuleIndex, setEditingRuleIndex] = useState<number | null>(null);
+  const [ruleForm, setRuleForm] = useState<{ keywords: string; reply: string }>({ keywords: "", reply: "" });
+
   const fetchStatus = async () => {
     try {
       const res = await getWhatsAppStatusFn({ data: { adminToken: token } });
@@ -4321,11 +4360,59 @@ function WhatsAppEngineView({ token }: { token: string }) {
     }
   };
 
+  const fetchRules = async () => {
+    try {
+      setLoadingRules(true);
+      const res = await getChatbotRulesFn({ data: { adminToken: token } });
+      setRules(res.rules || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingRules(false);
+    }
+  };
+
   useEffect(() => {
     fetchStatus();
+    fetchRules();
     const interval = setInterval(fetchStatus, 5000);
     return () => clearInterval(interval);
   }, [token]);
+
+  const handleSaveRules = async (newRules: any[]) => {
+    try {
+      await saveChatbotRulesFn({ data: { adminToken: token, rules: newRules } });
+      setRules(newRules);
+      alert("Rules saved successfully!");
+    } catch (e) {
+      console.error(e);
+      alert("Failed to save rules.");
+    }
+  };
+
+  const handleDeleteRule = (index: number) => {
+    if (!window.confirm("Are you sure you want to delete this rule?")) return;
+    const newRules = [...rules];
+    newRules.splice(index, 1);
+    handleSaveRules(newRules);
+  };
+
+  const handleSaveForm = () => {
+    const kws = ruleForm.keywords.split(",").map(k => k.trim().toLowerCase()).filter(Boolean);
+    if (kws.length === 0 || !ruleForm.reply.trim()) {
+      alert("Keywords and reply are required.");
+      return;
+    }
+    const newRules = [...rules];
+    if (editingRuleIndex !== null && editingRuleIndex !== -1) {
+      newRules[editingRuleIndex] = { keywords: kws, reply: ruleForm.reply };
+    } else {
+      newRules.push({ keywords: kws, reply: ruleForm.reply });
+    }
+    handleSaveRules(newRules);
+    setEditingRuleIndex(null);
+    setRuleForm({ keywords: "", reply: "" });
+  };
 
   const handleRestart = async () => {
     setStatus("Connecting...");
@@ -4346,52 +4433,159 @@ function WhatsAppEngineView({ token }: { token: string }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-4 sm:p-8 max-w-2xl mx-auto animate-reveal text-center">
-      <Smartphone className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 text-brand-blue-deep" />
-      <h2 className="text-xl sm:text-2xl font-bold font-display text-brand-blue-deep mb-2">WhatsApp Engine</h2>
-      <p className="text-slate-500 mb-6 sm:mb-8 text-sm sm:text-base">
-        Manage the WhatsApp bot connection. This bot automatically notifies you of new bookings and
-        responds to commands.
-      </p>
-
-      <div className="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-100 mb-6 sm:mb-8 inline-block w-full max-w-sm mx-auto">
-        <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Status</p>
-        <p
-          className={`text-xl font-bold ${
-            status === "Connected"
-              ? "text-green-600"
-              : status === "Error"
-                ? "text-red-600"
-                : "text-yellow-600"
-          }`}
-        >
-          {status}
+    <div className="space-y-8 animate-reveal">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-4 sm:p-8 max-w-2xl mx-auto text-center">
+        <Smartphone className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 text-brand-blue-deep" />
+        <h2 className="text-xl sm:text-2xl font-bold font-display text-brand-blue-deep mb-2">WhatsApp Engine</h2>
+        <p className="text-slate-500 mb-6 sm:mb-8 text-sm sm:text-base">
+          Manage the WhatsApp bot connection. This bot automatically notifies you of new bookings and
+          responds to commands.
         </p>
 
-        {status === "Awaiting QR" && qrCode && (
-          <div className="mt-6 flex flex-col items-center">
-            <p className="text-sm text-slate-600 mb-4">
-              Scan this QR code with your WhatsApp app to link the bot.
-            </p>
-            {/* Generate QR image from string */}
-            <QRCodeDisplay qr={qrCode} />
-          </div>
-        )}
+        <div className="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-100 mb-6 sm:mb-8 inline-block w-full max-w-sm mx-auto">
+          <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Status</p>
+          <p
+            className={`text-xl font-bold ${
+              status === "Connected"
+                ? "text-green-600"
+                : status === "Error"
+                  ? "text-red-600"
+                  : "text-yellow-600"
+            }`}
+          >
+            {status}
+          </p>
+
+          {status === "Awaiting QR" && qrCode && (
+            <div className="mt-6 flex flex-col items-center">
+              <p className="text-sm text-slate-600 mb-4">
+                Scan this QR code with your WhatsApp app to link the bot.
+              </p>
+              {/* Generate QR image from string */}
+              <QRCodeDisplay qr={qrCode} />
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <button
+            onClick={handleRestart}
+            className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+          >
+            {status === "Disconnected" || status === "Error" ? "Connect Bot" : "Restart Engine"}
+          </button>
+          <button
+            onClick={handleLogout}
+            className="px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors"
+          >
+            Logout / Reset Bot
+          </button>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-        <button
-          onClick={handleRestart}
-          className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
-        >
-          {status === "Disconnected" || status === "Error" ? "Connect Bot" : "Restart Engine"}
-        </button>
-        <button
-          onClick={handleLogout}
-          className="px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors"
-        >
-          Logout / Reset Bot
-        </button>
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-4 sm:p-8 max-w-4xl mx-auto">
+        <h2 className="text-xl sm:text-2xl font-bold font-display text-brand-blue-deep mb-2">Chatbot Auto-Reply Rules</h2>
+        <p className="text-slate-500 mb-6 text-sm sm:text-base">
+          Manage the automated replies sent by the WhatsApp bot when customers message specific keywords.
+        </p>
+
+        {editingRuleIndex !== null ? (
+          <div className="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-200 mb-6">
+            <h3 className="font-bold text-lg mb-4">{editingRuleIndex === -1 ? "Add New Rule" : "Edit Rule"}</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Keywords (Comma separated)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. hello, hi, inquiry"
+                  className="w-full px-4 py-2 border rounded-lg"
+                  value={ruleForm.keywords}
+                  onChange={(e) => setRuleForm({ ...ruleForm, keywords: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Reply Message</label>
+                <textarea
+                  placeholder="Type the automated reply here..."
+                  className="w-full px-4 py-2 border rounded-lg h-32 resize-y"
+                  value={ruleForm.reply}
+                  onChange={(e) => setRuleForm({ ...ruleForm, reply: e.target.value })}
+                />
+              </div>
+              <div className="flex gap-3 justify-end pt-2">
+                <button
+                  onClick={() => { setEditingRuleIndex(null); setRuleForm({ keywords: "", reply: "" }); }}
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg font-bold transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveForm}
+                  className="px-4 py-2 bg-brand-blue text-white rounded-lg font-bold hover:bg-brand-blue-deep transition-colors"
+                >
+                  Save Rule
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => {
+              setEditingRuleIndex(-1);
+              setRuleForm({ keywords: "", reply: "" });
+            }}
+            className="mb-6 flex items-center gap-2 px-4 py-2 bg-brand-blue text-white font-bold rounded-lg hover:bg-brand-blue-deep transition-colors"
+          >
+            <Plus className="w-4 h-4" /> Add New Rule
+          </button>
+        )}
+
+        {loadingRules ? (
+          <div className="py-8 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-brand-blue" /></div>
+        ) : (
+          <div className="space-y-4">
+            {rules.map((rule, idx) => (
+              <div key={idx} className="border border-slate-200 rounded-xl p-4 sm:p-5 flex flex-col md:flex-row gap-4 justify-between items-start">
+                <div className="flex-1">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {rule.keywords.map((kw: string, i: number) => (
+                      <span key={i} className="bg-brand-blue-light text-brand-blue-deep px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                  <pre className="whitespace-pre-wrap font-sans text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    {rule.reply}
+                  </pre>
+                </div>
+                <div className="flex gap-2 shrink-0 w-full md:w-auto justify-end">
+                  <button
+                    onClick={() => {
+                      setEditingRuleIndex(idx);
+                      setRuleForm({ keywords: rule.keywords.join(", "), reply: rule.reply });
+                    }}
+                    className="p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-blue rounded-lg transition-colors"
+                    title="Edit Rule"
+                  >
+                    <Edit className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteRule(idx)}
+                    className="p-2 text-slate-500 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors"
+                    title="Delete Rule"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+            {rules.length === 0 && !editingRuleIndex && (
+              <div className="text-center py-8 text-slate-500 border border-dashed rounded-xl">
+                No chatbot rules defined.
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -4414,5 +4608,328 @@ function QRCodeDisplay({ qr }: { qr: string }) {
       alt="QR Code"
       className="mx-auto rounded-xl shadow-sm border border-slate-200"
     />
+  );
+}
+
+function BlogsAdminView({
+  token,
+  blogs,
+  setDeleteConfirm,
+}: {
+  token: string;
+  blogs: any[];
+  setDeleteConfirm: (confirm: any) => void;
+}) {
+  const [editingBlog, setEditingBlog] = useState<any | null>(null);
+  const [editForm, setEditForm] = useState({ title: "", content: "", authorName: "", category: "", thumbnailBase64: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleEditClick = (blog: any) => {
+    setEditingBlog(blog);
+    setEditForm({
+      title: blog.title,
+      content: blog.content,
+      authorName: blog.authorName,
+      category: blog.category,
+      thumbnailBase64: "",
+    });
+    setErrorMsg("");
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setIsSubmitting(true);
+    try {
+      await updateCustomBlogFn({
+        data: {
+          adminToken: token,
+          id: editingBlog._id,
+          title: editForm.title,
+          content: editForm.content,
+          authorName: editForm.authorName,
+          category: editForm.category,
+          thumbnailBase64: editForm.thumbnailBase64 || undefined,
+        }
+      });
+      setEditingBlog(null);
+      window.location.reload();
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to update blog.");
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleToggleVisibility = async (blog: any) => {
+    try {
+      await toggleBlogVisibilityFn({
+        data: {
+          adminToken: token,
+          id: blog._id,
+          isHidden: !blog.isHidden
+        }
+      });
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to toggle visibility");
+    }
+  };
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg("Thumbnail size exceeds 5MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setEditForm({ ...editForm, thumbnailBase64: event.target.result as string });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="flex-1 flex flex-col min-h-0 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6 md:p-8 animate-reveal relative">
+      <div className="flex items-center justify-between mb-6 shrink-0">
+        <div>
+          <h2 className="text-xl font-bold font-display text-brand-blue-deep mb-1">
+            Custom Yatri Blogs
+          </h2>
+          <p className="text-slate-500 text-sm">
+            View, edit, and toggle visibility of custom travelogue blogs.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-auto min-h-0 border border-slate-100 rounded-xl custom-scrollbar">
+        {blogs.length === 0 ? (
+          <div className="text-center py-20">
+            <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-slate-600 mb-1">No custom blogs found</h3>
+            <p className="text-slate-400 text-sm">Custom stories submitted from the front-end blog page will appear here.</p>
+          </div>
+        ) : (
+          <table className="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider text-xs">
+                <th className="p-4">Image</th>
+                <th className="p-4">Title</th>
+                <th className="p-4">Author</th>
+                <th className="p-4">Category</th>
+                <th className="p-4">Date</th>
+                <th className="p-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {blogs.map((blog) => (
+                <tr key={blog._id} className={`hover:bg-slate-50/50 transition-colors ${blog.isHidden ? "opacity-60 bg-slate-50" : ""}`}>
+                  <td className="p-4">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0">
+                      <img
+                        src={blog.featuredImage}
+                        alt={blog.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </td>
+                  <td className="p-4 font-bold text-brand-blue-deep max-w-xs truncate">
+                    <a
+                      href={`/blog/${blog.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:text-brand-blue transition-colors font-semibold"
+                    >
+                      {blog.title}
+                    </a>
+                    {blog.isHidden && (
+                      <span className="ml-2 inline-block px-2 py-0.5 bg-slate-200 text-slate-500 text-[10px] rounded uppercase font-bold tracking-widest">Hidden</span>
+                    )}
+                  </td>
+                  <td className="p-4 text-slate-700 font-medium">{blog.authorName}</td>
+                  <td className="p-4">
+                    <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold">
+                      {blog.category}
+                    </span>
+                  </td>
+                  <td className="p-4 text-slate-500">
+                    {new Date(blog.publishedAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <a
+                        href={`/blog/${blog.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-brand-blue transition-colors"
+                        title="View Blog"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </a>
+                      <button
+                        onClick={() => handleToggleVisibility(blog)}
+                        className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-brand-blue transition-colors"
+                        title={blog.isHidden ? "Unhide Blog" : "Hide Blog"}
+                      >
+                        {blog.isHidden ? <Eye className="w-4 h-4 text-slate-400" /> : <EyeOff className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={() => handleEditClick(blog)}
+                        className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-brand-blue transition-colors"
+                        title="Edit Blog"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() =>
+                          setDeleteConfirm({ isOpen: true, id: blog._id, type: "blog" })
+                        }
+                        className="p-1.5 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-600 transition-colors"
+                        title="Delete Blog"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Edit Blog Modal */}
+      {editingBlog && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl w-full max-w-[650px] shadow-2xl border border-slate-100 flex flex-col max-h-[90vh] animate-reveal overflow-hidden">
+            <div className="p-6 md:p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <h3 className="text-2xl font-display font-bold text-brand-blue-deep">Edit Blog</h3>
+              <button
+                onClick={() => setEditingBlog(null)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-brand-blue hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {errorMsg && (
+              <div className="px-6 md:px-8 pt-6">
+                <div className="p-4 bg-red-50 text-red-700 text-sm font-medium rounded-xl border border-red-100 flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">!</div>
+                  {errorMsg}
+                </div>
+              </div>
+            )}
+
+            <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1">
+              <form id="editBlogForm" onSubmit={handleEditSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Blog Title</label>
+                  <input
+                    type="text"
+                    required
+                    minLength={3}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all outline-none"
+                    placeholder="Enter blog title"
+                    value={editForm.title}
+                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Author Name</label>
+                    <input
+                      type="text"
+                      required
+                      minLength={2}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all outline-none"
+                      value={editForm.authorName}
+                      onChange={(e) => setEditForm({ ...editForm, authorName: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Category</label>
+                    <select
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all outline-none bg-white"
+                      value={editForm.category}
+                      onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    >
+                      <option value="Travel Guides">Travel Guides</option>
+                      <option value="Pilgrimage">Pilgrimage</option>
+                      <option value="Experiences">Experiences</option>
+                      <option value="Tips & Tricks">Tips & Tricks</option>
+                      <option value="News">News</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Thumbnail Image</label>
+                  <div className="flex items-center gap-4">
+                    {editForm.thumbnailBase64 ? (
+                      <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 shrink-0">
+                        <img src={editForm.thumbnailBase64} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 shrink-0">
+                        <img src={editingBlog.featuredImage} alt="Current" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <label className="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl cursor-pointer hover:bg-slate-200 transition-colors text-sm border border-slate-200">
+                      Change Image
+                      <input type="file" accept="image/*" className="hidden" onChange={handleThumbnailChange} />
+                    </label>
+                    <span className="text-xs text-slate-400">Max 5MB. Leave empty to keep current.</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Content (HTML Supported)</label>
+                  <textarea
+                    required
+                    minLength={10}
+                    rows={8}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all outline-none resize-y custom-scrollbar"
+                    value={editForm.content}
+                    onChange={(e) => setEditForm({ ...editForm, content: e.target.value })}
+                  />
+                </div>
+              </form>
+            </div>
+
+            <div className="p-6 md:p-8 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => setEditingBlog(null)}
+                className="px-6 py-2.5 text-slate-600 font-bold hover:bg-slate-200 rounded-xl transition-colors"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="editBlogForm"
+                disabled={isSubmitting}
+                className="px-6 py-2.5 bg-brand-green text-white font-bold rounded-xl hover:bg-brand-green-dark transition-all flex items-center gap-2 shadow-lg shadow-brand-green/20"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

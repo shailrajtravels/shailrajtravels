@@ -95,7 +95,7 @@ function handleMessage(msg) {
   }
 
   // 3. Prevent duplicate processing of the same message ID (webhook retries)
-  const msgId = msg.id && (msg.id._serialized || msg.id.id);
+  const msgId = msg.id && (typeof msg.id === "object" ? (msg.id._serialized || msg.id.id) : msg.id);
   if (msgId) {
     if (processedMessageIds.has(msgId)) {
       console.log(`[Webhook] ℹ️ Skipping duplicate message ID: ${msgId}`);
@@ -140,7 +140,7 @@ function handleMessage(msg) {
       reply = "🙏 *Ujjain Package Details* 🙏\n\nExperience the spiritual bliss of Ujjain Mahakaleshwar!\n\n*Duration:* 2 Nights / 3 Days\n*Price:* Starting from ₹4,999 per person.\n\nReply with 'BOOK UJJAIN' to confirm your trip!";
     } else if (text === "kedarnath" || text === "chardham") {
       reply = "🚩 *Kedarnath Yatra Details* 🚩\n\nJoin our premium Kedarnath Yatra!\n\n*Duration:* 4 Nights / 5 Days\n*Price:* Starting from ₹9,500 per person.\n\nReply with 'BOOK KEDARNATH' for availability!";
-    } else if (["inquiry", "hi", "hello", "hii"].includes(text)) {
+    } else if (["inquiry", "hello", "hii"].includes(text)) {
       reply = "Welcome to *Shailraj Travels Pune*! 🌍\n\nHow can we help you today?\n\nAvailable Commands:\n- Type *Ujjain* for Ujjain package details.\n- Type *Kedarnath* for Kedarnath Yatra details.\n- Or just type your question and our agent will reply shortly!";
     }
   }

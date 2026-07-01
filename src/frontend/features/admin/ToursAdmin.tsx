@@ -273,7 +273,7 @@ function TourForm({ token, initialData, onClose, onSuccess }: any) {
                 alt="Hero Preview"
               />
             )}
-            <input type="file" accept="image/*" onChange={handleImageChange} className="w-full" />
+            <input type="file" accept="image/*" onChange={handleImageChange} className="w-full" id="tour-hero-image" name="heroImage" />
           </div>
 
           <div className="md:col-span-2">
@@ -306,6 +306,8 @@ function TourForm({ token, initialData, onClose, onSuccess }: any) {
               label="Highlights (comma separated)"
               value={highlightsInput}
               onChange={(e: any) => setHighlightsInput(e.target.value)}
+              id="tour-highlights"
+              name="highlights"
             />
           </div>
           <div className="md:col-span-2">
@@ -313,6 +315,8 @@ function TourForm({ token, initialData, onClose, onSuccess }: any) {
               label="Destinations (comma separated)"
               value={destinationsInput}
               onChange={(e: any) => setDestinationsInput(e.target.value)}
+              id="tour-destinations"
+              name="destinations"
             />
           </div>
           <div className="md:col-span-2">
@@ -320,6 +324,8 @@ function TourForm({ token, initialData, onClose, onSuccess }: any) {
               label="Available Dates (comma separated, e.g. 2026-07-15, 2026-08-20)"
               value={datesInput}
               onChange={(e: any) => setDatesInput(e.target.value)}
+              id="tour-dates"
+              name="dates"
             />
           </div>
 
@@ -359,6 +365,7 @@ function Input({ label, ...props }: any) {
         {label}
       </label>
       <input
+        id={props.name}
         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-medium text-brand-blue-deep placeholder-slate-400 focus:ring-2 focus:ring-brand-green focus:border-brand-green focus:bg-white transition-all outline-none"
         {...props}
       />

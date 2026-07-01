@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { SEOFAQAccordion } from "../components/SEOFAQAccordion";
 import { SEOBreadcrumbs, type BreadcrumbItem } from "../components/SEOBreadcrumbs";
 import { SchemaMarkup } from "../components/SchemaMarkup";
 import { generateProductSchema } from "../../backend/lib/schema-generators";
@@ -10,6 +9,61 @@ import { useLanguage } from "../../routes/__root";
 import { translations } from "../features/core/i18n";
 import { createBookingFn } from "../../backend/lib/bookings";
 import { LazyImage } from "../components/ui/lazy-image";
+import { CheckCircle2 } from "lucide-react";
+
+const RECOMMENDED_VEHICLES = [
+  {
+    id: "swift-dzire",
+    name: "Swift Dzire",
+    capacityStr: "1–4 Travelers",
+    minCap: 1,
+    maxCap: 4,
+    description: "Perfect for couples and small families.",
+    amenities: ["Air Conditioning", "Comfortable Seating", "Driver Included", "Luggage Space", "Fuel Included", "Toll Included", "Parking Included"],
+    image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "ertiga",
+    name: "Ertiga",
+    capacityStr: "5–7 Travelers",
+    minCap: 5,
+    maxCap: 7,
+    description: "Best for medium-sized families.",
+    amenities: ["Air Conditioning", "Spacious Cabin", "Driver Included", "Large Luggage Capacity", "Fuel Included", "Toll Included", "Parking Included"],
+    image: "https://images.unsplash.com/photo-1513681414995-777174eec705?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "innova-crysta",
+    name: "Innova Crysta",
+    capacityStr: "5–7 Travelers",
+    minCap: 5,
+    maxCap: 7,
+    badge: "Premium Choice",
+    description: "Luxury travel experience with extra comfort.",
+    amenities: ["Premium Seats", "Air Conditioning", "Driver Included", "Large Luggage Space", "Fuel Included", "Toll Included", "Parking Included"],
+    image: "https://images.unsplash.com/photo-1605810736025-0d3210438ec3?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "urbania-12",
+    name: "Urbania 12 Seater",
+    capacityStr: "8–12 Travelers",
+    minCap: 8,
+    maxCap: 12,
+    description: "Ideal for group tours and pilgrimages.",
+    amenities: ["Pushback Seats", "Air Conditioning", "Driver Included", "Extra Luggage", "Fuel Included", "Toll Included", "Parking Included"],
+    image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: "urbania-16",
+    name: "Urbania 16 Seater",
+    capacityStr: "13–16 Travelers",
+    minCap: 13,
+    maxCap: 16,
+    description: "Perfect for large groups.",
+    amenities: ["Premium Interior", "Air Conditioning", "Pushback Seats", "Driver Included", "Large Storage", "Fuel Included", "Toll Included", "Parking Included"],
+    image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=600&q=80",
+  },
+];
 
 interface TourPageTemplateProps {
   data: Tour;
@@ -22,9 +76,14 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [persons, setPersons] = useState(1);
+  const [selectedVehicle, setSelectedVehicle] = useState("");
   const [travelDate, setTravelDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
+  const [showTrust, setShowTrust] = useState(false);
+  const [showHighlights, setShowHighlights] = useState(false);
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
 
   const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === "Enter") {
@@ -67,7 +126,7 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
   const validDates = Array.isArray(data.dates) ? data.dates.filter(isUpcomingDate) : [];
 
   return (
-    <main className="w-full bg-white pb-16">
+    <main className="w-full bg-white">
       <SchemaMarkup schema={data.schemaData} />
 
       {/* Hero Section */}
@@ -140,108 +199,270 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <SEOBreadcrumbs items={breadcrumbs} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-6">
-        <div className="lg:col-span-2 space-y-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-12 mt-6">
+        <div className="lg:col-span-2 space-y-8">
           {/* Overview Section */}
           <section>
             <h2 className="text-3xl font-bold text-brand-blue-deep mb-6">
               {t.tourOverview || "Overview"}
             </h2>
-            <div
-              className="prose max-w-none text-gray-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: data.overview }}
-            />
+            <div className={`relative ${!isOverviewExpanded ? "max-h-[300px] overflow-hidden" : ""}`}>
+              <div
+                className="prose max-w-none text-gray-700 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: data.overview }}
+              />
+              {!isOverviewExpanded && (
+                <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+              )}
+            </div>
+            <button
+              onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+              className="mt-4 text-brand-orange font-bold text-sm hover:text-brand-orange-dark transition-colors flex items-center"
+            >
+              {isOverviewExpanded ? "Read Less" : "Read More"}
+              <svg
+                className={`ml-1.5 w-4 h-4 transition-transform duration-300 ${isOverviewExpanded ? "rotate-180" : ""}`}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </section>
 
           {/* Highlights Section */}
-          <section>
-            <h2 className="text-3xl font-bold text-brand-blue-deep mb-6">
-              {t.tourHighlights || "Tour Highlights"}
-            </h2>
-            <ul className="list-disc pl-6 space-y-2 text-gray-700">
-              {data.highlights.map((highlight, idx) => (
-                <li key={idx} className="pl-1">
-                  {highlight}
-                </li>
-              ))}
-            </ul>
+          <section className="pt-4">
+            <button 
+              onClick={() => setShowHighlights(!showHighlights)}
+              className="w-full flex items-center justify-between text-left group"
+            >
+              <h2 className="text-3xl font-bold text-brand-blue-deep group-hover:text-brand-orange transition-colors">
+                {t.tourHighlights || "Tour Highlights"}
+              </h2>
+              <svg 
+                className={`w-6 h-6 text-brand-blue-deep transition-transform duration-300 ${showHighlights ? "rotate-180" : ""}`} 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {showHighlights && (
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mt-6">
+                {data.highlights.map((highlight, idx) => (
+                  <li key={idx} className="pl-1">
+                    {highlight}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
-          {/* Packages Section */}
-          <section>
-            <h2 className="text-3xl font-bold text-brand-blue-deep mb-6">
-              {t.tourPackages || "Packages & Pricing"}
+          {/* Recommended Vehicles Section */}
+          <section className="pt-4">
+            <h2 className="text-3xl font-bold text-brand-blue-deep mb-2">
+              Recommended Vehicle for Your Group
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {data.packages.map((pkg, idx) => (
-                <div
-                  key={idx}
-                  className="border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col bg-white"
-                >
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{pkg.title}</h3>
-                  <p className="text-3xl font-bold text-brand-orange mb-6">
-                    ₹{pkg.price}{" "}
-                    <span className="text-sm font-normal text-gray-500">
-                      {t.tourPerPerson || "per person"}
-                    </span>
-                  </p>
-                  <div className="flex-grow space-y-4">
-                    {pkg.inclusions && pkg.inclusions.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">
-                          {t.tourIncludes || "Includes:"}
-                        </h4>
-                        <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1.5">
-                          {pkg.inclusions.map((inc: string, i: number) => (
-                            <li key={i}>{inc}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {pkg.exclusions && pkg.exclusions.length > 0 && (
-                      <div className="pt-2">
-                        <h4 className="font-semibold text-gray-900 mb-2">
-                          {t.tourExcludes || "Excludes:"}
-                        </h4>
-                        <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1.5">
-                          {pkg.exclusions.map((exc: string, i: number) => (
-                            <li key={i}>{exc}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    className="mt-8 w-full py-2.5 border-2 border-brand-orange text-brand-orange font-bold rounded-lg hover:bg-brand-orange hover:text-white transition-colors"
-                    onClick={() => {
-                      window.dataLayer?.push({
-                        event: "inquire_package",
-                        tour: data.title,
-                        package: pkg.title,
-                      });
-                      document
-                        .getElementById("sidebar-booking-form")
-                        ?.scrollIntoView({ behavior: "smooth" });
-                      setTimeout(() => {
-                        const input = document.getElementById("booking-name-input");
-                        if (input) (input as HTMLElement).focus();
-                      }, 500);
-                    }}
+            <p className="text-gray-600 mb-8">
+              Choose your group size and we'll recommend the perfect vehicle for a comfortable journey.
+            </p>
+
+            {/* Smart Traveler Selector */}
+            <div className="bg-brand-blue-deep/5 p-6 rounded-2xl mb-8 border border-brand-blue-deep/10">
+              <label className="block text-lg font-bold text-brand-blue-deep mb-3">
+                How many travelers are joining?
+              </label>
+              <select
+                className="w-full md:w-1/2 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none text-slate-800 text-lg shadow-sm"
+                value={persons}
+                onChange={(e) => {
+                  const num = Number(e.target.value);
+                  setPersons(num);
+                  // Find best vehicle
+                  const best = RECOMMENDED_VEHICLES.find(v => num >= v.minCap && num <= v.maxCap) || RECOMMENDED_VEHICLES[0];
+                  setSelectedVehicle(best.name);
+                  // Scroll slightly to let them see it
+                  setTimeout(() => {
+                    document.getElementById(`vehicle-${best.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }, 100);
+                }}
+              >
+                <option value={1}>1–4 Travelers</option>
+                <option value={5}>5–7 Travelers</option>
+                <option value={8}>8–12 Travelers</option>
+                <option value={13}>13–16 Travelers</option>
+              </select>
+            </div>
+
+            <div className="flex overflow-x-auto pb-6 -mx-4 px-4 snap-x snap-mandatory gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:mx-0 md:px-0 scrollbar-hide">
+              {RECOMMENDED_VEHICLES.map((vehicle) => {
+                const isRecommended = persons >= vehicle.minCap && persons <= vehicle.maxCap;
+                return (
+                  <div
+                    key={vehicle.id}
+                    id={`vehicle-${vehicle.id}`}
+                    className="group min-w-[85vw] sm:min-w-[300px] snap-center shrink-0 md:min-w-0 md:shrink relative border rounded-2xl overflow-hidden bg-white flex flex-col transition-all duration-300 border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-brand-blue/30"
                   >
-                    {t.tourInquire || "Inquire Package"}
-                  </button>
-                </div>
-              ))}
+                    <div className="relative h-40 w-full bg-gray-100 overflow-hidden">
+                      <LazyImage
+                        src={vehicle.image}
+                        alt={vehicle.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      {vehicle.badge && (
+                        <div className="absolute top-4 left-4 bg-gray-900/90 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full z-10">
+                          {vehicle.badge}
+                        </div>
+                      )}
+                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur text-brand-blue-deep text-xs font-bold px-3 py-1 rounded-full shadow-sm z-10">
+                        {vehicle.capacityStr}
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 flex flex-col flex-grow">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{vehicle.name}</h3>
+                      <p className="text-gray-600 text-sm mb-4 flex-grow">{vehicle.description}</p>
+                      
+                      <div className="space-y-1.5 mb-5">
+                        {vehicle.amenities.map((amenity, i) => (
+                          <div key={i} className="flex items-start text-sm text-gray-700">
+                            <CheckCircle2 className="w-4 h-4 text-brand-green mr-2 mt-0.5 shrink-0" />
+                            <span>{amenity}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <button
+                        className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+                          selectedVehicle === vehicle.name
+                            ? 'bg-brand-blue-deep text-white shadow-md'
+                            : 'border-2 border-brand-blue-deep text-brand-blue-deep hover:bg-brand-blue-deep hover:text-white'
+                        }`}
+                        onClick={() => {
+                          setSelectedVehicle(vehicle.name);
+                          setPersons(vehicle.maxCap);
+                          window.dataLayer?.push({
+                            event: "inquire_vehicle",
+                            tour: data.title,
+                            vehicle: vehicle.name,
+                          });
+                          document
+                            .getElementById("sidebar-booking-form")
+                            ?.scrollIntoView({ behavior: "smooth" });
+                          setTimeout(() => {
+                            const input = document.getElementById("booking-name-input");
+                            if (input) (input as HTMLElement).focus();
+                          }, 500);
+                        }}
+                      >
+                        {selectedVehicle === vehicle.name ? 'Selected' : 'Choose Vehicle'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
 
-          {/* FAQs Section */}
-          <section className="pt-4">
-            <h2 className="text-3xl font-bold text-brand-blue-deep mb-4">
-              {t.tourFaq || "Frequently Asked Questions"}
-            </h2>
-            <SEOFAQAccordion faqs={data.faq} />
+          {/* Vehicle Comparison Table */}
+          <section>
+            <button 
+              onClick={() => setShowCompare(!showCompare)}
+              className="w-full flex items-center justify-between text-left group"
+            >
+              <h3 className="text-2xl font-bold text-brand-blue-deep group-hover:text-brand-orange transition-colors">Compare Vehicles</h3>
+              <svg 
+                className={`w-6 h-6 text-brand-blue-deep transition-transform duration-300 ${showCompare ? "rotate-180" : ""}`} 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {showCompare && (
+              <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm mt-6">
+                <table className="w-full text-left border-collapse bg-white whitespace-nowrap">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm">
+                      <th className="p-4 font-semibold">Vehicle</th>
+                      <th className="p-4 font-semibold">Capacity</th>
+                      <th className="p-4 font-semibold">Comfort</th>
+                      <th className="p-4 font-semibold">Luggage</th>
+                      <th className="p-4 font-semibold">Best For</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 text-sm text-gray-800">
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="p-4 font-medium">Swift Dzire</td>
+                      <td className="p-4">1–4</td>
+                      <td className="p-4 text-brand-orange">★★★★☆</td>
+                      <td className="p-4">Medium</td>
+                      <td className="p-4">Couples</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="p-4 font-medium">Ertiga</td>
+                      <td className="p-4">5–7</td>
+                      <td className="p-4 text-brand-orange">★★★★☆</td>
+                      <td className="p-4">Large</td>
+                      <td className="p-4">Families</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="p-4 font-medium">Innova Crysta</td>
+                      <td className="p-4">5–7</td>
+                      <td className="p-4 text-brand-orange">★★★★★</td>
+                      <td className="p-4">Large</td>
+                      <td className="p-4">Premium Family Tours</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="p-4 font-medium">Urbania 12</td>
+                      <td className="p-4">8–12</td>
+                      <td className="p-4 text-brand-orange">★★★★★</td>
+                      <td className="p-4">Extra Large</td>
+                      <td className="p-4">Group Tours</td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="p-4 font-medium">Urbania 16</td>
+                      <td className="p-4">13–16</td>
+                      <td className="p-4 text-brand-orange">★★★★★</td>
+                      <td className="p-4">Extra Large</td>
+                      <td className="p-4">Large Groups</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
+
+          {/* Trust Section */}
+          <section>
+            <button 
+              onClick={() => setShowTrust(!showTrust)}
+              className="w-full flex items-center justify-between text-left group"
+            >
+              <h3 className="text-2xl font-bold text-brand-blue-deep group-hover:text-brand-orange transition-colors">Why Our Vehicles?</h3>
+              <svg 
+                className={`w-6 h-6 text-brand-blue-deep transition-transform duration-300 ${showTrust ? "rotate-180" : ""}`} 
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {showTrust && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                {[
+                  "Professional Drivers", "Sanitized Before Every Trip", "GPS Enabled",
+                  "24×7 Roadside Support", "Comfortable Long-Distance Travel", "Well Maintained Fleet"
+                ].map((trust, idx) => (
+                  <div key={idx} className="flex items-center space-x-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="bg-brand-green/10 p-2 rounded-full text-brand-green shrink-0">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-800">{trust}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
 
           {/* Internal Linking Components */}
           <RelatedTours tours={data.relatedTours} />
@@ -294,9 +515,24 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
               </div>
             ) : (
               <>
-                <h3 className="text-xl font-bold text-gray-900 mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
                   {t.tourCustomQuote || "Request a Custom Quote"}
                 </h3>
+                {selectedVehicle && (
+                  <div className="mb-6 bg-brand-orange/10 border border-brand-orange/20 px-4 py-3 rounded-xl flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-brand-orange-dark font-bold uppercase tracking-wider mb-0.5">Selected Vehicle</p>
+                      <p className="text-sm font-bold text-gray-900">{selectedVehicle}</p>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => setSelectedVehicle("")}
+                      className="text-xs text-gray-500 hover:text-gray-700 underline"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
                 <form
                   onKeyDown={handleFormKeyDown}
                   onSubmit={async (e) => {
@@ -309,6 +545,7 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                         tripName: data.title,
                         persons,
                         travelDate,
+                        vehicle: selectedVehicle || "Not specified",
                       };
                       await createBookingFn({ data: bookingData });
                       setSuccess(true);
@@ -327,6 +564,8 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                     <input
                       id="booking-name-input"
                       type="text"
+                      name="name"
+                      autoComplete="name"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
@@ -340,6 +579,9 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                     </label>
                     <input
                       type="tel"
+                      name="phone"
+                      id="tour-phone"
+                      autoComplete="tel"
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -352,6 +594,9 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                       {lang === "mr" ? "प्रवासी संख्या" : "Number of Persons"}
                     </label>
                     <select
+                      name="persons"
+                      id="tour-persons"
+                      autoComplete="off"
                       value={persons}
                       onChange={(e) => setPersons(Number(e.target.value))}
                       className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-shadow cursor-pointer text-slate-800"
@@ -377,6 +622,8 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                     {validDates && validDates.length > 0 ? (
                       <select
                         name="travelDate"
+                        id="tour-travel-date"
+                        autoComplete="off"
                         required
                         value={travelDate}
                         onChange={(e) => setTravelDate(e.target.value)}
@@ -392,6 +639,9 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                     ) : (
                       <input
                         type="date"
+                        name="travelDate"
+                        id="tour-travel-date"
+                        autoComplete="off"
                         required
                         value={travelDate}
                         onChange={(e) => setTravelDate(e.target.value)}

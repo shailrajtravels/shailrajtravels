@@ -1,4 +1,4 @@
-import { useState, useEffect, type ImgHTMLAttributes } from "react";
+import { useState, useEffect, useRef, type ImgHTMLAttributes } from "react";
 import { Skeleton } from "./skeleton";
 import { cn } from "@/backend/lib/utils";
 
@@ -17,11 +17,16 @@ export function LazyImage({
 }: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    // If the image is cached, we can check if it loaded instantly or reset
-    setIsLoaded(false);
-    setError(false);
+    // If the image is cached, it might have loaded before React attaches the onLoad listener
+    if (imgRef.current?.complete) {
+      setIsLoaded(true);
+    } else {
+      setIsLoaded(false);
+      setError(false);
+    }
   }, [src]);
 
   return (
@@ -32,6 +37,7 @@ export function LazyImage({
         />
       )}
       <img
+        ref={imgRef}
         src={src}
         alt={alt}
         className={cn(

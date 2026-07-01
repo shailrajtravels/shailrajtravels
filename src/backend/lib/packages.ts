@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import clientPromise from "./db";
+import { packageRepository } from "./repositories/PackageRepository";
 import { getAdminToken } from "./token";
-import { ObjectId } from "mongodb";
 import { uploadImageToCloudinary } from "./cloudinary";
 import { logAuditAction } from "./audit";
 import { getCachedData, setCachedData, invalidateCache } from "./redis";
@@ -13,9 +12,7 @@ export const getPackagesFn = createServerFn({ method: "POST" }).handler(async ()
       return cached;
     }
 
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-    const packages = await db.collection("packages").find({}).sort({ createdAt: -1 }).toArray();
+    const packages = await packageRepository.findAllSorted();
 
     const mapped = packages.map((p: any) => ({
       _id: p._id.toString(),
@@ -79,27 +76,19 @@ export const createPackageFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
 
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-
     const processedData = await processPackageImages(data.data);
-
-    const newDoc = {
-      ...processedData,
-      createdAt: new Date(),
-    };
-
-    const res = await db.collection("packages").insertOne(newDoc);
+    const newDoc = { ...processedData, createdAt: new Date() };
+    const insertedId = await packageRepository.insertOne(newDoc);
     await logAuditAction({
       data: {
         action: "Create Package",
         entityType: "Package",
         details: `Created new package: ${newDoc.title}`,
-        entityId: res.insertedId.toString(),
+        entityId: insertedId,
       },
     });
     await invalidateCache("admin:packages");
-    return { success: true, _id: res.insertedId.toString() };
+    return { success: true, _id: insertedId };
   });
 
 export const updatePackageFn = createServerFn({ method: "POST" })
@@ -107,14 +96,11 @@ export const updatePackageFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
 
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-
     const processedData = await processPackageImages(data.data);
     const updateData = { ...processedData };
     delete updateData._id; // prevent _id override
 
-    await db.collection("packages").updateOne({ _id: new ObjectId(data.id) }, { $set: updateData });
+    await packageRepository.updateOne(data.id, updateData);
 
     await logAuditAction({
       data: {
@@ -133,13 +119,8 @@ export const deletePackageFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
 
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-
-    // Fetch package first to get title for log
-    const pkg = await db.collection("packages").findOne({ _id: new ObjectId(data.id) });
-
-    await db.collection("packages").deleteOne({ _id: new ObjectId(data.id) });
+    const pkg = await packageRepository.findById(data.id);
+    await packageRepository.deleteOne(data.id);
 
     if (pkg) {
       await logAuditAction({

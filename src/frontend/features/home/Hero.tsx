@@ -270,6 +270,7 @@ export function Hero({
             </div>
           ) : (
             <form
+              suppressHydrationWarning
               onKeyDown={handleFormKeyDown}
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -300,8 +301,11 @@ export function Hero({
             >
               <FieldBox icon={<User className="h-5 w-5" />} label={t.formName}>
                 <input
+                  suppressHydrationWarning
                   type="text"
                   name="name"
+                  id="hero-name"
+                  autoComplete="name"
                   required
                   placeholder={t.formNamePlace}
                   className="w-full bg-transparent text-[15px] font-semibold text-brand-blue-deep placeholder:text-slate-400 placeholder:font-medium focus:outline-none"
@@ -310,8 +314,11 @@ export function Hero({
 
               <FieldBox icon={<Phone className="h-5 w-5" />} label={t.formContact}>
                 <input
+                  suppressHydrationWarning
                   type="tel"
                   name="phone"
+                  id="hero-phone"
+                  autoComplete="tel"
                   required
                   placeholder="+91 00000 00000"
                   className="w-full bg-transparent text-[15px] font-semibold text-brand-blue-deep placeholder:text-slate-400 placeholder:font-medium focus:outline-none"
@@ -321,6 +328,10 @@ export function Hero({
               <FieldBox icon={<MapPin className="h-5 w-5" />} label={t.formTrip}>
                 <div className="relative flex items-center w-full">
                   <select
+                    suppressHydrationWarning
+                    name="trip"
+                    id="hero-trip"
+                    autoComplete="off"
                     className="w-full appearance-none bg-transparent text-[15px] font-semibold text-brand-blue-deep focus:outline-none cursor-pointer"
                     value={selectedTrip}
                     onChange={(e) => setSelectedTrip(e.target.value)}
@@ -339,8 +350,11 @@ export function Hero({
               {selectedTrip === "custom" && (
                 <FieldBox icon={<MapPin className="h-5 w-5" />} label={t.formCustom}>
                   <input
+                    suppressHydrationWarning
                     type="text"
                     name="customDestination"
+                    id="hero-custom-destination"
+                    autoComplete="off"
                     required
                     placeholder={t.formCustomPlace}
                     className="w-full bg-transparent text-[15px] font-semibold text-brand-blue-deep placeholder:text-slate-400 placeholder:font-medium focus:outline-none"
@@ -350,8 +364,9 @@ export function Hero({
 
               <FieldBox icon={<Users className="h-5 w-5" />} label={t.formPersons}>
                 <div className="flex items-center justify-between w-full h-full">
-                  <input type="hidden" name="persons" value={persons} />
+                  <input suppressHydrationWarning id="hero-persons" type="hidden" name="persons" value={persons} />
                   <button
+                    suppressHydrationWarning
                     type="button"
                     onClick={() => setPersons((p) => Math.max(1, p - 1))}
                     className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition"
@@ -362,6 +377,7 @@ export function Hero({
                     {persons} {persons === 1 ? t.formPerson : t.formPersonsPlural}
                   </span>
                   <button
+                    suppressHydrationWarning
                     type="button"
                     onClick={() => setPersons((p) => Math.min(16, p + 1))}
                     className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-green/10 text-brand-green-dark hover:bg-brand-green/20 transition"
@@ -375,7 +391,10 @@ export function Hero({
                 {validDates && validDates.length > 0 ? (
                   <div className="relative flex items-center w-full">
                     <select
+                      suppressHydrationWarning
                       name="travelDate"
+                      id="hero-travel-date"
+                      autoComplete="off"
                       required
                       className="w-full appearance-none bg-transparent text-[14px] md:text-[15px] font-semibold text-brand-blue-deep focus:outline-none cursor-pointer"
                     >
@@ -390,8 +409,11 @@ export function Hero({
                   </div>
                 ) : (
                   <input
+                    suppressHydrationWarning
                     type="datetime-local"
                     name="travelDate"
+                    id="hero-travel-date"
+                    autoComplete="off"
                     required
                     className="w-full bg-transparent text-[14px] md:text-[15px] font-semibold text-brand-blue-deep focus:outline-none cursor-pointer"
                   />
@@ -399,6 +421,7 @@ export function Hero({
               </FieldBox>
 
               <button
+                suppressHydrationWarning
                 type="submit"
                 disabled={loading}
                 className={`btn-cta flex h-[70px] items-center justify-center gap-2.5 rounded-2xl px-8 text-base font-semibold ${selectedTrip === "custom" ? "md:col-span-3" : ""} disabled:opacity-70`}

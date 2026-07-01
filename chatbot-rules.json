@@ -1,7 +1,7 @@
 {
   "rules": [
     {
-      "keywords": ["hi", "hello", "hii", "inquiry"],
+      "keywords": ["hii", "hello", "inquiry"],
       "reply": "Welcome to *Shailraj Travels Pune*! 🌍\n\nHow can we help you today?\n\nAvailable Tours:\n- Type *Ashtavinayak* for Ashtavinayak Yatra details.\n- Type *Ujjain* for Ujjain Mahakal Yatra details.\n- Type *Kedarnath* or *Char Dham* for Char Dham/Kedarnath Yatra details.\n- Type *Jyotirlinga* for 5 Jyotirlinga Darshan details.\n- Type *Pandharpur* for Pandharpur Wari details.\n- Type *Shirdi* for Shirdi & Shani Shingnapur details.\n- Type *Tirupati* for Tirupati Balaji tour details.\n\nReply with any keyword above to get instant details!"
     },
     {

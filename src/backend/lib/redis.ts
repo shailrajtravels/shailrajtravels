@@ -2,6 +2,7 @@ import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 import path from "path";
 import fs from "fs";
+import { memoryCache } from "./memory-cache";
 
 // Load .env variables manually in Node environment if not loaded
 if (typeof window === "undefined") {
@@ -76,9 +77,20 @@ export const rateLimiters = {
     : null,
 };
 export async function getCachedData<T>(key: string): Promise<T | null> {
+  // 1. Check L1 Memory Cache (Fastest)
+  const l1Data = memoryCache.get<T>(key);
+  if (l1Data !== null) {
+    return l1Data;
+  }
+
+  // 2. Check L2 Redis Cache
   if (!redis) return null;
   try {
     const data = await redis.get<T>(key);
+    if (data !== null) {
+      // Backfill L1 Cache from Redis
+      memoryCache.set(key, data);
+    }
     return data;
   } catch (error) {
     console.error(`Redis GET error for key ${key}:`, error);
@@ -87,6 +99,9 @@ export async function getCachedData<T>(key: string): Promise<T | null> {
 }
 
 export async function setCachedData(key: string, data: any, ex: number = 300): Promise<void> {
+  // Set in L1 Memory Cache (clamp TTL to 60s max to prevent severe cross-instance staleness)
+  memoryCache.set(key, data, Math.min(ex, 60));
+
   if (!redis) return;
   try {
     await redis.set(key, data, { ex });
@@ -96,6 +111,8 @@ export async function setCachedData(key: string, data: any, ex: number = 300): P
 }
 
 export async function invalidateCache(key: string): Promise<void> {
+  memoryCache.delete(key);
+
   if (!redis) return;
   try {
     await redis.del(key);

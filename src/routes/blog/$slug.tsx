@@ -23,17 +23,28 @@ import {
   generateBreadcrumbSchema,
   generateFAQSchema,
 } from "../../backend/lib/blog-schema";
+import { getCustomBlogBySlugFn } from "../../backend/lib/custom-blogs";
 
 export const Route = createFileRoute("/blog/$slug")({
-  loader: ({ params }) => {
-    const post = blogPosts.find((p) => p.slug === params.slug);
-    if (!post) throw notFound();
+  loader: async ({ params }) => {
+    let post = blogPosts.find((p) => p.slug === params.slug);
+    if (!post) {
+      try {
+        const customBlog = await getCustomBlogBySlugFn({ data: { slug: params.slug } });
+        if (customBlog) {
+          post = customBlog;
+        }
+      } catch (err) {
+        console.error("Failed to fetch custom blog by slug:", err);
+      }
+    }
+    if (!post || post.isHidden) throw notFound();
     return { post };
   },
   head: ({ loaderData }) => {
     if (!loaderData) return {};
     const { post } = loaderData;
-    const author = blogAuthors[post.authorId];
+    const author = post.authorId ? blogAuthors[post.authorId] : undefined;
 
     return {
       meta: generateSEO({
@@ -122,12 +133,12 @@ function BlogPostPage() {
             </h1>
 
             <div className="flex flex-wrap items-center justify-center gap-y-4 gap-x-8 text-slate-500 font-medium text-sm md:text-base">
-              {author && (
+              {(author || post.authorName) && (
                 <div className="flex items-center gap-3">
-                  {author.avatarUrl ? (
+                  {author?.avatarUrl ? (
                     <img
                       src={author.avatarUrl}
-                      alt={author.name}
+                      alt={post.authorName || author.name}
                       className="w-10 h-10 rounded-full border border-slate-200"
                     />
                   ) : (
@@ -135,7 +146,7 @@ function BlogPostPage() {
                       <User className="w-5 h-5 text-slate-400" />
                     </div>
                   )}
-                  <span className="text-slate-800 font-bold">{author.name}</span>
+                  <span className="text-slate-800 font-bold">{post.authorName || author?.name || "Editorial Team"}</span>
                 </div>
               )}
               <div className="flex items-center gap-2">

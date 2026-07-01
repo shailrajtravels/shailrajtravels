@@ -6,7 +6,7 @@ export function RelatedBlogs({ blogs }: { blogs: RelatedItem[] }) {
   if (!blogs || blogs.length === 0) return null;
 
   return (
-    <div className="mt-12 border-t border-gray-200 pt-8">
+    <div className="mt-6 border-t border-gray-200 pt-4">
       <h3 className="text-2xl font-bold text-brand-blue-deep mb-6">Helpful Guides & Travel Tips</h3>
       <div className="flex flex-col space-y-4">
         {blogs.map((blog) => (

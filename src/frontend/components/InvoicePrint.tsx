@@ -491,6 +491,8 @@ export function InvoicePrint({
                     <td className="px-5 py-4 text-center font-medium text-[#222]">
                       {isEditing ? (
                         <input
+                          id="invoice-persons"
+                          name="persons"
                           type="number"
                           className="w-16 text-center border border-slate-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-brand-blue"
                           value={data.persons}
@@ -503,6 +505,8 @@ export function InvoicePrint({
                     <td className="px-5 py-4 text-center font-medium text-[#222]">
                       {isEditing ? (
                         <input
+                          id="invoice-rate"
+                          name="rate"
                           type="number"
                           className="w-20 text-center border border-slate-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-brand-blue"
                           value={data.rate}
@@ -644,6 +648,8 @@ function InfoLine({ label, value, isEditing, onChange }: any) {
       <div className="ml-2 font-semibold flex-1">
         {isEditing ? (
           <input
+            id={`info-${label.replace(/\s+/g, '-').toLowerCase()}`}
+            name={`info-${label.replace(/\s+/g, '-').toLowerCase()}`}
             className="w-full border border-slate-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-brand-blue"
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -678,6 +684,8 @@ function DetailRow({ label, value, isEditing, onChange }: any) {
       <div className="ml-2 flex-1">
         {isEditing ? (
           <input
+            id={`detail-${label.replace(/\s+/g, '-').toLowerCase()}`}
+            name={`detail-${label.replace(/\s+/g, '-').toLowerCase()}`}
             className="w-full border border-slate-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-brand-blue"
             value={value}
             onChange={(e) => onChange(e.target.value)}

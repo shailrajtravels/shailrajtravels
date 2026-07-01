@@ -203,6 +203,9 @@ export function BookingModal({ tour, onClose, t, lang }: BookingModalProps) {
                   <User className="h-5 w-5 text-slate-400 shrink-0" />
                   <input
                     type="text"
+                    name="name"
+                    id="booking-name"
+                    autoComplete="name"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -221,6 +224,9 @@ export function BookingModal({ tour, onClose, t, lang }: BookingModalProps) {
                   <Phone className="h-5 w-5 text-slate-400 shrink-0" />
                   <input
                     type="tel"
+                    name="phone"
+                    id="booking-phone"
+                    autoComplete="tel"
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -240,6 +246,9 @@ export function BookingModal({ tour, onClose, t, lang }: BookingModalProps) {
                   <MapPin className="h-5 w-5 text-slate-400 shrink-0" />
                   <input
                     type="text"
+                    name="pickupLocation"
+                    id="booking-pickup"
+                    autoComplete="street-address"
                     required
                     value={pickupLocation}
                     onChange={(e) => setPickupLocation(e.target.value)}
@@ -290,6 +299,8 @@ export function BookingModal({ tour, onClose, t, lang }: BookingModalProps) {
                     {validDates.length > 0 ? (
                       <select
                         name="travelDate"
+                        id="booking-travel-date"
+                        autoComplete="off"
                         required
                         value={travelDate}
                         onChange={(e) => setTravelDate(e.target.value)}
@@ -306,6 +317,8 @@ export function BookingModal({ tour, onClose, t, lang }: BookingModalProps) {
                       <input
                         type="date"
                         name="travelDate"
+                        id="booking-travel-date"
+                        autoComplete="off"
                         required
                         value={travelDate}
                         onChange={(e) => setTravelDate(e.target.value)}

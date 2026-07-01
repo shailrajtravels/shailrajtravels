@@ -64,31 +64,22 @@ export const addReviewFn = createServerFn({ method: "POST" })
 
       let textEn = text;
       let textMr = text;
-      let blogTitle = "A Journey of Devotion";
-      let blogContent = text;
-      let blogTitleMr = "भक्तीचा प्रवास";
-      let blogContentMr = text;
 
-      // Auto-translate and generate blog using Gemini
+      // Auto-translate using Gemini
       if (apiKey) {
         try {
           const genAI = new GoogleGenerativeAI(apiKey);
           let model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
-          const prompt = `You are an expert travel blog writer and translator for Shailraj Travels.
-You will receive a short user review of their trip.
-Task 1: Translate the raw review into BOTH English and Marathi.
-Task 2: Write a completely new, beautifully expanded 3-paragraph travelogue story based on their review. DO NOT just copy their review. Write a creative story in the third person or first person adding immersive details. Create a catchy blog title. Do this in BOTH English and Marathi.
+          const prompt = `You are a translator for Shailraj Travels.
+You will receive a customer review of their trip.
+Translate the raw review into BOTH English and Marathi.
 
 OUTPUT FORMAT:
 You must return a raw JSON object (no markdown, no \`\`\` tags).
 {
-  "textEn": "String",
-  "textMr": "String",
-  "blogTitle": "String",
-  "blogContent": "String (must be 2-3 paragraphs, completely rewritten from the review)",
-  "blogTitleMr": "String",
-  "blogContentMr": "String"
+  "textEn": "String (English translation of the review)",
+  "textMr": "String (Marathi translation of the review)"
 }
 
 Review text:
@@ -118,12 +109,8 @@ Review text:
           const parsed = JSON.parse(jsonStr);
           if (parsed.textEn) textEn = parsed.textEn;
           if (parsed.textMr) textMr = parsed.textMr;
-          if (parsed.blogTitle) blogTitle = parsed.blogTitle;
-          if (parsed.blogContent) blogContent = parsed.blogContent;
-          if (parsed.blogTitleMr) blogTitleMr = parsed.blogTitleMr;
-          if (parsed.blogContentMr) blogContentMr = parsed.blogContentMr;
         } catch (e) {
-          console.error("Translation/Blog generation failed, saving original text:", e);
+          console.error("Translation failed, saving original text:", e);
         }
       }
 
@@ -135,10 +122,6 @@ Review text:
         rating,
         textEn,
         textMr,
-        blogTitle,
-        blogContent,
-        blogTitleMr,
-        blogContentMr,
         date: new Date().toISOString(),
       };
 

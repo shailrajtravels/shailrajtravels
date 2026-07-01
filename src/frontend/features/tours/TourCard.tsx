@@ -140,6 +140,7 @@ export function TourCard({ tour, onOpenDetails, onBookSeat, t }: TourCardProps) 
           <div className="flex gap-2">
             {tour.slug ? (
               <Link
+                suppressHydrationWarning
                 to="/tours/$tourSlug"
                 params={{ tourSlug: tour.slug }}
                 className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 text-[#112233] font-semibold text-[14px] hover:bg-slate-50 transition-colors"
@@ -148,6 +149,7 @@ export function TourCard({ tour, onOpenDetails, onBookSeat, t }: TourCardProps) 
               </Link>
             ) : (
               <button
+                suppressHydrationWarning
                 onClick={() => onOpenDetails(tour)}
                 className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 text-[#112233] font-semibold text-[14px] hover:bg-slate-50 transition-colors"
               >
@@ -156,6 +158,7 @@ export function TourCard({ tour, onOpenDetails, onBookSeat, t }: TourCardProps) 
             )}
             {onBookSeat ? (
               <button
+                suppressHydrationWarning
                 onClick={() => onBookSeat(tour)}
                 className="flex items-center justify-center px-6 py-2.5 rounded-xl bg-[#F59E0B] hover:bg-[#E5910A] text-[#112233] font-bold text-[14px] transition-colors cursor-pointer"
               >
@@ -163,6 +166,7 @@ export function TourCard({ tour, onOpenDetails, onBookSeat, t }: TourCardProps) 
               </button>
             ) : tour.slug ? (
               <Link
+                suppressHydrationWarning
                 to="/tours/$tourSlug"
                 params={{ tourSlug: tour.slug }}
                 hash="sidebar-booking-form"
@@ -172,6 +176,7 @@ export function TourCard({ tour, onOpenDetails, onBookSeat, t }: TourCardProps) 
               </Link>
             ) : (
               <a
+                suppressHydrationWarning
                 href="#sidebar-booking-form"
                 className="flex items-center justify-center px-6 py-2.5 rounded-xl bg-[#F59E0B] hover:bg-[#E5910A] text-[#112233] font-bold text-[14px] transition-colors"
               >

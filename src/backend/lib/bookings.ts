@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import clientPromise from "./db";
+import { tripOptionRepository } from "./repositories/TripOptionRepository";
+import { bookingRepository } from "./repositories/BookingRepository";
+import { packageRepository } from "./repositories/PackageRepository";
 import { getAdminToken } from "./token";
 import { ObjectId } from "mongodb";
 import { logAuditAction } from "./audit";
@@ -122,9 +124,7 @@ export const getTripOptionsFn = createServerFn({ method: "POST" }).handler(async
     const cached = await getCachedData<any[]>("admin:trip_options");
     if (cached) return cached;
 
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-    const options = await db.collection("trip_options").find({}).toArray();
+    const options = await tripOptionRepository.findAll();
     const mapped = options.map((o: any) => {
       let combinedDates = Array.isArray(o.dates)
         ? o.dates.map((d: any) => formatDateSafe(d))
@@ -176,33 +176,27 @@ export const createTripOptionFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; data: any }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
     const processedData = await processTripImages(data.data);
-    const res = await db.collection("trip_options").insertOne(processedData);
+    const insertedId = await tripOptionRepository.insertOne(processedData);
     await logAuditAction({
       data: {
         action: "Create Trip Option",
         entityType: "TripOption",
         details: `Added new trip option: ${processedData.name}`,
-        entityId: res.insertedId.toString(),
+        entityId: insertedId,
       },
     });
     await invalidateCache("admin:trip_options");
-    return { success: true, _id: res.insertedId.toString() };
+    return { success: true, _id: insertedId };
   });
 
 export const updateTripOptionFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; id: string; data: any }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
     const processedData = await processTripImages(data.data);
     delete processedData._id; // Prevent MongoDB immutable field error
-    await db
-      .collection("trip_options")
-      .updateOne({ _id: new ObjectId(data.id) }, { $set: processedData });
+    await tripOptionRepository.updateOne(data.id, processedData);
     await logAuditAction({
       data: {
         action: "Update Trip Option",
@@ -219,10 +213,8 @@ export const deleteTripOptionFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; id: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-    const trip = await db.collection("trip_options").findOne({ _id: new ObjectId(data.id) });
-    await db.collection("trip_options").deleteOne({ _id: new ObjectId(data.id) });
+    const trip = await tripOptionRepository.findById(data.id);
+    await tripOptionRepository.deleteOne(data.id);
     if (trip) {
       await logAuditAction({
         data: {
@@ -258,11 +250,9 @@ export const getBookingsFn = createServerFn({ method: "POST" })
       const cached = await getCachedData<any[]>("admin:bookings");
       if (cached) return cached;
 
-      const client = await clientPromise;
-      const db = client.db("shailraj");
-      const bookings = await db.collection("bookings").find({}).sort({ createdAt: -1 }).toArray();
-      const trips = await db.collection("trip_options").find({}).toArray();
-      const packages = await db.collection("packages").find({}).toArray();
+      const bookings = await bookingRepository.findAllSorted();
+      const trips = await tripOptionRepository.findAll();
+      const packages = await packageRepository.findAllSorted();
 
       const getBookingDefaultRate = (tripName: string) => {
         const trip = trips.find((t: any) => t.name === tripName);
@@ -307,18 +297,11 @@ export const saveInvoiceFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; bookingId: string; invoiceCustomData: any }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-    await db.collection("bookings").updateOne(
-      { _id: new ObjectId(data.bookingId) },
-      {
-        $set: {
-          isInvoiceLocked: true,
-          invoiceCustomData: data.invoiceCustomData,
-          paymentStatus: data.invoiceCustomData?.paymentStatus || "PENDING",
-        },
-      },
-    );
+    await bookingRepository.updateOne(data.bookingId, {
+      isInvoiceLocked: true,
+      invoiceCustomData: data.invoiceCustomData,
+      paymentStatus: data.invoiceCustomData?.paymentStatus || "PENDING",
+    });
     await logAuditAction({
       data: {
         action: "Lock Invoice",
@@ -334,9 +317,7 @@ export const saveInvoiceFn = createServerFn({ method: "POST" })
 
     if (data.invoiceCustomData?.paymentStatus === "PAID") {
       try {
-        const booking = await db
-          .collection("bookings")
-          .findOne({ _id: new ObjectId(data.bookingId) });
+        const booking = await bookingRepository.findById(data.bookingId);
         if (booking) {
           const { sendBookingInvoicePDF } = await import("./whatsapp");
           whatsappSent = await sendBookingInvoicePDF(booking);
@@ -355,9 +336,7 @@ export const sendInvoiceWhatsAppFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; bookingId: string; phone?: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-    const booking = await db.collection("bookings").findOne({ _id: new ObjectId(data.bookingId) });
+    const booking = await bookingRepository.findById(data.bookingId);
     if (!booking) throw new Error("Booking not found");
 
     if (data.phone) {
@@ -412,19 +391,16 @@ export const createBookingFn = createServerFn({ method: "POST" })
         }
       }
 
-      const client = await clientPromise;
-      const db = client.db("shailraj");
-
       const requestedPersons = Number(data.persons) || 1;
 
       // Determine dynamic seats limit based on database or frontend fallback
       let seatsLimit = 16;
-      const pkg = await db.collection("packages").findOne({ title: data.tripName });
+      const pkg = await packageRepository.findByQuery({ title: data.tripName }).then((r: any[]) => r[0]);
       if (pkg) {
         seatsLimit =
           pkg.seatsTotal !== undefined && pkg.seatsTotal !== null ? Number(pkg.seatsTotal) : 16;
       } else {
-        const tripOption = await db.collection("trip_options").findOne({ name: data.tripName });
+        const tripOption = await tripOptionRepository.findByQuery({ name: data.tripName }).then((r: any[]) => r[0]);
         if (tripOption) {
           seatsLimit =
             tripOption.seatsTotal !== undefined && tripOption.seatsTotal !== null
@@ -463,10 +439,10 @@ export const createBookingFn = createServerFn({ method: "POST" })
         paymentStatus: data.paymentStatus || "PENDING",
         createdAt: new Date(),
       };
-      const res = await db.collection("bookings").insertOne(newBooking);
+      const insertedId = await bookingRepository.insertOne(newBooking);
       // Save Idempotency Key
       if (data.idempotencyKey && redis) {
-        await redis.set(`idempotency:booking:${data.idempotencyKey}`, res.insertedId.toString(), {
+        await redis.set(`idempotency:booking:${data.idempotencyKey}`, insertedId, {
           ex: 86400,
         }); // 24 hours
       }
@@ -488,7 +464,7 @@ export const createBookingFn = createServerFn({ method: "POST" })
       }
 
       await invalidateCache("admin:bookings");
-      return { success: true, _id: res.insertedId.toString() };
+      return { success: true, _id: insertedId };
     } catch (error: any) {
       console.error("Failed to submit booking", error);
       throw new Error(error.message || "Failed to submit booking");
@@ -499,16 +475,12 @@ export const updateBookingStatusFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; id: string; status: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
 
     // Fetch booking details first to send WhatsApp to target phone
-    const booking = await db.collection("bookings").findOne({ _id: new ObjectId(data.id) });
+    const booking = await bookingRepository.findById(data.id);
     if (!booking) throw new Error("Booking not found");
 
-    await db
-      .collection("bookings")
-      .updateOne({ _id: new ObjectId(data.id) }, { $set: { status: data.status } });
+    await bookingRepository.updateOne(data.id, { status: data.status });
 
     await logAuditAction({
       data: {
@@ -552,10 +524,7 @@ export const sendBookingReplyFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; id: string; message: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-
-    const booking = await db.collection("bookings").findOne({ _id: new ObjectId(data.id) });
+    const booking = await bookingRepository.findById(data.id);
     if (!booking) throw new Error("Booking not found");
     if (!booking.phone) throw new Error("Customer phone number is missing");
 
@@ -582,10 +551,7 @@ export const updateBookingPaymentStatusFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; id: string; paymentStatus: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-
-    const booking = await db.collection("bookings").findOne({ _id: new ObjectId(data.id) });
+    const booking = await bookingRepository.findById(data.id);
     if (!booking) throw new Error("Booking not found");
 
     // Always sync both root paymentStatus AND invoiceCustomData.paymentStatus
@@ -596,9 +562,7 @@ export const updateBookingPaymentStatusFn = createServerFn({ method: "POST" })
       updateFields["invoiceCustomData.paymentStatus"] = data.paymentStatus;
     }
 
-    await db
-      .collection("bookings")
-      .updateOne({ _id: new ObjectId(data.id) }, { $set: updateFields });
+    await bookingRepository.updateOne(data.id, updateFields);
 
     await logAuditAction({
       data: {
@@ -616,9 +580,7 @@ export const updateBookingPaymentStatusFn = createServerFn({ method: "POST" })
 
     if (data.paymentStatus === "PAID") {
       try {
-        const updatedBooking = await db
-          .collection("bookings")
-          .findOne({ _id: new ObjectId(data.id) });
+        const updatedBooking = await bookingRepository.findById(data.id);
 
         if (updatedBooking) {
           const { sendBookingInvoicePDF, sendWhatsAppMessage } = await import("./whatsapp");
@@ -675,10 +637,8 @@ export const deleteBookingFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; id: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-    const booking = await db.collection("bookings").findOne({ _id: new ObjectId(data.id) });
-    await db.collection("bookings").deleteOne({ _id: new ObjectId(data.id) });
+    const booking = await bookingRepository.findById(data.id);
+    await bookingRepository.deleteOne(data.id);
     if (booking) {
       await logAuditAction({
         data: {
@@ -699,11 +659,7 @@ export const getBookingForPrintFn = createServerFn({ method: "POST" })
   .validator((data: { adminToken: string; bookingId: string }) => data)
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-    const booking = await db
-      .collection("bookings")
-      .findOne({ _id: new ObjectId(data.bookingId) });
+    const booking = await bookingRepository.findById(data.bookingId);
     if (!booking) throw new Error("Booking not found");
     // Return as plain JSON (no MongoDB ObjectId)
     return JSON.parse(JSON.stringify(booking));
@@ -711,11 +667,8 @@ export const getBookingForPrintFn = createServerFn({ method: "POST" })
 
 export const getPublicStatsFn = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-    
-    // Confirmed travelers count (sum of persons in confirmed bookings)
-    const confirmedBookings = await db.collection("bookings")
+    const bookingsCol = await (await import("./database/StorageManager")).storageManager.getCollectionForRead("booking", "dummy", "bookings");
+    const confirmedBookings = await bookingsCol
       .find({ status: "Confirmed" }, { projection: { persons: 1 } })
       .toArray();
       
@@ -725,12 +678,14 @@ export const getPublicStatsFn = createServerFn({ method: "GET" }).handler(async 
     }, 0);
     
     // Total destinations / packages / tours
-    const packagesCount = await db.collection("packages").countDocuments();
-    const toursCount = await db.collection("tours").countDocuments();
-    const tripOptionsCount = await db.collection("trip_options").countDocuments();
+    const storage = (await import("./database/StorageManager")).storageManager;
+    const packagesCount = await (await storage.getGlobalCollection("packages")).countDocuments();
+    const toursCount = await (await storage.getGlobalCollection("tours")).countDocuments();
+    const tripOptionsCount = await (await storage.getGlobalCollection("trip_options")).countDocuments();
 
     // Average rating
-    const reviews = await db.collection("reviews")
+    const reviewsCollection = await storage.getGlobalCollection("reviews");
+    const reviews = await reviewsCollection
       .find({}, { projection: { rating: 1 } })
       .toArray();
     const totalRating = reviews.reduce((sum: number, r: any) => sum + (Number(r.rating) || 5), 0);

@@ -7,7 +7,7 @@ export function RelatedTours({ tours }: { tours: RelatedItem[] }) {
   if (!tours || tours.length === 0) return null;
 
   return (
-    <div className="mt-12 border-t border-gray-200 pt-8">
+    <div className="mt-6 border-t border-gray-200 pt-4">
       <h3 className="text-2xl font-bold text-brand-blue-deep mb-6">Related Pilgrimage Tours</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {tours.map((tour) => (

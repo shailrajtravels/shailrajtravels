@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import clientPromise from "./db";
 import { getAdminToken } from "./token";
-import { ObjectId } from "mongodb";
+import { tourRepository } from "./repositories/TourRepository";
 import { uploadImageToCloudinary } from "./cloudinary";
 import { logAuditAction } from "./audit";
 import { getCachedData, setCachedData, invalidateCache } from "./redis";
@@ -15,9 +14,6 @@ export const getToursFn = createServerFn({ method: "POST" })
       const cached = await getCachedData<any[]>(cacheKey);
       if (cached) return cached;
 
-      const client = await clientPromise;
-      const db = client.db("shailraj");
-
       const query: any = {};
       if (data.lang) {
         query.lang = data.lang;
@@ -25,7 +21,7 @@ export const getToursFn = createServerFn({ method: "POST" })
         query.lang = { $in: ["en", null] };
       }
 
-      const tours = await db.collection("tours").find(query).sort({ createdAt: -1 }).toArray();
+      const tours = await tourRepository.findAllSorted(query);
 
       const mapped = tours.map((t: any) => ({
         _id: t._id.toString(),
@@ -58,9 +54,6 @@ export const getTourBySlugFn = createServerFn({ method: "POST" })
   .validator((data: { slug: string; lang?: string }) => data)
   .handler(async ({ data }) => {
     try {
-      const client = await clientPromise;
-      const db = client.db("shailraj");
-
       const query: any = { slug: data.slug };
       if (data.lang) {
         query.lang = data.lang;
@@ -68,7 +61,7 @@ export const getTourBySlugFn = createServerFn({ method: "POST" })
         query.lang = { $in: ["en", null] }; // default to english or un-versioned
       }
 
-      const tour = await db.collection("tours").findOne(query);
+      const tour = await tourRepository.findBySlug(data.slug, { lang: query.lang });
 
       if (!tour) return null;
 
@@ -120,26 +113,23 @@ export const createTourFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
 
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-
     const processedData = await processTourImages(data.data);
     processedData.createdAt = new Date();
 
-    const result = await db.collection("tours").insertOne(processedData);
+    const insertedId = await tourRepository.insertOne(processedData);
 
     await logAuditAction({
       data: {
         action: "Create Tour",
         entityType: "Tour",
         details: `Created tour: ${processedData.title}`,
-        entityId: result.insertedId.toString(),
+        entityId: insertedId,
       },
     });
     await invalidateCache("admin:tours:all");
     await invalidateCache("admin:tours:en");
     await invalidateCache("admin:tours:mr");
-    return { success: true, id: result.insertedId.toString() };
+    return { success: true, id: insertedId };
   });
 
 export const updateTourFn = createServerFn({ method: "POST" })
@@ -147,14 +137,11 @@ export const updateTourFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
 
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-
     const processedData = await processTourImages(data.data);
     const updateData = { ...processedData };
     delete updateData._id; // prevent _id override
 
-    await db.collection("tours").updateOne({ _id: new ObjectId(data.id) }, { $set: updateData });
+    await tourRepository.updateOne(data.id, updateData);
 
     await logAuditAction({
       data: {
@@ -175,14 +162,11 @@ export const deleteTourFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (data.adminToken !== getAdminToken()) throw new Error("Unauthorized");
 
-    const client = await clientPromise;
-    const db = client.db("shailraj");
-
-    const tour = await db.collection("tours").findOne({ _id: new ObjectId(data.id) });
+    const tour = await tourRepository.findById(data.id);
 
     if (tour && tour.slug) {
       // Delete all language versions of the tour
-      await db.collection("tours").deleteMany({ slug: tour.slug });
+      await tourRepository.deleteManyBySlug(tour.slug);
       await logAuditAction({
         data: {
           action: "Delete Tour",
@@ -192,7 +176,7 @@ export const deleteTourFn = createServerFn({ method: "POST" })
         },
       });
     } else {
-      await db.collection("tours").deleteOne({ _id: new ObjectId(data.id) });
+      await tourRepository.deleteOne(data.id);
       await logAuditAction({
         data: {
           action: "Delete Tour",
