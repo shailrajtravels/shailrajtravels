@@ -1,11 +1,11 @@
 import React from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { getTourBySlugFn } from '../backend/lib/tours';
-import { TourPageTemplate } from '../frontend/templates/TourPageTemplate';
-import { generateSEO } from '../backend/lib/seo';
-import { generateProductSchema } from '../backend/lib/schema-generators';
-import { useLanguage } from './__root';
-import { translations } from '../frontend/features/core/i18n';
+import { getTourBySlugFn } from '@/backend/features/tours';
+import { TourPageTemplate } from '@/frontend/shared/templates/TourPageTemplate';
+import { generateSEO } from '@/backend/features/seo';
+import { generateProductSchema } from '@/backend/shared/schema-generators';
+import { useLanguage } from '@/routes/__root';
+import { translations } from '@/frontend/core/i18n';
 export const Route = createFileRoute("/tours/$tourSlug")({
   validateSearch: (search: Record<string, unknown>): { lang?: string } => ({
     lang: search.lang as string | undefined,

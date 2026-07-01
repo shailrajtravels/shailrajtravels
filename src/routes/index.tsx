@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { useLanguage } from "./__root";
-import { getReviewsFn } from "../backend/lib/reviews";
+import React, { useState } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { useLanguage } from '@/routes/__root';
+import { getReviewsFn } from '@/backend/features/reviews';
 
-import { translations } from "../frontend/features/core/i18n";
-import { Navbar } from "../frontend/features/core/Navbar";
-import { FooterSection as Footer } from "../frontend/features/core/Footer";
-import { Hero } from "../frontend/features/home/Hero";
-import { AboutSection } from "../frontend/features/home/AboutSection";
-import { FeaturesSection } from "../frontend/features/why-choose-us/FeaturesSection";
-import { ToursSection } from "../frontend/features/tours/ToursSection";
-import { ReviewsSection } from "../frontend/features/reviews/ReviewsSection";
-import { GallerySection } from "../frontend/features/gallery/GallerySection";
-import { BookingModal } from "../frontend/features/tours/BookingModal";
+import { translations } from '@/frontend/core/i18n';
+import { Navbar } from '@/frontend/core/Navbar';
+import { FooterSection as Footer } from '@/frontend/core/Footer';
+import { Hero } from '@/frontend/features/home/Hero';
+import { AboutSection } from '@/frontend/features/home/AboutSection';
+import { FeaturesSection } from '@/frontend/features/why-choose-us/FeaturesSection';
+import { ToursSection } from '@/frontend/features/tours/ToursSection';
+import { ReviewsSection } from '@/frontend/features/reviews/ReviewsSection';
+import { GallerySection } from '@/frontend/features/gallery/GallerySection';
+import { BookingModal } from '@/frontend/features/tours/BookingModal';
 
-import { getPackagesFn } from "../backend/lib/packages";
+import { getPackagesFn } from '@/backend/features/packages';
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { lang?: string } => ({
@@ -27,9 +27,9 @@ export const Route = createFileRoute("/")({
       const [reviews, packages, tripOptions, galleryPhotos, tours] = await Promise.all([
         getReviewsFn(),
         getPackagesFn(),
-        import("../backend/lib/bookings").then((m) => m.getTripOptionsFn()),
-        import("../backend/lib/gallery").then((m) => m.getGalleryPhotosFn()),
-        import("../backend/lib/tours").then((m) => m.getToursFn({ data: { lang: lang || "en" } })),
+        import('@/backend/shared/bookings').then((m) => m.getTripOptionsFn()),
+        import('@/backend/shared/gallery').then((m) => m.getGalleryPhotosFn()),
+        import('@/backend/features/tours').then((m) => m.getToursFn({ data: { lang: lang || "en" } })),
       ]);
       return { reviews, packages, tripOptions, galleryPhotos, tours };
     } catch (e) {

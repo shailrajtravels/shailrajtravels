@@ -1,11 +1,11 @@
-import React from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { getReviewsFn } from "../backend/lib/reviews";
+import React from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { getReviewsFn } from '@/backend/features/reviews';
 
-import { translations } from "../frontend/features/core/i18n";
-import { Navbar } from "../frontend/features/core/Navbar";
-import { FooterSection as Footer } from "../frontend/features/core/Footer";
-import { Star, User, Calendar } from "lucide-react";
+import { translations } from '@/frontend/core/i18n';
+import { Navbar } from '@/frontend/core/Navbar';
+import { FooterSection as Footer } from '@/frontend/core/Footer';
+import { Star, User, Calendar } from 'lucide-react';
 
 export const Route = createFileRoute("/yatri-stories")({
   component: BlogPage,

@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { SchemaMarkup } from "../../frontend/components/SchemaMarkup";
-import React from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { generateSEO } from "../../backend/lib/seo";
-import { comparisons } from "../../frontend/data/comparisons";
-import { getToursFn } from "../../backend/lib/tours";
+import { SchemaMarkup } from '@/frontend/shared/components/SchemaMarkup';
+import React from 'react';
+import { createFileRoute, Link, notFound } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { comparisons } from '@/frontend/shared/data/comparisons';
+import { getToursFn } from '@/backend/features/tours';
 
 export const Route = createFileRoute("/compare/$compareSlug")({
   loader: async ({ params }) => {

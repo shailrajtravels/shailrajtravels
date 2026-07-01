@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { generateSEO } from "../backend/lib/seo";
-import { MapPin, Phone, Mail } from "lucide-react";
+import React, { useState } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { MapPin, Phone, Mail } from 'lucide-react';
 
 export const Route = createFileRoute("/contact")({
   head: () => ({

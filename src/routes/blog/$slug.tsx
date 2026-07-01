@@ -1,11 +1,11 @@
 // @ts-nocheck
-import React, { useMemo } from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { generateSEO, generateHreflangLinks } from "../../backend/lib/seo";
-import { blogPosts, blogAuthors } from "../../frontend/data/blogs";
-import { Navbar } from "../../frontend/features/core/Navbar";
-import { FooterSection as Footer } from "../../frontend/features/core/Footer";
-import { translations } from "../../frontend/features/core/i18n";
+import React, { useMemo } from 'react';
+import { createFileRoute, Link, notFound } from '@tanstack/react-router';
+import { generateSEO, generateHreflangLinks } from '@/backend/features/seo';
+import { blogPosts, blogAuthors } from '@/frontend/shared/data/blogs';
+import { Navbar } from '@/frontend/core/Navbar';
+import { FooterSection as Footer } from '@/frontend/core/Footer';
+import { translations } from '@/frontend/core/i18n';
 import {
   Calendar,
   Clock,
@@ -16,14 +16,14 @@ import {
   Twitter,
   Linkedin,
   ArrowRight,
-} from "lucide-react";
-import { AuthorProfile } from "../../frontend/components/AuthorProfile";
+} from 'lucide-react';
+import { AuthorProfile } from '@/frontend/shared/components/AuthorProfile';
 import {
   generateArticleSchema,
   generateBreadcrumbSchema,
   generateFAQSchema,
-} from "../../backend/lib/blog-schema";
-import { getCustomBlogBySlugFn } from "../../backend/lib/custom-blogs";
+} from '@/backend/shared/blog-schema';
+import { getCustomBlogBySlugFn } from '@/backend/features/custom-blogs';
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {

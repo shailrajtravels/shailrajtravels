@@ -1,5 +1,5 @@
-import React from "react";
-import { CheckCircle2 } from "lucide-react";
+import React from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
 export function FeatureCardBig({
   icon,

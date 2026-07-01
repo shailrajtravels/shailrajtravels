@@ -1,8 +1,8 @@
-import React, { useEffect, useCallback } from "react";
-import { X, Clock, Bus, Calendar, Route, Check, ChevronLeft, ChevronRight } from "lucide-react";
-import { TourData } from "./TourCard";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
+import React, { useEffect, useCallback } from 'react';
+import { X, Clock, Bus, Calendar, Route, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { TourData } from '@/frontend/features/tours/TourCard';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 interface TourModalProps {
   tour: TourData;

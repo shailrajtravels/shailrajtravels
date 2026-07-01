@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { verifyAdminFn } from "../backend/lib/auth";
-import { Lock, Mail, Loader2, ArrowRight } from "lucide-react";
-import logo from "@/frontend/assets/Shailraj travels-Punelogo.png";
+import React, { useState } from 'react';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { verifyAdminFn } from '@/backend/infrastructure/auth';
+import { Lock, Mail, Loader2, ArrowRight } from 'lucide-react';
+import logo from '@/frontend/shared/assets/Shailraj travels-Punelogo.png';
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,

@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { SchemaMarkup } from "../../frontend/components/SchemaMarkup";
-import React from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { generateSEO } from "../../backend/lib/seo";
-import { factPages } from "../../frontend/data/facts";
+import { SchemaMarkup } from '@/frontend/shared/components/SchemaMarkup';
+import React from 'react';
+import { createFileRoute, Link, notFound } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { factPages } from '@/frontend/shared/data/facts';
 
 export const Route = createFileRoute("/facts/$factSlug")({
   loader: ({ params }) => {

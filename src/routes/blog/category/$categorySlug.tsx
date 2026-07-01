@@ -1,13 +1,13 @@
-import React, { useMemo } from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { generateSEO, generateHreflangLinks } from "../../../backend/lib/seo";
-import { blogPosts, blogAuthors } from "../../../frontend/data/blogs";
-import { Navbar } from "../../../frontend/features/core/Navbar";
-import { FooterSection as Footer } from "../../../frontend/features/core/Footer";
-import { translations } from "../../../frontend/features/core/i18n";
-import { Calendar, Clock, ChevronRight, User } from "lucide-react";
+import React, { useMemo } from 'react';
+import { createFileRoute, Link, notFound } from '@tanstack/react-router';
+import { generateSEO, generateHreflangLinks } from '@/backend/features/seo';
+import { blogPosts, blogAuthors } from '@/frontend/shared/data/blogs';
+import { Navbar } from '@/frontend/core/Navbar';
+import { FooterSection as Footer } from '@/frontend/core/Footer';
+import { translations } from '@/frontend/core/i18n';
+import { Calendar, Clock, ChevronRight, User } from 'lucide-react';
 
-import { getCustomBlogsFn } from "../../../backend/lib/custom-blogs";
+import { getCustomBlogsFn } from '@/backend/features/custom-blogs';
 
 export const Route = createFileRoute("/blog/category/$categorySlug")({
   loader: async ({ params }) => {

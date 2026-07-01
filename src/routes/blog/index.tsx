@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from "react";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { generateSEO, generateHreflangLinks } from "../../backend/lib/seo";
-import { blogPosts, blogAuthors } from "../../frontend/data/blogs";
-import { Navbar } from "../../frontend/features/core/Navbar";
-import { FooterSection as Footer } from "../../frontend/features/core/Footer";
-import { translations } from "../../frontend/features/core/i18n";
-import { Calendar, Clock, User, ChevronRight, PenTool, X } from "lucide-react";
-import { generateBreadcrumbSchema } from "../../backend/lib/blog-schema";
-import { getCustomBlogsFn, createCustomBlogFn } from "../../backend/lib/custom-blogs";
+import React, { useMemo, useState } from 'react';
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
+import { generateSEO, generateHreflangLinks } from '@/backend/features/seo';
+import { blogPosts, blogAuthors } from '@/frontend/shared/data/blogs';
+import { Navbar } from '@/frontend/core/Navbar';
+import { FooterSection as Footer } from '@/frontend/core/Footer';
+import { translations } from '@/frontend/core/i18n';
+import { Calendar, Clock, User, ChevronRight, PenTool, X } from 'lucide-react';
+import { generateBreadcrumbSchema } from '@/backend/shared/blog-schema';
+import { getCustomBlogsFn, createCustomBlogFn } from '@/backend/features/custom-blogs';
 
 export const Route = createFileRoute("/blog/")({
   loader: async () => {

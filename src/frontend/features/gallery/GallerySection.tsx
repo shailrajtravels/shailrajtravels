@@ -1,8 +1,8 @@
-import React from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { LazyImage } from "../../components/ui/lazy-image";
+import React from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { LazyImage } from '@/frontend/shared/ui/lazy-image';
 
 export function GallerySection({ t, photos = [] }: { t: any; photos?: any[] }) {
   if (!photos || photos.length === 0) return null;

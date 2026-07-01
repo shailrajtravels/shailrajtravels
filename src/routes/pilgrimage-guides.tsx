@@ -1,9 +1,9 @@
 // @ts-nocheck
-import React from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { generateSEO } from "../backend/lib/seo";
-import { blogPosts } from "../frontend/data/blogs";
-import { BookOpen, Map, MapPin } from "lucide-react";
+import React from 'react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { blogPosts } from '@/frontend/shared/data/blogs';
+import { BookOpen, Map, MapPin } from 'lucide-react';
 
 export const Route = createFileRoute("/pilgrimage-guides")({
   head: () => ({

@@ -1,7 +1,7 @@
-import React from "react";
-import { Link } from "@tanstack/react-router";
-import { MapPin, Calendar, Repeat, Route, Info } from "lucide-react";
-import { LazyImage } from "@/frontend/components/ui/lazy-image";
+import React from 'react';
+import { Link } from '@tanstack/react-router';
+import { MapPin, Calendar, Repeat, Route, Info } from 'lucide-react';
+import { LazyImage } from '@/frontend/shared/ui/lazy-image';
 
 export interface TourData {
   id: string;

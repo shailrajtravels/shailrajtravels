@@ -1,8 +1,8 @@
 // @ts-nocheck
-import React from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { generateSEO } from "../backend/lib/seo";
-import { authors } from "../frontend/data/authors";
+import React from 'react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { authors } from '@/frontend/shared/data/authors';
 
 export const Route = createFileRoute("/authors")({
   head: () => ({

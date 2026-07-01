@@ -1,9 +1,9 @@
-import { SchemaMarkup } from "../frontend/components/SchemaMarkup";
-import React from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { generateSEO } from "../backend/lib/seo";
-import { businessConfig } from "../frontend/config/business";
-import { ShieldCheck, Clock, Users, Star } from "lucide-react";
+import { SchemaMarkup } from '@/frontend/shared/components/SchemaMarkup';
+import React from 'react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { businessConfig } from '@/frontend/shared/config/business';
+import { ShieldCheck, Clock, Users, Star } from 'lucide-react';
 
 export const Route = createFileRoute("/why-choose-shailraj-travels")({
   head: () => ({

@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { SchemaMarkup } from "../frontend/components/SchemaMarkup";
-import React from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { generateSEO } from "../backend/lib/seo";
-import { businessConfig } from "../frontend/config/business";
-import { authors } from "../frontend/data/authors";
+import { SchemaMarkup } from '@/frontend/shared/components/SchemaMarkup';
+import React from 'react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { businessConfig } from '@/frontend/shared/config/business';
+import { authors } from '@/frontend/shared/data/authors';
 
 export const Route = createFileRoute("/about-shailraj-travels")({
   head: () => ({

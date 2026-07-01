@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, Loader2, ArrowLeft } from "lucide-react";
-import { createTourFn, updateTourFn, deleteTourFn } from "../../../backend/lib/tours";
+import React, { useState, useEffect } from 'react';
+import { Plus, Edit, Trash2, Loader2, ArrowLeft } from 'lucide-react';
+import { createTourFn, updateTourFn, deleteTourFn } from '@/backend/features/tours';
 
 export function ToursAdmin({ token, tours, loadData, setDeleteConfirm }: any) {
   const [isFormOpen, setIsFormOpen] = useState(false);

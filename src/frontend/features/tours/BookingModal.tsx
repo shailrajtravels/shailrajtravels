@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   X,
   User,
@@ -10,9 +10,9 @@ import {
   Plus,
   Loader2,
   ShieldCheck,
-} from "lucide-react";
-import { TourData } from "./TourCard";
-import { createBookingFn } from "../../../backend/lib/bookings";
+} from 'lucide-react';
+import { TourData } from '@/frontend/features/tours/TourCard';
+import { createBookingFn } from '@/backend/shared/bookings';
 
 interface BookingModalProps {
   tour: TourData;

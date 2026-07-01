@@ -10,10 +10,10 @@
  *
  * URL: /invoice-print?bookingId=XXX&adminToken=YYY&generatedInvoiceNo=INV-V0048
  */
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { InvoicePrint } from "../frontend/components/InvoicePrint";
-import { getBookingForPrintFn } from "../backend/lib/bookings";
+import { createFileRoute } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+import { InvoicePrint } from '@/frontend/shared/components/InvoicePrint';
+import { getBookingForPrintFn } from '@/backend/shared/bookings';
 
 export const Route = createFileRoute("/invoice-print")({
   validateSearch: (s: Record<string, unknown>) => ({

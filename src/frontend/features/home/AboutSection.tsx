@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Map, Users, Star } from "lucide-react";
-import { getPublicStatsFn } from "../../../backend/lib/bookings";
-import { highlightBrandName } from "../core/BrandHighlight";
+import React, { useState, useEffect, useRef } from 'react';
+import { Map, Users, Star } from 'lucide-react';
+import { getPublicStatsFn } from '@/backend/shared/bookings';
+import { highlightBrandName } from '@/frontend/core/BrandHighlight';
 
 const AnimatedCounter = ({
   target,

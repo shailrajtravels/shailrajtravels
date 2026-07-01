@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   ChevronDown,
@@ -17,13 +17,13 @@ import {
   BedDouble,
   Compass,
   Loader2,
-} from "lucide-react";
-import { Leaf } from "../core/icons";
-import { translations } from "../core/i18n";
-import { highlightBrandName } from "../core/BrandHighlight";
-import bgMobile from "@/frontend/assets/hero-pandharpur.webp";
-import temple from "@/frontend/assets/hero-pandharpur.webp"; // fallback until correct image is found
-import { createBookingFn } from "../../../backend/lib/bookings";
+} from 'lucide-react';
+import { Leaf } from '@/frontend/core/icons';
+import { translations } from '@/frontend/core/i18n';
+import { highlightBrandName } from '@/frontend/core/BrandHighlight';
+import bgMobile from '@/frontend/shared/assets/hero-pandharpur.webp';
+import temple from '@/frontend/shared/assets/hero-pandharpur.webp'; // fallback until correct image is found
+import { createBookingFn } from '@/backend/shared/bookings';
 
 export function getUpcomingDates(allowedDaysOfWeek: number[]) {
   const dates = [];

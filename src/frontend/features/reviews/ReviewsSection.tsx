@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Star, CheckCircle2, User, FileText, Send, Sparkles, Loader2, Wand2 } from "lucide-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Route } from "../../../routes/index";
-import { addReviewFn } from "../../../backend/lib/reviews";
+import React, { useState } from 'react';
+import { Star, CheckCircle2, User, FileText, Send, Sparkles, Loader2, Wand2 } from 'lucide-react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { Route } from '@/routes/index';
+import { addReviewFn } from '@/backend/features/reviews';
 
 const MOCK_REVIEWS = [
   {

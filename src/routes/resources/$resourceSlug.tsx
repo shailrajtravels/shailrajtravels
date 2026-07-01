@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { SchemaMarkup } from "../../frontend/components/SchemaMarkup";
-import React from "react";
+import { SchemaMarkup } from '@/frontend/shared/components/SchemaMarkup';
+import React from 'react';
 
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { generateSEO } from "../../backend/lib/seo";
-import { resources } from "../../frontend/data/resources";
-import { getToursFn } from "../../backend/lib/tours";
+import { createFileRoute, Link, notFound } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { resources } from '@/frontend/shared/data/resources';
+import { getToursFn } from '@/backend/features/tours';
 
 export const Route = createFileRoute("/resources/$resourceSlug")({
   loader: ({ params }) => {

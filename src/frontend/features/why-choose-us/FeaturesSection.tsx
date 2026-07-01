@@ -1,13 +1,13 @@
-import React from "react";
-import { BrandHighlight } from "../core/BrandHighlight";
-import { ArrowRight } from "lucide-react";
-import iconPin from "@/frontend/assets/icon-pin.webp";
-import iconTag from "@/frontend/assets/icon-tag.webp";
+import React from 'react';
+import { BrandHighlight } from '@/frontend/core/BrandHighlight';
+import { ArrowRight } from 'lucide-react';
+import iconPin from '@/frontend/shared/assets/icon-pin.webp';
+import iconTag from '@/frontend/shared/assets/icon-tag.webp';
 // Provide fallback imports for the others
-import iconShield from "@/frontend/assets/icon-shield.webp"; // Fallback
-import iconBus from "@/frontend/assets/icon-bus.webp"; // Fallback
+import iconShield from '@/frontend/shared/assets/icon-shield.webp'; // Fallback
+import iconBus from '@/frontend/shared/assets/icon-bus.webp'; // Fallback
 
-import { FeatureCardBig, CheckItem } from "./components";
+import { FeatureCardBig, CheckItem } from '@/frontend/features/why-choose-us/components';
 
 export function FeaturesSection({ lang, t }: { lang: "mr" | "en"; t: any }) {
   return (

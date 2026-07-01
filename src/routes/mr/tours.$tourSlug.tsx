@@ -1,8 +1,8 @@
-import React from "react";
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { getTourBySlugFn } from "../../backend/lib/tours";
-import { TourPageTemplate } from "../../frontend/templates/TourPageTemplate";
-import { generateSEO, generateHreflangLinks } from "../../backend/lib/seo";
+import React from 'react';
+import { createFileRoute, notFound } from '@tanstack/react-router';
+import { getTourBySlugFn } from '@/backend/features/tours';
+import { TourPageTemplate } from '@/frontend/shared/templates/TourPageTemplate';
+import { generateSEO, generateHreflangLinks } from '@/backend/features/seo';
 
 export const Route = createFileRoute("/mr/tours/$tourSlug")({
   loader: async ({ params }) => {

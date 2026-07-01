@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { SchemaMarkup } from "../../frontend/components/SchemaMarkup";
-import React from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { generateSEO } from "../../backend/lib/seo";
-import { authors } from "../../frontend/data/authors";
-import { blogPosts } from "../../frontend/data/blogs";
-import { BookOpen, MapPin, Award } from "lucide-react";
+import { SchemaMarkup } from '@/frontend/shared/components/SchemaMarkup';
+import React from 'react';
+import { createFileRoute, Link, notFound } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { authors } from '@/frontend/shared/data/authors';
+import { blogPosts } from '@/frontend/shared/data/blogs';
+import { BookOpen, MapPin, Award } from 'lucide-react';
 
 export const Route = createFileRoute("/author/$authorSlug")({
   loader: ({ params }) => {

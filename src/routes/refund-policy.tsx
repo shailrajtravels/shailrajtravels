@@ -1,6 +1,6 @@
-import React from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { generateSEO } from "../backend/lib/seo";
+import React from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
 
 export const Route = createFileRoute("/refund-policy")({
   head: () => ({

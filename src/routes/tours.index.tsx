@@ -1,13 +1,13 @@
-import React, { useState, useMemo } from "react";
-import { createFileRoute, Link, useLoaderData } from "@tanstack/react-router";
-import { getToursFn } from "../backend/lib/tours";
-import { generateSEO } from "../backend/lib/seo";
-import { useLanguage } from "./__root";
-import { translations } from "../frontend/features/core/i18n";
-import { Search, MapPin, Filter } from "lucide-react";
-import { Navbar } from "../frontend/features/core/Navbar";
-import { FooterSection as Footer } from "../frontend/features/core/Footer";
-import { LazyImage } from "../frontend/components/ui/lazy-image";
+import React, { useState, useMemo } from 'react';
+import { createFileRoute, Link, useLoaderData } from '@tanstack/react-router';
+import { getToursFn } from '@/backend/features/tours';
+import { generateSEO } from '@/backend/features/seo';
+import { useLanguage } from '@/routes/__root';
+import { translations } from '@/frontend/core/i18n';
+import { Search, MapPin, Filter } from 'lucide-react';
+import { Navbar } from '@/frontend/core/Navbar';
+import { FooterSection as Footer } from '@/frontend/core/Footer';
+import { LazyImage } from '@/frontend/shared/ui/lazy-image';
 
 export const Route = createFileRoute("/tours/")({
   validateSearch: (search: Record<string, unknown>) => ({

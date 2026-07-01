@@ -1,7 +1,7 @@
 import "./lib/error-capture";
 
-import { consumeLastCapturedError } from "./lib/error-capture";
-import { renderErrorPage } from "./lib/error-page";
+import { consumeLastCapturedError } from '@/backend/shared/error-capture';
+import { renderErrorPage } from '@/backend/shared/error-page';
 
 // We do NOT auto-start whatsapp here because it can hang Vite SSR boot.
 // Instead, let the admin start it from the UI or it lazy-starts.
@@ -14,7 +14,7 @@ let serverEntryPromise: Promise<ServerEntry> | undefined;
 
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
-    serverEntryPromise = import("@tanstack/react-start/server-entry").then(
+    serverEntryPromise = import('@tanstack/react-start/server-entry').then(
       (m) => (m.default ?? m) as ServerEntry,
     );
   }
@@ -69,8 +69,8 @@ function withSecurityHeaders(response: Response): Response {
   return new Response(body, init);
 }
 
-import { z } from "zod";
-import { MongoClient } from "mongodb";
+import { z } from 'zod';
+import { MongoClient } from 'mongodb';
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -85,7 +85,7 @@ const rateLimit = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000;
 const MAX_REQUESTS = 3;
 
-import clientPromise from "./lib/db";
+import clientPromise from '@/backend/shared/db';
 
 async function connectToDatabase() {
   return clientPromise;

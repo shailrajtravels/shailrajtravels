@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { TourCard } from "./TourCard";
-import { TourModal } from "./TourModal";
-import { getMockTours, TourData } from "./data";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import bgFallback from "@/frontend/assets/hero-pandharpur.webp";
+import React, { useState, useEffect, useCallback } from 'react';
+import { TourCard } from '@/frontend/features/tours/TourCard';
+import { TourModal } from '@/frontend/features/tours/TourModal';
+import { getMockTours, TourData } from '@/frontend/features/tours/data';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import bgFallback from '@/frontend/shared/assets/hero-pandharpur.webp';
 
 export function ToursSection({
   lang,

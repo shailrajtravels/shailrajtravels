@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { SchemaMarkup } from "../frontend/components/SchemaMarkup";
-import React, { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { generateSEO } from "../backend/lib/seo";
-import { getToursFn } from "../backend/lib/tours";
+import { SchemaMarkup } from '@/frontend/shared/components/SchemaMarkup';
+import React, { useState } from 'react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { generateSEO } from '@/backend/features/seo';
+import { getToursFn } from '@/backend/features/tours';
 
 export const Route = createFileRoute("/faq")({
   loader: async () => {

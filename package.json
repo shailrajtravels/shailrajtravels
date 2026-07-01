@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "dev:all": "concurrently \"npm run dev\" \"npm run dev --prefix ../OpenWA\" \"node webhook-server.mjs\"",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev --prefix ./OpenWA\" \"node webhook-server.mjs\"",
+    "start": "npm run preview",
+    "start:all": "concurrently \"npm run start\" \"npm run prod --prefix ./OpenWA\" \"node webhook-server.mjs\"",
     "build": "vite build",
+    "build:all": "vite build && npm run build --prefix ./OpenWA",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",

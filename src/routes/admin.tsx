@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
-import { verifyAdminFn } from "../backend/lib/auth";
+import React, { useState, useEffect } from 'react';
+import { createFileRoute, useNavigate, redirect } from '@tanstack/react-router';
+import { verifyAdminFn } from '@/backend/infrastructure/auth';
 import {
   getPackagesFn,
   createPackageFn,
   updatePackageFn,
   deletePackageFn,
-} from "../backend/lib/packages";
-import { getReviewsFn, deleteReviewFn } from "../backend/lib/reviews";
-import { getCustomBlogsFn, deleteCustomBlogFn, updateCustomBlogFn, toggleBlogVisibilityFn } from "../backend/lib/custom-blogs";
+} from '@/backend/features/packages';
+import { getReviewsFn, deleteReviewFn } from '@/backend/features/reviews';
+import { getCustomBlogsFn, deleteCustomBlogFn, updateCustomBlogFn, toggleBlogVisibilityFn } from '@/backend/features/custom-blogs';
 import {
   getTripOptionsFn,
   createTripOptionFn,
@@ -19,22 +19,22 @@ import {
   updateBookingStatusFn,
   updateBookingPaymentStatusFn,
   sendBookingReplyFn,
-} from "../backend/lib/bookings";
+} from '@/backend/shared/bookings';
 import {
   getGalleryPhotosFn,
   addGalleryPhotoFn,
   deleteGalleryPhotoFn,
-} from "../backend/lib/gallery";
-import { getAuditLogsFn } from "../backend/lib/audit";
-import { getToursFn, deleteTourFn } from "../backend/lib/tours";
+} from '@/backend/shared/gallery';
+import { getAuditLogsFn } from '@/backend/shared/audit';
+import { getToursFn, deleteTourFn } from '@/backend/features/tours';
 import {
   getWhatsAppStatusFn,
   restartWhatsAppFn,
   logoutWhatsAppFn,
   getChatbotRulesFn,
   saveChatbotRulesFn,
-} from "../backend/lib/whatsapp-api";
-import { ToursAdmin } from "../frontend/features/admin/ToursAdmin";
+} from '@/backend/infrastructure/whatsapp-api';
+import { ToursAdmin } from '@/frontend/features/admin/ToursAdmin';
 import {
   LayoutDashboard,
   Package,
@@ -67,10 +67,10 @@ import {
   Smartphone,
   TrendingUp,
   CreditCard,
-} from "lucide-react";
-import logo from "@/frontend/assets/Shailraj travels-Punelogo.png";
-import { Calendar } from "@/frontend/components/ui/calendar";
-import { format } from "date-fns";
+} from 'lucide-react';
+import logo from '@/frontend/shared/assets/Shailraj travels-Punelogo.png';
+import { Calendar } from '@/frontend/shared/ui/calendar';
+import { format } from 'date-fns';
 import {
   BarChart,
   Bar,
@@ -83,7 +83,7 @@ import {
   Pie,
   Cell,
   LabelList,
-} from "recharts";
+} from 'recharts';
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: () => {
@@ -2949,7 +2949,7 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
   const [dateFilterType, setDateFilterType] = React.useState<"all" | "custom" | "created" | "travel">("created");
 
   const exportBookings = async () => {
-    const XLSX = await import("xlsx-js-style/dist/xlsx.bundle.js");
+    const XLSX = await import('xlsx-js-style/dist/xlsx.bundle.js');
     let targetBookings = bookings;
 
     // Quick filters: All / Custom
@@ -3126,7 +3126,7 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
   };
 
   const exportCustomers = async () => {
-    const XLSX = await import("xlsx-js-style/dist/xlsx.bundle.js");
+    const XLSX = await import('xlsx-js-style/dist/xlsx.bundle.js');
     const customersMap = new globalThis.Map();
     (bookings || []).forEach((bk) => {
       if (!bk) return;
@@ -3265,7 +3265,7 @@ function ReportsView({ bookings = [] }: { bookings?: any[] }) {
 
   const exportSpecificTrip = async () => {
     if (!selectedTripGroup) return;
-    const XLSX = await import("xlsx-js-style/dist/xlsx.bundle.js");
+    const XLSX = await import('xlsx-js-style/dist/xlsx.bundle.js');
     const group = tripGroups.find((g) => g[0] === selectedTripGroup);
     if (!group) return;
 
@@ -3515,7 +3515,7 @@ function AuditLogsPanel({ logs }: { logs: any[] }) {
   );
 }
 
-import { InvoicePrint } from "../frontend/components/InvoicePrint";
+import { InvoicePrint } from '@/frontend/shared/components/InvoicePrint';
 
 function InvoicesView({
   bookings,
@@ -4591,7 +4591,7 @@ function WhatsAppEngineView({ token }: { token: string }) {
   );
 }
 
-import QRCode from "qrcode";
+import QRCode from 'qrcode';
 function QRCodeDisplay({ qr }: { qr: string }) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
 
