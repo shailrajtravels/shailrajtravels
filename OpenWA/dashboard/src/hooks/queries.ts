@@ -12,6 +12,8 @@ import {
   type WebhookFilters,
   type TemplatePayload,
   type StatsPeriod,
+  botRulesApi,
+  type ChatbotRulesDto,
 } from '../services/api';
 
 // ── Query Keys ────────────────────────────────────────────────────────
@@ -32,6 +34,7 @@ export const queryKeys = {
   currentEngine: ['engines', 'current'] as const,
   statsOverview: ['stats', 'overview'] as const,
   statsMessages: (period: string) => ['stats', 'messages', period] as const,
+  botRules: ['botRules'] as const,
 };
 
 // ── Session Queries ───────────────────────────────────────────────────
@@ -289,5 +292,25 @@ export function useStatsMessagesQuery(period: StatsPeriod) {
     queryFn: () => statsApi.getMessages(period),
     staleTime: 30_000,
     retry: false,
+  });
+}
+
+// ── Bot Rules Queries ──────────────────────────────────────────────────
+
+export function useBotRulesQuery() {
+  return useQuery({
+    queryKey: queryKeys.botRules,
+    queryFn: botRulesApi.getRules,
+    staleTime: 30_000,
+  });
+}
+
+export function useUpdateBotRulesMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: ChatbotRulesDto) => botRulesApi.updateRules(data),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.botRules });
+    },
   });
 }

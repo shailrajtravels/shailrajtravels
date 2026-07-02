@@ -35,6 +35,7 @@ import {
   saveChatbotRulesFn,
 } from '@/backend/infrastructure/whatsapp-api';
 import { ToursAdmin } from '@/frontend/features/admin/ToursAdmin';
+import { RecommendedVehiclesAdmin } from '@/frontend/features/admin/RecommendedVehiclesAdmin';
 import {
   LayoutDashboard,
   Package,
@@ -134,7 +135,7 @@ function AdminPage() {
     | "whatsapp"
     | "blogs"
   >("dashboard");
-  const [subTab, setSubTab] = useState<"tours" | "packages">("tours");
+  const [subTab, setSubTab] = useState<"tours" | "packages" | "vehicles">("tours");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
@@ -625,6 +626,16 @@ function AdminPage() {
                   >
                     Packages
                   </button>
+                  <button
+                    onClick={() => setSubTab("vehicles")}
+                    className={`px-5 py-2.5 rounded-lg font-bold text-sm transition-all cursor-pointer ${
+                      subTab === "vehicles"
+                        ? "bg-brand-blue-deep text-white shadow-sm"
+                        : "text-slate-600 hover:text-brand-blue-deep hover:bg-white/50"
+                    }`}
+                  >
+                    Recommended Vehicles
+                  </button>
                 </div>
               )}
 
@@ -635,6 +646,8 @@ function AdminPage() {
                   loadData={loadData}
                   setDeleteConfirm={setDeleteConfirm}
                 />
+              ) : subTab === "vehicles" ? (
+                <RecommendedVehiclesAdmin token={token} />
               ) : isFormOpen ? (
                 <PackageForm
                   token={token}
@@ -3654,7 +3667,7 @@ function InvoicesView({
                         ? Number(custom.rate)
                         : bk.tripName === "custom"
                           ? 0
-                          : bk.defaultRate || 6000;
+                          : bk.defaultRate || 0;
                     const persons =
                       custom.persons !== undefined ? Number(custom.persons) : Number(bk.persons) || 1;
                     const total = rate * persons;
@@ -3718,7 +3731,7 @@ function InvoicesView({
                     ? Number(custom.rate)
                     : bk.tripName === "custom"
                       ? 0
-                      : bk.defaultRate || 6000;
+                      : bk.defaultRate || 0;
                 const persons =
                   custom.persons !== undefined ? Number(custom.persons) : Number(bk.persons) || 1;
                 const total = rate * persons;
@@ -3791,7 +3804,7 @@ function RevenueView({ bookings }: { bookings: any[] }) {
     if (bk.tripName === "custom" && !bk.isInvoiceLocked) {
       return 0;
     }
-    const rate = custom.rate !== undefined ? Number(custom.rate) : bk.defaultRate || 6000;
+    const rate = custom.rate !== undefined ? Number(custom.rate) : bk.defaultRate || 0;
     const persons = custom.persons !== undefined ? Number(custom.persons) : Number(bk.persons) || 1;
     return rate * persons;
   };
@@ -4231,7 +4244,7 @@ function RevenueView({ bookings }: { bookings: any[] }) {
                       ? Number(custom.rate)
                       : bk.tripName === "custom"
                         ? 0
-                        : bk.defaultRate || 6000;
+                        : bk.defaultRate || 0;
                   const persons =
                     custom.persons !== undefined ? Number(custom.persons) : bk.persons || 1;
                   const total = rate * persons;
@@ -4299,7 +4312,7 @@ function RevenueView({ bookings }: { bookings: any[] }) {
                   ? Number(custom.rate)
                   : bk.tripName === "custom"
                     ? 0
-                    : bk.defaultRate || 6000;
+                    : bk.defaultRate || 0;
               const persons =
                 custom.persons !== undefined ? Number(custom.persons) : bk.persons || 1;
               const total = rate * persons;

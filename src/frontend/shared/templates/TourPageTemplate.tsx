@@ -11,65 +11,14 @@ import { createBookingFn } from '@/backend/shared/bookings';
 import { LazyImage } from '@/frontend/shared/ui/lazy-image';
 import { CheckCircle2 } from 'lucide-react';
 
-const RECOMMENDED_VEHICLES = [
-  {
-    id: "swift-dzire",
-    name: "Swift Dzire",
-    capacityStr: "1–4 Travelers",
-    minCap: 1,
-    maxCap: 4,
-    description: "Perfect for couples and small families.",
-    amenities: ["Air Conditioning", "Comfortable Seating", "Driver Included", "Luggage Space", "Fuel Included", "Toll Included", "Parking Included"],
-    image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: "ertiga",
-    name: "Ertiga",
-    capacityStr: "5–7 Travelers",
-    minCap: 5,
-    maxCap: 7,
-    description: "Best for medium-sized families.",
-    amenities: ["Air Conditioning", "Spacious Cabin", "Driver Included", "Large Luggage Capacity", "Fuel Included", "Toll Included", "Parking Included"],
-    image: "https://images.unsplash.com/photo-1513681414995-777174eec705?auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: "innova-crysta",
-    name: "Innova Crysta",
-    capacityStr: "5–7 Travelers",
-    minCap: 5,
-    maxCap: 7,
-    badge: "Premium Choice",
-    description: "Luxury travel experience with extra comfort.",
-    amenities: ["Premium Seats", "Air Conditioning", "Driver Included", "Large Luggage Space", "Fuel Included", "Toll Included", "Parking Included"],
-    image: "https://images.unsplash.com/photo-1605810736025-0d3210438ec3?auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: "urbania-12",
-    name: "Urbania 12 Seater",
-    capacityStr: "8–12 Travelers",
-    minCap: 8,
-    maxCap: 12,
-    description: "Ideal for group tours and pilgrimages.",
-    amenities: ["Pushback Seats", "Air Conditioning", "Driver Included", "Extra Luggage", "Fuel Included", "Toll Included", "Parking Included"],
-    image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: "urbania-16",
-    name: "Urbania 16 Seater",
-    capacityStr: "13–16 Travelers",
-    minCap: 13,
-    maxCap: 16,
-    description: "Perfect for large groups.",
-    amenities: ["Premium Interior", "Air Conditioning", "Pushback Seats", "Driver Included", "Large Storage", "Fuel Included", "Toll Included", "Parking Included"],
-    image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=600&q=80",
-  },
-];
+// RECOMMENDED_VEHICLES moved to DB
 
 interface TourPageTemplateProps {
   data: Tour;
+  recommendedVehicles?: any[];
 }
 
-export function TourPageTemplate({ data }: TourPageTemplateProps) {
+export function TourPageTemplate({ data, recommendedVehicles = [] }: TourPageTemplateProps) {
   const { lang } = useLanguage();
   const t = translations[lang];
 
@@ -276,24 +225,30 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                 onChange={(e) => {
                   const num = Number(e.target.value);
                   setPersons(num);
-                  // Find best vehicle
-                  const best = RECOMMENDED_VEHICLES.find(v => num >= v.minCap && num <= v.maxCap) || RECOMMENDED_VEHICLES[0];
-                  setSelectedVehicle(best.name);
-                  // Scroll slightly to let them see it
-                  setTimeout(() => {
-                    document.getElementById(`vehicle-${best.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }, 100);
+                  if (num === 17) {
+                    setSelectedVehicle("");
+                  } else {
+                    // Find best vehicle
+                    const best = recommendedVehicles.find(v => num >= v.minCap && num <= v.maxCap) || recommendedVehicles[0];
+                    setSelectedVehicle(best?.name || "");
+                    // Scroll slightly to let them see it
+                    setTimeout(() => {
+                      document.getElementById(`vehicle-${best.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }, 100);
+                  }
                 }}
               >
-                <option value={1}>1–4 Travelers</option>
-                <option value={5}>5–7 Travelers</option>
-                <option value={8}>8–12 Travelers</option>
-                <option value={13}>13–16 Travelers</option>
+                {Array.from(new Set(recommendedVehicles.map(v => `${v.minCap}-${v.maxCap}|${v.capacityStr}`))).map(opt => {
+                  const [range, label] = opt.split('|');
+                  const min = parseInt(range.split('-')[0]);
+                  return <option key={opt} value={min}>{label}</option>;
+                })}
+                <option value={17}>Other</option>
               </select>
             </div>
 
             <div className="flex overflow-x-auto pb-6 -mx-4 px-4 snap-x snap-mandatory gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:mx-0 md:px-0 scrollbar-hide">
-              {RECOMMENDED_VEHICLES.map((vehicle) => {
+              {recommendedVehicles.map((vehicle) => {
                 const isRecommended = persons >= vehicle.minCap && persons <= vehicle.maxCap;
                 return (
                   <div
@@ -322,7 +277,7 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                       <p className="text-gray-600 text-sm mb-4 flex-grow">{vehicle.description}</p>
                       
                       <div className="space-y-1.5 mb-5">
-                        {vehicle.amenities.map((amenity, i) => (
+                        {vehicle.amenities.map((amenity: string, i: number) => (
                           <div key={i} className="flex items-start text-sm text-gray-700">
                             <CheckCircle2 className="w-4 h-4 text-brand-green mr-2 mt-0.5 shrink-0" />
                             <span>{amenity}</span>
@@ -598,21 +553,24 @@ export function TourPageTemplate({ data }: TourPageTemplateProps) {
                       id="tour-persons"
                       autoComplete="off"
                       value={persons}
-                      onChange={(e) => setPersons(Number(e.target.value))}
+                      onChange={(e) => {
+                        const num = Number(e.target.value);
+                        setPersons(num);
+                        if (num === 17) {
+                          setSelectedVehicle("");
+                        } else {
+                          const best = recommendedVehicles.find(v => num >= v.minCap && num <= v.maxCap) || recommendedVehicles[0];
+                          setSelectedVehicle(best?.name || "");
+                        }
+                      }}
                       className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-shadow cursor-pointer text-slate-800"
                     >
-                      {[...Array(16)].map((_, i) => (
-                        <option key={i + 1} value={i + 1}>
-                          {i + 1}{" "}
-                          {i + 1 === 1
-                            ? lang === "mr"
-                              ? "प्रवासी"
-                              : "Person"
-                            : lang === "mr"
-                              ? "प्रवासी"
-                              : "Persons"}
-                        </option>
-                      ))}
+                      {Array.from(new Set(recommendedVehicles.map(v => `${v.minCap}-${v.maxCap}|${v.capacityStr}`))).map(opt => {
+                        const [range, label] = opt.split('|');
+                        const min = parseInt(range.split('-')[0]);
+                        return <option key={opt} value={min}>{label}</option>;
+                      })}
+                      <option value={17}>Other</option>
                     </select>
                   </div>
                   <div>

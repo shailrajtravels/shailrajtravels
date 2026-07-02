@@ -643,8 +643,51 @@ export class SessionService implements OnModuleDestroy, OnModuleInit, OnApplicat
               return;
             }
 
-            // Persist the incoming message so the dashboard chats view can render history.
             const incoming: IncomingMessage = finalMessage;
+
+            // --- PRIVACY FILTER ---
+            // Prevent personal contacts/chats from appearing in the dashboard unless they trigger a keyword.
+            const isIncoming = !incoming.fromMe;
+            const isIndividual = incoming.chatId && (incoming.chatId.endsWith('@c.us') || incoming.chatId.endsWith('@lid'));
+            
+            if (isIncoming && isIndividual) {
+              // Check if we already have a conversation with this person in the database
+              const existingMessage = await this.messageRepository.findOne({
+                where: { sessionId: id, chatId: incoming.chatId },
+                select: ['id']
+              });
+
+              if (!existingMessage) {
+                // This is a NEW personal chat. Check if it matches a keyword.
+                let matchesKeyword = false;
+                const text = (incoming.body || '').toLowerCase().trim();
+                
+                if (text) {
+                  try {
+                    let rulesPath = require('path').resolve(process.cwd(), 'chatbot-rules.json');
+                    if (!require('fs').existsSync(rulesPath)) {
+                       rulesPath = require('path').resolve(process.cwd(), '../chatbot-rules.json');
+                    }
+                    if (require('fs').existsSync(rulesPath)) {
+                      const rulesData = JSON.parse(require('fs').readFileSync(rulesPath, 'utf8'));
+                      if (Array.isArray(rulesData.rules)) {
+                        matchesKeyword = rulesData.rules.some((rule: any) =>
+                          rule.keywords.some((k: string) => text === k.trim().toLowerCase())
+                        );
+                      }
+                    }
+                  } catch (err) {
+                    this.logger.error('Error reading chatbot rules for privacy filter', String(err));
+                  }
+                }
+                
+                if (!matchesKeyword) {
+                   this.logger.debug(`Privacy filter: Dropped message from ${incoming.chatId} (no keyword match)`, { sessionId: id });
+                   return; // STOP processing. Do not save, do not webhook.
+                }
+              }
+            }
+            // --- END PRIVACY FILTER ---
 
             // Inline @lid -> phone resolution (#263), opt-in via RESOLVE_LID_TO_PHONE. Best-effort:
             // attaches senderPhone (digits or null) before persist/dispatch so webhook/ws consumers
@@ -1237,9 +1280,25 @@ export class SessionService implements OnModuleDestroy, OnModuleInit, OnApplicat
       throw new BadRequestException('Session is not started');
     }
 
-    // Most-recent first, then bound the response window. Sorting before the cap means a capped
-    // response is the N newest chats (what clients show first) rather than an arbitrary slice.
-    const chats = [...(await engine.getChats())].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    // Privacy Filter: Only return chats that have at least one message in our database
+    // This ensures personal chats that never triggered the bot are hidden from the dashboard.
+    const allChats = await engine.getChats();
+    let chats: ChatSummary[] = [];
+    
+    if (allChats.length > 0) {
+       const dbChats = await this.messageRepository
+         .createQueryBuilder('message')
+         .select('message.chatId', 'chatId')
+         .where('message.sessionId = :id', { id })
+         .andWhere('message.chatId IN (:...chatIds)', { chatIds: allChats.map(c => c.id) })
+         .groupBy('message.chatId')
+         .getRawMany();
+
+       const validChatIds = new Set(dbChats.map(row => row.chatId));
+       chats = allChats.filter(c => validChatIds.has(c.id));
+    }
+
+    chats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
     return paginate(chats, opts.limit, opts.offset);
   }
 

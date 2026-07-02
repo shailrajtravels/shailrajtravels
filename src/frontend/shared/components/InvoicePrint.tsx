@@ -86,7 +86,8 @@ export function InvoicePrint({
           ? Number(custom.rate)
           : b.tripName === "custom"
             ? 0
-            : b.defaultRate || 6000,
+            : b.defaultRate || 0,
+      description: custom.description || "Package Price (Per Person)",
       persons: custom.persons !== undefined ? Number(custom.persons) : b.persons || 1,
       paymentStatus: livePaymentStatus,
     };
@@ -486,7 +487,16 @@ export function InvoicePrint({
                 <tbody>
                   <tr>
                     <td className="px-5 py-4 font-medium text-[#222]">
-                      Package Price (Per Person)
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          className="w-full border border-slate-300 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-brand-blue"
+                          value={data.description}
+                          onChange={(e) => updateData("description", e.target.value)}
+                        />
+                      ) : (
+                        data.description
+                      )}
                     </td>
                     <td className="px-5 py-4 text-center font-medium text-[#222]">
                       {isEditing ? (
@@ -509,15 +519,15 @@ export function InvoicePrint({
                           name="rate"
                           type="number"
                           className="w-20 text-center border border-slate-300 rounded px-1 py-0.5 outline-none focus:ring-1 focus:ring-brand-blue"
-                          value={data.rate}
+                          value={data.rate || ""}
                           onChange={(e) => updateData("rate", parseInt(e.target.value) || 0)}
                         />
                       ) : (
-                        data.rate.toLocaleString()
+                        data.rate > 0 ? data.rate.toLocaleString() : ""
                       )}
                     </td>
                     <td className="px-5 py-4 text-center font-medium text-[#222]">
-                      {totalAmount.toLocaleString()}
+                      {totalAmount > 0 ? totalAmount.toLocaleString() : ""}
                     </td>
                   </tr>
                 </tbody>
@@ -531,7 +541,7 @@ export function InvoicePrint({
                       className="px-5 py-3 text-center text-[20px] font-extrabold leading-normal"
                       style={{ color: DARK }}
                     >
-                      ₹ {totalAmount.toLocaleString()}
+                      {totalAmount > 0 ? `₹ ${totalAmount.toLocaleString()}` : ""}
                     </td>
                   </tr>
                 </tfoot>
@@ -543,7 +553,7 @@ export function InvoicePrint({
               <Card title="PAYMENT DETAILS">
                 <div className="flex flex-col h-full gap-1">
                   <DetailRow label="Payment Mode" value="Cash / Online" />
-                  <DetailRow label="Paid Amount" value={`₹ ${totalAmount.toLocaleString()}`} />
+                  <DetailRow label="Paid Amount" value={totalAmount > 0 ? `₹ ${totalAmount.toLocaleString()}` : ""} />
                   <div className="mt-1 flex items-center text-[13px]">
                     <div className="w-[130px] font-medium">Payment Status</div>
                     <div className="w-3">:</div>

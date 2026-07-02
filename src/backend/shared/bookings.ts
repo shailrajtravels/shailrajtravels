@@ -4,6 +4,7 @@ import { tripOptionRepository } from '@/backend/shared/repositories/TripOptionRe
 import { bookingRepository } from '@/backend/shared/repositories/BookingRepository';
 import { packageRepository } from '@/backend/shared/repositories/PackageRepository';
 import { getAdminToken } from '@/backend/infrastructure/token';
+export { getAdminToken };
 import { ObjectId } from 'mongodb';
 import { logAuditAction } from '@/backend/shared/audit';
 import { uploadImageToCloudinary } from '@/backend/shared/cloudinary';
@@ -261,11 +262,15 @@ export const getBookingsFn = createServerFn({ method: "POST" })
           if (!isNaN(parsed)) return parsed;
         }
         const pkg = packages.find((p: any) => p.title === tripName);
-        if (pkg && pkg.price) {
-          const parsed = parseFloat(pkg.price.replace(/[^\d.]/g, ""));
-          if (!isNaN(parsed)) return parsed;
+        if (pkg) {
+          if (pkg.price) {
+            const parsed = parseFloat(pkg.price.replace(/[^\d.]/g, ""));
+            if (!isNaN(parsed)) return parsed;
+          }
+          return 0; // Tours without price default to 0
         }
-        return 6000;
+        
+        return 0; // Default to 0 instead of 6000 for unknown/custom trips
       };
 
       const mapped = bookings.map((b: any) => ({

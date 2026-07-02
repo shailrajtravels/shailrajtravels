@@ -22,6 +22,11 @@ export function Sessions() {
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newSessionName, setNewSessionName] = useState('');
+  const [filterEnabled, setFilterEnabled] = useState(false);
+  const [filterKeywords, setFilterKeywords] = useState('');
+  const [filterCaseInsensitive, setFilterCaseInsensitive] = useState(true);
+  const [filterIgnoreExtraSpaces, setFilterIgnoreExtraSpaces] = useState(true);
+  const [filterMatchMode, setFilterMatchMode] = useState<'exact' | 'partial'>('exact');
   const [creating, setCreating] = useState(false);
   const [qrData, setQrData] = useState<{ sessionId: string; sessionName: string; qrCode: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -134,9 +139,20 @@ export function Sessions() {
     if (!newSessionName.trim()) return;
     try {
       setCreating(true);
-      const newSession = await sessionApi.create(newSessionName);
+      const config = filterEnabled ? {
+        chatFilter: {
+          enabled: true,
+          keywords: filterKeywords.split(',').map(k => k.trim()).filter(k => k),
+          caseInsensitive: filterCaseInsensitive,
+          ignoreExtraSpaces: filterIgnoreExtraSpaces,
+          matchMode: filterMatchMode
+        }
+      } : undefined;
+      const newSession = await sessionApi.create(newSessionName, config);
       setSessions([...sessions, newSession]);
       setNewSessionName('');
+      setFilterEnabled(false);
+      setFilterKeywords('');
       setShowCreateModal(false);
       toast.success(t('sessions.create.successTitle'), t('sessions.create.successDesc', { name: newSession.name }));
     } catch (err) {
@@ -350,6 +366,64 @@ export function Sessions() {
                 sessions.some(s => s.name === newSessionName) && (
                   <p className="input-error">{t('sessions.create.duplicate')}</p>
                 )}
+
+              <div className="privacy-filter-section" style={{ marginTop: '1.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 600 }}>
+                  <input
+                    type="checkbox"
+                    checked={filterEnabled}
+                    onChange={e => setFilterEnabled(e.target.checked)}
+                  />
+                  Enable Privacy Chat Filter
+                </label>
+                <p className="input-hint" style={{ marginTop: '0.25rem' }}>
+                  Only show and fetch chats that start with specific keywords. Prevents your personal chats from appearing in the dashboard.
+                </p>
+
+                {filterEnabled && (
+                  <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div>
+                      <label>Trigger Keywords (comma separated)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. hi, hello, support, help"
+                        value={filterKeywords}
+                        onChange={e => setFilterKeywords(e.target.value)}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.875rem' }}>
+                        <input
+                          type="checkbox"
+                          checked={filterCaseInsensitive}
+                          onChange={e => setFilterCaseInsensitive(e.target.checked)}
+                        />
+                        Case insensitive
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.875rem' }}>
+                        <input
+                          type="checkbox"
+                          checked={filterIgnoreExtraSpaces}
+                          onChange={e => setFilterIgnoreExtraSpaces(e.target.checked)}
+                        />
+                        Ignore extra spaces
+                      </label>
+                    </div>
+                    <div>
+                      <label>Match Mode</label>
+                      <select
+                        value={filterMatchMode}
+                        onChange={e => setFilterMatchMode(e.target.value as 'exact' | 'partial')}
+                        style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                      >
+                        <option value="exact">Exact match (recommended)</option>
+                        <option value="partial">Partial match</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
+
             </div>
             <div className="modal-footer">
               <button className="btn-secondary" onClick={() => setShowCreateModal(false)}>

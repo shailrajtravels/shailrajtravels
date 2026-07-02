@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --host",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev --prefix ./OpenWA\" \"node webhook-server.mjs\"",
     "start": "npm run preview",
     "start:all": "concurrently \"npm run start\" \"npm run prod --prefix ./OpenWA\" \"node webhook-server.mjs\"",

@@ -33,6 +33,7 @@ export default defineConfig({
       external: ["@open-wa/wa-automate", "puppeteer-core", "puppeteer", "pdfkit", "@aws-sdk/client-s3", "qrcode", "http-auth", "buffer-crc32"],
     },
     server: {
+      host: true,
       watch: {
         ignored: ["**/.wwebjs_auth/**", "**/.wwebjs_cache/**"],
       },

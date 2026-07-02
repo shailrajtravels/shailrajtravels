@@ -1,4 +1,4 @@
-import "./lib/error-capture";
+import "@/backend/shared/error-capture";
 
 import { consumeLastCapturedError } from '@/backend/shared/error-capture';
 import { renderErrorPage } from '@/backend/shared/error-page';

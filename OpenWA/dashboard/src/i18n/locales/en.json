@@ -75,7 +75,30 @@
     "messageTester": "Message Tester",
     "infrastructure": "Infrastructure",
     "plugins": "Plugins",
-    "logs": "Logs"
+    "logs": "Logs",
+    "botRules": "Bot Rules"
+  },
+  "botRules": {
+    "title": "Bot Rules",
+    "subtitle": "Manage auto-responder keywords and replies",
+    "newRule": "New Rule",
+    "editRule": "Edit Rule",
+    "keywords": "Keywords (comma separated)",
+    "keywordsPlaceholder": "e.g., hello, hi, greetings",
+    "reply": "Reply Message",
+    "replyPlaceholder": "Enter the reply text here...",
+    "saveChanges": "Save Changes",
+    "deleteTitle": "Delete Rule",
+    "deleteConfirm": "Are you sure you want to delete this rule?",
+    "empty": {
+      "title": "No rules found",
+      "description": "Create a new bot rule to auto-reply to matching keywords."
+    },
+    "toasts": {
+      "saved": "Rules saved successfully",
+      "saveFailed": "Failed to save rules: {{message}}",
+      "deleted": "Rule deleted successfully"
+    }
   },
   "chats": {
     "subtitle": "Send and reply to WhatsApp messages in real time",

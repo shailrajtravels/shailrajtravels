@@ -27,6 +27,7 @@ export interface Session {
   updatedAt: string;
   /** Human-readable reason for the most recent terminal engine failure (set only when status is 'failed'). */
   lastError?: string | null;
+  config?: Record<string, any>;
 }
 
 export interface SessionStats {
@@ -381,10 +382,10 @@ async function requestText(endpoint: string): Promise<string> {
 export const sessionApi = {
   list: () => request<Session[]>('/sessions'),
   get: (id: string) => request<Session>(`/sessions/${id}`),
-  create: (name: string) =>
+  create: (name: string, config?: Record<string, any>) =>
     request<Session>('/sessions', {
       method: 'POST',
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, config }),
     }),
   delete: (id: string) => request<void>(`/sessions/${id}`, { method: 'DELETE' }),
   start: (id: string) => request<Session>(`/sessions/${id}/start`, { method: 'POST' }),
@@ -649,6 +650,28 @@ export const settingsApi = {
     request<Settings>('/settings', {
       method: 'PUT',
       body: JSON.stringify(settings),
+    }),
+};
+
+// =============================================================================
+// Bot Rules API
+// =============================================================================
+
+export interface ChatbotRule {
+  keywords: string[];
+  reply: string;
+}
+
+export interface ChatbotRulesDto {
+  rules: ChatbotRule[];
+}
+
+export const botRulesApi = {
+  getRules: () => request<ChatbotRulesDto>('/bot-rules'),
+  updateRules: (data: ChatbotRulesDto) =>
+    request<{ success: boolean }>('/bot-rules', {
+      method: 'PUT',
+      body: JSON.stringify(data),
     }),
 };
 

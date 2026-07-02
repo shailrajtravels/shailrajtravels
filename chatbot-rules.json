@@ -1,35 +1,62 @@
 {
   "rules": [
     {
-      "keywords": ["hii", "hello", "inquiry"],
+      "keywords": [
+        "hii",
+        "hello",
+        "inquiry"
+      ],
       "reply": "Welcome to *Shailraj Travels Pune*! 🌍\n\nHow can we help you today?\n\nAvailable Tours:\n- Type *Ashtavinayak* for Ashtavinayak Yatra details.\n- Type *Ujjain* for Ujjain Mahakal Yatra details.\n- Type *Kedarnath* or *Char Dham* for Char Dham/Kedarnath Yatra details.\n- Type *Jyotirlinga* for 5 Jyotirlinga Darshan details.\n- Type *Pandharpur* for Pandharpur Wari details.\n- Type *Shirdi* for Shirdi & Shani Shingnapur details.\n- Type *Tirupati* for Tirupati Balaji tour details.\n\nReply with any keyword above to get instant details!"
     },
     {
-      "keywords": ["ujjain", "mahakal"],
+      "keywords": [
+        "ujjain",
+        "mahakal"
+      ],
       "reply": "🙏 *Ujjain Mahakal Yatra Details* 🙏\n\nExperience the spiritual bliss of Ujjain Mahakaleshwar & Omkareshwar!\n\n*Duration:* 2 Nights / 3 Days (Every Friday - Sunday)\n*Route:* Pune → Omkareshwar & Mamleshwar → Ujjain (Mahakaleshwar Bhasma Aarti) → Grishneshwar → Pune\n*Inclusions:*\n✅ Travel by AC Force Urbania / Innova\n✅ Hotel Accommodation\n✅ Pure Veg Meals (Breakfast, Lunch & Dinner)\n✅ VIP Darshan passes assistance\n✅ Tour Manager\n✅ Travel Insurance\n\n*Price:* Starting from ₹9,999 per person.\n\nReply with 'BOOK UJJAIN' to confirm your trip!"
     },
     {
-      "keywords": ["kedarnath", "chardham", "char dham"],
+      "keywords": [
+        "kedarnath",
+        "chardham",
+        "char dham"
+      ],
       "reply": "🚩 *Char Dham & Kedarnath Yatra* 🚩\n\nEmbark on the ultimate Himalayan pilgrimage!\n\n*Duration:* 11 Nights / 12 Days (from Haridwar)\n*Route:* Haridwar → Yamunotri → Gangotri → Kedarnath → Badrinath → Rishikesh → Haridwar\n*Inclusions:*\n✅ Hotel/Camp stay with hot water facility\n✅ Pure Veg Breakfast & Dinner\n✅ Kedarnath Trek/Helicopter assistance\n✅ Priority medical screening & oxygen support\n✅ Experienced tour guides\n\n*Price:* Starting from ₹28,500 per person.\n\nReply with 'BOOK CHARDHAM' for slots & availability!"
     },
     {
-      "keywords": ["ashtavinayak", "ganesha"],
+      "keywords": [
+        "ashtavinayak",
+        "ganesha"
+      ],
       "reply": "🐘 *Ashtavinayak Yatra Details* 🐘\n\nComplete the sacred 8 Ganesha temples circuit comfortably!\n\n*Duration:* 1 Night / 2 Days (Weekly Departures)\n*Temples Covered:* Morgaon, Siddhatek, Pali, Mahad, Theur, Lenyadri, Ozar, Ranjangaon\n*Inclusions:*\n✅ Travel by AC Luxury Coach / Bus\n✅ Comfortable Hotel Stay\n✅ Pure Veg Hygienic Meals\n✅ Tour Manager & Guide\n\n*Price:* Starting from ₹3,999 per person.\n\nReply with 'BOOK ASHTAVINAYAK' to book your seat!"
     },
     {
-      "keywords": ["jyotirlinga", "5 jyotirlinga", "shiva"],
+      "keywords": [
+        "jyotirlinga",
+        "5 jyotirlinga",
+        "shiva"
+      ],
       "reply": "🔱 *5 Jyotirlinga Maharashtra Tour* 🔱\n\nVisit all 5 sacred Jyotirlingas in Maharashtra in one tour!\n\n*Duration:* 4 Nights / 5 Days\n*Temples Covered:* Bhimashankar, Trimbakeshwar, Grishneshwar, Aundha Nagnath, Parli Vaijnath\n*Inclusions:*\n✅ Private AC Cab / Tempo Traveller\n✅ Premium Hotel Accommodation\n✅ Daily Breakfast & Dinner\n✅ Transparent pricing (All toll/parking included)\n\n*Price:* Starting from ₹12,500 per person.\n\nReply with 'BOOK JYOTIRLINGA' to enquire!"
     },
     {
-      "keywords": ["shirdi", "sai"],
+      "keywords": [
+        "shirdi",
+        "sai"
+      ],
       "reply": "😇 *Shirdi Sai Baba & Shani Shingnapur Tour* 😇\n\nExperience the divine presence of Sai Baba!\n\n*Duration:* 1 Night / 2 Days\n*Places Covered:* Shirdi (Samadhi Mandir, Dwarkamai) & Shani Shingnapur\n*Inclusions:*\n✅ AC Bus / Cab Travel from Pune\n✅ Good Hotel Stay near Temple\n✅ VIP Darshan pass assistance\n✅ Pure Veg Meals\n\n*Price:* Starting from ₹2,499 per person.\n\nReply with 'BOOK SHIRDI' for instant booking!"
     },
     {
-      "keywords": ["tirupati", "balaji"],
+      "keywords": [
+        "tirupati",
+        "balaji"
+      ],
       "reply": "🙏 *Tirupati Balaji Darshan Tour* 🙏\n\nHassle-free VIP entry to Lord Venkateswara temple!\n\n*Duration:* 2 Nights / 3 Days\n*Inclusions:*\n✅ Flight / Train tickets assistance\n✅ VIP Special Entry Darshan Tickets\n✅ AC Hotel stay in Tirupati\n✅ Tonsuring arrangements & guide support\n\n*Price:* Starting from ₹8,999 per person.\n\nReply with 'BOOK TIRUPATI' to plan your trip!"
     },
     {
-      "keywords": ["pandharpur", "vitthal"],
+      "keywords": [
+        "pandharpur",
+        "vitthal"
+      ],
       "reply": "🚩 *Pandharpur & Tuljapur Tour* 🚩\n\nSeek blessings of Vitthal-Rukmini and Tulja Bhavani!\n\n*Duration:* 2 Nights / 3 Days\n*Route:* Pune → Pandharpur → Solapur → Tuljapur → Alandi → Pune\n*Inclusions:*\n✅ AC Transportation\n✅ Hotel Stay\n✅ Pure Veg Meals\n✅ Priority entry assistance\n\n*Price:* Starting from ₹5,499 per person.\n\nReply with 'BOOK PANDHARPUR' to get in touch!"
     }
   ]

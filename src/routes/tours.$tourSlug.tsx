@@ -1,6 +1,7 @@
 import React from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { getTourBySlugFn } from '@/backend/features/tours';
+import { getRecommendedVehiclesFn } from '@/backend/shared/recommended-vehicles';
 import { TourPageTemplate } from '@/frontend/shared/templates/TourPageTemplate';
 import { generateSEO } from '@/backend/features/seo';
 import { generateProductSchema } from '@/backend/shared/schema-generators';
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/tours/$tourSlug")({
     if (!tour) {
       throw notFound();
     }
+    const recommendedVehicles = await getRecommendedVehiclesFn();
 
     // Dynamically generate schema since it's no longer stored in DB
     (tour as any).schemaData = generateProductSchema({
@@ -27,7 +29,7 @@ export const Route = createFileRoute("/tours/$tourSlug")({
       reviewCount: 150,
     });
 
-    return tour as any;
+    return { tour: tour as any, recommendedVehicles };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -38,18 +40,23 @@ export const Route = createFileRoute("/tours/$tourSlug")({
 
     return {
       meta: generateSEO({
-        title: loaderData.metaTitle,
-        description: loaderData.metaDescription,
-        canonicalUrl: loaderData.canonicalUrl,
-        ogImage: `https://www.shailrajtravels.com${loaderData.heroContent.image}`,
+        title: loaderData.tour.metaTitle,
+        description: loaderData.tour.metaDescription,
+        canonicalUrl: loaderData.tour.canonicalUrl,
+        ogImage: `https://www.shailrajtravels.com${loaderData.tour.heroContent.image}`,
         type: "website",
       }),
-      links: [{ rel: "canonical", href: loaderData.canonicalUrl }],
+      links: [{ rel: "canonical", href: loaderData.tour.canonicalUrl }],
     };
   },
   component: TourPageComponent,
   pendingComponent: TourPageSkeleton
 });
+
+function TourPageComponent() {
+  const { tour, recommendedVehicles } = Route.useLoaderData();
+  return <TourPageTemplate data={tour} recommendedVehicles={recommendedVehicles} />;
+}
 
 function TourPageSkeleton() {
   const { lang } = useLanguage();
@@ -134,7 +141,3 @@ function TourPageSkeleton() {
   );
 }
 
-function TourPageComponent() {
-  const tour = Route.useLoaderData();
-  return <TourPageTemplate data={tour} />;
-}

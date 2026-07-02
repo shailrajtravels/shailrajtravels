@@ -1,5 +1,5 @@
-import { mongoAdapter } from '@/backend/shared/lib/database/MongoAdapter';
-import { storageManager } from '@/backend/shared/lib/database/StorageManager';
+import { mongoAdapter } from '@/backend/shared/database/MongoAdapter';
+import { storageManager } from '@/backend/shared/database/StorageManager';
 
 export async function initializeDatabase() {
   console.log("[Init-DB] Starting MongoDB initialization...");
